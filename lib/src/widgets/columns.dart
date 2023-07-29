@@ -22,7 +22,7 @@ class MdiColumns extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final columns = top.childToParentIterable
-        .map((e) => e.widget)
+        .map((e) => e.widget.withKey(e))
         .take(columnCount)
         .toList()
         .reversed
