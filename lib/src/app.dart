@@ -48,9 +48,13 @@ class MdiAppBits with _$MdiAppBits {
 
   late final columnCount = _disposers.fw(4);
 
-  late final textStyle = GoogleFonts.robotoMono().copyWith(
+  late final monoTextStyle = GoogleFonts.robotoMono().copyWith(
     fontSize: 14,
     color: Colors.white,
+  );
+
+  late final textStyle = const TextStyle(
+    fontSize: 14,
   );
 
   late final ui = UiBuilder(
@@ -75,4 +79,6 @@ mixin HasAppBits {
   MdiAppBits get appBits;
 
   late final ui = appBits.ui;
+
+  late final configBits = appBits.configBits;
 }

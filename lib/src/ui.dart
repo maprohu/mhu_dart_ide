@@ -24,4 +24,14 @@ extension UiBuilderX on UiBuilder {
   UiBuilder withOpReg(OpReg opReg) => copyWith(opReg: opReg);
 
   HasSizedWidget sizedKeys(Keys? keys) => sized.sizedKeys(keys: keys, ui: this);
+
+  HasSizedWidget sizedOpIcon({
+    required HasSizedWidget icon,
+    required Keys? keys,
+  }) =>
+      sized.sizedOpIcon(
+        icon: icon,
+        keys: keys,
+        ui: this,
+      );
 }

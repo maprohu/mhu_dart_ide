@@ -41,7 +41,8 @@ class MdiColumns extends StatelessWidget {
 @freezedStruct
 class ColumnBits with _$ColumnBits, HasAppBits, HasParent<ColumnBits> {
   ColumnBits._();
-   factory ColumnBits({
+
+  factory ColumnBits({
     required MdiAppBits appBits,
     required ColumnBits? parent,
     required OpReg opReg,
@@ -108,6 +109,16 @@ class ColumnWidgetBits
     required ColumnBits columnBits,
     required Widget widget,
   }) = _ColumnWidgetBits;
+
+  factory ColumnWidgetBits.fromParent({
+    required ColumnWidgetParent parent,
+    required Widget widget,
+  }) =>
+      ColumnWidgetBits(
+        parent: parent.parent,
+        columnBits: parent.columnBits,
+        widget: widget,
+      );
 }
 
 mixin ColumnWidgetBuilder {
@@ -115,16 +126,14 @@ mixin ColumnWidgetBuilder {
 
   Widget get widget;
 
-  late final widgetBits = ColumnWidgetBits(
-    parent: parent.parent,
-    columnBits: parent.columnBits.push(),
+  late final widgetBits = ColumnWidgetBits.fromParent(
+    parent: parent,
     widget: widget,
   );
 
   late final columnBits = widgetBits.columnBits;
 
-
-  late final widgetParent = ColumnWidgetParent.fromWidget(widgetBits);
+  // late final widgetParent = ColumnWidgetParent.fromWidget(widgetBits);
 }
 
 Widget sepColumn(

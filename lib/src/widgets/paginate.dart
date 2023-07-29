@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/ui.dart';
 import 'package:mhu_dart_ide/src/widgets/columns.dart';
 import 'package:mhu_dart_ide/src/widgets/sized.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+
+import '../app.dart';
+
+part 'paginate.freezed.dart';
 
 class HwPaginatorController {
   final firstIndex = fw(0);
@@ -66,4 +71,44 @@ int itemFitCount({
   }
 
   return 1 + (remaining ~/ (itemSize + separator));
+}
+
+@freezedStruct
+class PaginatorBits with _$PaginatorBits {
+  PaginatorBits._();
+
+  factory PaginatorBits({
+    required double itemHeight,
+    required int itemCount,
+    required Iterable<Widget> Function(int from, int count) itemBuilder,
+  }) = _PaginatorBits;
+}
+
+typedef PaginatorRegistrar = PaginatorBits Function(DspReg disposers);
+
+@freezedStruct
+class PaginatorBuilder
+    with _$PaginatorBuilder, ColumnWidgetBuilder, HasColumnBits, HasAppBits {
+  PaginatorBuilder._();
+
+  factory PaginatorBuilder({
+    required ColumnWidgetParent parent,
+    required WidgetLinker<PaginatorBits> linker,
+  }) = _PaginatorBuilder;
+
+  late final controller = HwPaginatorController();
+
+  @override
+  late final widget = linkWidget(
+    linker: linker,
+    builder: (bits) {
+      return hwPaginator(
+        itemHeight: bits.itemHeight,
+        itemCount: bits.itemCount,
+        itemBuilder: bits.itemBuilder,
+        ui: ui,
+        controller: controller,
+      );
+    },
+  );
 }

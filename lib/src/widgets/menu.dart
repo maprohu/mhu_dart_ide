@@ -27,7 +27,7 @@ class MenuBuilder
     ) watchItems,
   }) = _MenuBuilder;
 
-  late final controller = HwPaginatorController();
+  late final controller = paginatorBuilder.controller;
 
   HasSizedWidget itemLabel(String label) {
     return ui.itemText.text(label);
@@ -54,27 +54,25 @@ class MenuBuilder
     keys: itemKeys(null),
   ).height;
 
-  @override
-  late final widget = flcFrr(() {
-    final items = watchItems(widgetBits);
+  late final paginatorBuilder = PaginatorBuilder(
+    parent: parent,
+    linker: () {
+      final items = watchItems(widgetBits);
 
-    return flcDsp((disposers) {
-      final handles = items.map((itemBits) {
-        return (
-          label: itemLabel(itemBits.label),
-          state: opReg.register(
-            action: itemBits.action,
-            disposers: disposers,
-          )
-        );
-      }).toList();
+      return (disposers) {
+        final handles = items.map((itemBits) {
+          return (
+            label: itemLabel(itemBits.label),
+            state: opReg.register(
+              action: itemBits.action,
+              disposers: disposers,
+            )
+          );
+        }).toList();
 
-      final itemCount = handles.length;
-
-      return flcFrr(() {
-        return hwPaginator(
+        return PaginatorBits(
           itemHeight: itemHeight,
-          itemCount: itemCount,
+          itemCount: handles.length,
           itemBuilder: (from, count) {
             final subHandles = handles.sublist(from, from + count);
 
@@ -96,12 +94,62 @@ class MenuBuilder
               ).widget,
             );
           },
-          ui: ui,
-          controller: controller,
         );
-      });
-    });
-  });
+      };
+    },
+  );
+
+  @override
+  late final widget = paginatorBuilder.widget;
+
+// @override
+// late final widget = flcFrr(() {
+//   final items = watchItems(widgetBits);
+//
+//   return flcDsp((disposers) {
+//     final handles = items.map((itemBits) {
+//       return (
+//         label: itemLabel(itemBits.label),
+//         state: opReg.register(
+//           action: itemBits.action,
+//           disposers: disposers,
+//         )
+//       );
+//     }).toList();
+//
+//     final itemCount = handles.length;
+//
+//     return flcFrr(() {
+//       return hwPaginator(
+//         itemHeight: itemHeight,
+//         itemCount: itemCount,
+//         itemBuilder: (from, count) {
+//           final subHandles = handles.sublist(from, from + count);
+//
+//           final widgets = subHandles.map((e) {
+//             return (
+//               label: e.label,
+//               keys: itemKeys(e.state()),
+//             );
+//           }).toList();
+//
+//           final keysWidth = widgets.map((e) => e.keys.width).maxOrNull ?? 0;
+//
+//           return widgets.map(
+//             (e) => menuItem(
+//               label: e.label,
+//               keys: e.keys.constrain(
+//                 minWidth: keysWidth,
+//               ),
+//             ).widget,
+//           );
+//         },
+//         ui: ui,
+//         controller: controller,
+//       );
+//     });
+//   });
+// });
 }
 
 @freezedStruct

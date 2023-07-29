@@ -3,9 +3,14 @@ syntax = "proto3";
 //import "mhu_dart_model.proto";
 
 message MdiConfigMsg {
-  repeated string packagePaths = 5;
+  repeated string package_paths = 5;
+  MdiBuildRunnerConfigMsg build_runner_config = 6;
 }
 
+message  MdiBuildRunnerConfigMsg {
+  string some_value = 1;
+
+}
 
 
 

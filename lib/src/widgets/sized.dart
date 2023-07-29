@@ -134,9 +134,11 @@ HWidget hwDivider([double thickness = 1]) {
 
 SizedWidget sizedColumn({
   required List<HasSizedWidget> children,
+  CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
 }) {
   return SizedWidget(
     widget: Column(
+      crossAxisAlignment: crossAxisAlignment,
       children: children.map((e) => e.widget).toList(),
     ),
     height: children.sumByDouble((e) => e.height),
@@ -190,11 +192,18 @@ extension HWidgetX on HWidget {
 }
 
 SizedWidget columnGap([double height = 1]) => SizedWidget(
+  widget: SizedBox(
+    height: height,
+  ),
+  height: height,
+  width: 0,
+);
+SizedWidget rowGap([double width = 1]) => SizedWidget(
       widget: SizedBox(
-        height: height,
+        width: width,
       ),
-      height: height,
-      width: 0,
+      height: 0,
+      width: width,
     );
 
 HasSizedWidget sizedKeys({
@@ -207,7 +216,8 @@ HasSizedWidget sizedKeys({
         chars,
         textAlign: TextAlign.center,
       )
-      .constrain(minWidth: 16);
+      // .constrain(minWidth: 16)
+  ;
 }
 
 SizedWidget sizedOpIcon({
@@ -217,12 +227,12 @@ SizedWidget sizedOpIcon({
 }) {
   return sizedColumn(children: [
     icon,
-    columnGap(),
+    // rowGap(),
     sizedKeys(
       keys: keys,
       ui: ui,
     ),
-  ]).withPadding();
+  ]).withPadding(all: 2);
 }
 
 extension SizedWidgetWidgetX on Widget {

@@ -1,5 +1,6 @@
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/op_registry.dart';
+import 'package:mhu_dart_ide/src/pfe/pfe.dart';
 import 'package:mhu_dart_ide/src/widgets/columns.dart';
 import 'package:mhu_dart_ide/src/widgets/menu.dart';
 
@@ -19,7 +20,10 @@ ColumnWidgetBits mdiBuildRunnerMenu({
         widgetBits.opener(
           label: "Settings",
           builder: (parent) {
-            throw "todo";
+            return mdiProtoFwEditor(
+              parent: parent,
+              mfw: parent.configBits.config.buildRunnerConfig,
+            );
           },
         )
       ];
