@@ -38,9 +38,10 @@ class MdiColumns extends StatelessWidget {
   }
 }
 
-@freezed
+@freezedStruct
 class ColumnBits with _$ColumnBits, HasAppBits, HasParent<ColumnBits> {
-  const factory ColumnBits({
+  ColumnBits._();
+   factory ColumnBits({
     required MdiAppBits appBits,
     required ColumnBits? parent,
     required OpReg opReg,
@@ -51,6 +52,8 @@ mixin HasColumnBits {
   ColumnBits get columnBits;
 
   late final appBits = columnBits.appBits;
+
+  late final opReg = columnBits.opReg;
 }
 
 extension ColumnBitsX on ColumnBits {
@@ -114,9 +117,12 @@ mixin ColumnWidgetBuilder {
 
   late final widgetBits = ColumnWidgetBits(
     parent: parent.parent,
-    columnBits: parent.columnBits,
+    columnBits: parent.columnBits.push(),
     widget: widget,
   );
+
+  late final columnBits = widgetBits.columnBits;
+
 
   late final widgetParent = ColumnWidgetParent.fromWidget(widgetBits);
 }

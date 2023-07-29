@@ -31,7 +31,7 @@ class MdiIcons {
     );
   }
 
-  final addColumn = _svg("ftinscol");
-  final removeColumn = _svg("ftremcol");
-  final help = _icon(Icons.help_outline);
+  static final addColumn = _svg("ftinscol");
+  static final removeColumn = _svg("ftremcol");
+  static final help = _icon(Icons.help_outline);
 }

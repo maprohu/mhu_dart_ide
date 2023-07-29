@@ -97,6 +97,7 @@ SizedWidget sizedPadding({
     width: child.width + left + right,
   );
 }
+
 HWidget hwPadding({
   required HasHWidget child,
   double all = 2,
@@ -138,8 +139,20 @@ SizedWidget sizedColumn({
     widget: Column(
       children: children.map((e) => e.widget).toList(),
     ),
-    height: children.sumBy((e) => e.height),
+    height: children.sumByDouble((e) => e.height),
     width: children.map((e) => e.width).maxOrNull ?? 0,
+  );
+}
+
+SizedWidget sizedRow({
+  required List<HasSizedWidget> children,
+}) {
+  return SizedWidget(
+    widget: Row(
+      children: children.map((e) => e.widget).toList(),
+    ),
+    width: children.sumByDouble((e) => e.width),
+    height: children.map((e) => e.height).maxOrNull ?? 0,
   );
 }
 
@@ -189,7 +202,12 @@ HasSizedWidget sizedKeys({
   required UiBuilder ui,
 }) {
   final chars = keys?.chars ?? '';
-  return ui.keysText.text(chars).constrain(minWidth: 16);
+  return ui.keysText
+      .text(
+        chars,
+        textAlign: TextAlign.center,
+      )
+      .constrain(minWidth: 16);
 }
 
 SizedWidget sizedOpIcon({
@@ -246,6 +264,7 @@ extension SizedWidgetX on HasSizedWidget {
       widget: SizedBox(
         width: width,
         height: height,
+        child: widget,
       ),
       width: width ?? this.width,
       height: height ?? this.height,
@@ -267,4 +286,14 @@ extension SizedWidgetX on HasSizedWidget {
       left: left,
     );
   }
+
+  SizedWidget withWidget(Widget widget) => SizedWidget(
+        widget: widget,
+        width: width,
+        height: height,
+      );
+
+  HasSizedWidget get expanded => withWidget(
+        Expanded(child: widget),
+      );
 }

@@ -3,6 +3,9 @@ import 'package:mhu_dart_ide/src/op_registry.dart';
 import 'package:mhu_dart_ide/src/widgets/sized.dart';
 import 'package:mhu_dart_ide/src/widgets/text.dart';
 
+import 'op.dart';
+import 'widgets/sized.dart' as sized;
+
 part 'ui.freezed.dart';
 
 @freezedStruct
@@ -20,9 +23,5 @@ class UiBuilder with _$UiBuilder {
 extension UiBuilderX on UiBuilder {
   UiBuilder withOpReg(OpReg opReg) => copyWith(opReg: opReg);
 
-  SizedWidget opIcon({
-    required HasSizedWidget icon,
-}) {
-    sizedOpIcon(icon: icon, keys: keys, ui: ui)
-  }
+  HasSizedWidget sizedKeys(Keys? keys) => sized.sizedKeys(keys: keys, ui: this);
 }

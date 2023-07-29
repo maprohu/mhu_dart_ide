@@ -5,9 +5,9 @@ import 'package:mhu_dart_ide/src/widgets/menu.dart';
 
 import '../op.dart';
 
-const buildRunnerOp = Op(
-  label: "Build Runner",
-);
+// const buildRunnerOp = Op(
+//   label: "Build Runner",
+// );
 
 ColumnWidgetBits mdiBuildRunnerMenu({
   required ColumnWidgetParent parent,

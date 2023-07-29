@@ -5,16 +5,12 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart'
     hide Op;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:isar/isar.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/widgets/op_icon.dart';
-import 'package:mhu_dart_ide/src/widgets/op_keys.dart';
-import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
 import 'op.dart';
-import 'widgets/menu.dart';
 
-typedef OpState = Fr<Keys>;
+typedef OpState = Watch<Keys?>;
 
 typedef OpOrder = IList<int>;
 
@@ -28,15 +24,15 @@ class OpReg {
   late final _order = _orderBase.add(_index);
 
   OpState register({
-    required Op op,
-    required VoidCallback action,
+    required Watch<VoidCallback?> action,
     required DspReg disposers,
+    Op? op,
   }) {
     return _screen.register(
-      op: op,
       order: _order,
       disposers: disposers,
       action: action,
+      op: op,
     );
   }
 
@@ -50,52 +46,50 @@ class OpReg {
 }
 
 extension OpRegX on OpReg {
-  Widget icon(Op op, Watch<VoidCallback?> action) {
-    return widget(
-      op: op,
-      action: action,
-      builder: (keys) => OpIcon(op: op, keys: keys),
-    );
-  }
+  // Widget icon(Op op, Watch<VoidCallback?> action) {
+  //   return widget(
+  //     op: op,
+  //     action: action,
+  //     builder: (keys) => OpIcon(op: op, keys: keys),
+  //   );
+  // }
 
-  Widget keys(Op op, Watch<VoidCallback?> action) {
-    return widget(
-      op: op,
-      action: action,
-      builder: (keys) => OpKeys(keys: keys),
-    );
-  }
+  // Widget keys(Op op, Watch<VoidCallback?> action) {
+  //   return widget(
+  //     op: op,
+  //     action: action,
+  //     builder: (keys) => OpKeys(keys: keys),
+  //   );
+  // }
 
-
-
-  Widget widget({
-    required Op op,
-    required Watch<VoidCallback?> action,
-    required Widget Function(Keys? keys) builder,
-  }) {
-    return flcFrr(() {
-      final callback = action();
-
-      if (callback == null) {
-        return builder(null);
-      }
-
-      return flcDsp((disposers) {
-        final keysFr = register(
-          op: op,
-          action: callback,
-          disposers: disposers,
-        );
-        return keysFr.asKey(builder);
-      }).withKey(callback);
-    });
-  }
+  // Widget widget({
+  //   required Op op,
+  //   required Watch<VoidCallback?> action,
+  //   required Widget Function(Keys? keys) builder,
+  // }) {
+  //   return flcFrr(() {
+  //     final callback = action();
+  //
+  //     if (callback == null) {
+  //       return builder(null);
+  //     }
+  //
+  //     return flcDsp((disposers) {
+  //       final keysFr = register(
+  //         op: op,
+  //         action: callback,
+  //         disposers: disposers,
+  //       );
+  //       return keysFr.asKey(builder);
+  //     }).withKey(callback);
+  //   });
+  // }
 
   OpReg push() => OpReg._(
-    screen: _screen,
-    orderBase: _orderBase,
-    index: _index + 1,
-  );
+        screen: _screen,
+        orderBase: _orderBase,
+        index: _index + 1,
+      );
 
   OpReg fork() => OpReg._(
         screen: _screen,
@@ -105,7 +99,7 @@ extension OpRegX on OpReg {
 }
 
 class _Handle {
-  final VoidCallback action;
+  final Watch<VoidCallback?> action;
   final disposers = DspImpl();
   final orders = HeapPriorityQueue<OpOrder>(compareOpOrder);
 
@@ -148,8 +142,30 @@ class OpScreen {
   static final keyLabelSet =
       OpScreen.keyChars.map((e) => e.toUpperCase()).toISet();
 
+  late final _activeOps = _disposers.fr(() {
+    final opHandles = _ops();
+
+    final records = opHandles.mapTo((op, handle) {
+      final action = handle.action();
+      if (action == null) {
+        return null;
+      }
+
+      return (
+        op: op,
+        action: action,
+        order: handle.highestOrder.read(),
+      );
+    }).whereNotNull();
+
+    return IMap.fromValues(
+      values: records,
+      keyMapper: (r) => r.op,
+    );
+  });
+
   late final _opChars = _disposers.fr(() {
-    final ops = _ops();
+    final ops = _activeOps();
 
     final count = ops.length;
     var availableKeysCount = count;
@@ -171,12 +187,12 @@ class OpScreen {
       availableKeysCount += keyCount - 1;
     }
 
-    final opsSorted = ops.entries
+    final opsSorted = ops.values
         .sortedByCompare(
-          (e) => e.value.highestOrder.read(),
+          (e) => e.order,
           compareOpOrder,
         )
-        .map((e) => e.key);
+        .map((e) => e.op);
 
     return IMap<Op, String>.fromEntries(
       opsSorted.zipMapWith(
@@ -191,65 +207,50 @@ class OpScreen {
     final pressedChars = _pressedChars();
     final pressedCount = pressedChars.length;
 
-    return opChars.map((op, chars) {
-      if (chars.startsWith(pressedChars)) {
-        return MapEntry(
-          op,
-          (
-            chars: chars,
-            pressedCount: pressedCount,
-          ),
-        );
-      } else {
-        return MapEntry(
-          op,
-          (
-            chars: "",
-            pressedCount: 0,
-          ),
-        );
-      }
-    });
+    final entries = opChars.entries.where(
+      (e) => e.value.startsWith(pressedChars),
+    );
+
+    return IMap.fromIterable(
+      entries,
+      keyMapper: (e) => e.key,
+      valueMapper: (e) => (
+        chars: e.value,
+        pressedCount: pressedCount,
+      ),
+    );
   });
 
   OpState register({
-    required Op op,
     required OpOrder order,
     required DspReg disposers,
-    required VoidCallback action,
+    required Watch<VoidCallback?> action,
+    Op? op,
   }) {
-    final handleDisposers = DspImpl();
+    final finalOp = op ?? Op();
+
     _ops.update((ops) {
-      var handle = ops[op];
+      var handle = ops[finalOp];
 
       if (handle == null) {
         handle = _Handle(
           action: action,
         );
-        ops = ops.add(op, handle);
+        ops = ops.add(finalOp, handle);
       }
 
       final finalHandle = handle;
       finalHandle.addOrder(order);
-      handleDisposers.add(() async {
+      disposers.add(() async {
         await finalHandle.remove(order, () {
-          _ops.update((ops) => ops.remove(op));
+          _ops.update((ops) => ops.remove(finalOp));
         });
       });
 
       return ops;
     });
 
-    final stateDisposers = DspImpl();
-    final state = stateDisposers.fr(() => _opStates()[op]!);
-
-    disposers.add(() async {
-      final stateFut = stateDisposers.dispose();
-      await handleDisposers.dispose();
-      await stateFut;
-    });
-
-    return state;
+    return () => _opStates()[finalOp];
   }
 
   late final root = OpReg._(
@@ -272,14 +273,14 @@ class OpScreen {
         .toList();
 
     switch (candidates) {
-      case []:
+      case []: // no matching op, ignore key
         return;
-      case [final single]:
+      case [final single]: // found a single match, execute
         assert(single.value.chars == newPressed);
         _pressedChars.value = '';
-        _ops.read()[single.key]!.action();
-      default:
-      // no match for key, ignore
+        _activeOps.read()[single.key]!.action();
+      default: // multiple matches, wait for more chars
+        _pressedChars.value = newPressed;
     }
   }
 
@@ -294,3 +295,8 @@ class OpScreen {
     }
   }
 }
+
+typedef OpHandle = ({
+  OpState state,
+  HasSizedWidget widget,
+});

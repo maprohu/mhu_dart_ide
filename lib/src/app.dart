@@ -73,4 +73,6 @@ class MdiAppBits with _$MdiAppBits {
 
 mixin HasAppBits {
   MdiAppBits get appBits;
+
+  late final ui = appBits.ui;
 }
