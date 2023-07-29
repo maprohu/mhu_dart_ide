@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+//import "mhu_dart_model.proto";
+
+message MdiConfigMsg {
+  repeated string packagePaths = 5;
+}
+
+
+
+
