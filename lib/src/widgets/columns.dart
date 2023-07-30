@@ -2,11 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/icons.dart';
 import 'package:mhu_dart_ide/src/main_page.dart';
 import 'package:mhu_dart_ide/src/op_registry.dart';
+import 'package:mhu_dart_ide/src/ui.dart';
+import 'package:mhu_dart_ide/src/widgets/sized.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 part 'columns.freezed.dart';
+
+@freezedStruct
+class ColumnParts with _$ColumnParts {
+  ColumnParts._();
+
+  factory ColumnParts({
+    required Widget body,
+    required Widget? header,
+  }) = _ColumnParts;
+}
+
+@freezedStruct
+class ColumnHeaderParts with _$ColumnHeaderParts {
+  ColumnHeaderParts._();
+
+  factory ColumnHeaderParts({
+    SizedWidget? left,
+    SizedWidget? right,
+  }) = _ColumnHeaderParts;
+}
 
 class MdiColumns extends StatelessWidget {
   final ColumnWidgetBits? top;
@@ -143,11 +166,13 @@ mixin ColumnWidgetBuilder {
 Widget sepColumn(
   Iterable<Widget> children, {
   double thickness = 1.0,
+  bool expand = false,
 }) {
   return sepFlex(
     children: children,
     thickness: thickness,
     direction: Axis.vertical,
+    expand: expand,
   );
 }
 
@@ -166,6 +191,7 @@ Widget sepFlex({
   required Iterable<Widget> children,
   double thickness = 1,
   required Axis direction,
+  bool expand = false,
 }) {
   final separator = switch (direction) {
     Axis.horizontal => VerticalDivider(
@@ -181,6 +207,9 @@ Widget sepFlex({
         endIndent: 0,
       ),
   };
+  if (expand) {
+    children = children.map((e) => Expanded(child: e));
+  }
   return Flex(
     direction: direction,
     children: children.separatedBy(separator).toList(),

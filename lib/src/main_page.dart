@@ -1,3 +1,4 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
@@ -7,6 +8,8 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import 'icons.dart';
 import 'op_registry.dart';
+
+part 'main_page.freezed.dart';
 
 const hline = Divider(
   height: 1,
@@ -22,11 +25,49 @@ const vline = VerticalDivider(
   endIndent: 0,
 );
 
+@freezed
+class DrawData with _$DrawData {
+  const factory DrawData({
+    required Size size,
+    required OpStates opStates,
+    required int pressedCount,
+  }) = _DrawData;
+}
+
 Widget mdiMainPage({
+  required MdiAppBits appBits,
+  required Widget Function(DrawData data) watchScreen,
+}) {
+  final opScreen = appBits.opScreen;
+
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final height = constraints.maxHeight;
+      final width = constraints.maxWidth;
+
+      final size = Size(width, height);
+
+      return flcFrr(() {
+        final opStates = opScreen.opStates();
+        final pressedCount = opScreen.pressedCount();
+
+        final drawData = DrawData(
+          size: size,
+          opStates: opStates,
+          pressedCount: pressedCount,
+        );
+
+        return watchScreen(drawData);
+      }).withKey(constraints);
+    },
+  );
+}
+
+Widget watchMdiMainScreen({
+  required DrawData data,
   required MdiAppBits appBits,
 }) {
   final ui = appBits.ui;
-
   final opReg = ui.opReg;
 
   return flcDsp((disposers) {

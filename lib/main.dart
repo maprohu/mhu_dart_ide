@@ -10,6 +10,7 @@ import 'package:mhu_dart_ide/src/op_registry.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 void main() async {
+  GoogleFonts.config.allowRuntimeFetching = false;
   WidgetsFlutterBinding.ensureInitialized();
   mhuDartIdeLib.register();
 
@@ -21,6 +22,9 @@ void main() async {
     isar: isar,
     disposers: disposers,
   );
+
+  ScreenSizeObserver.stream(disposers).forEach(print);
+
 
   final appBits = MdiAppBits(
     isar: isar,
@@ -54,10 +58,17 @@ class MdiApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData.dark(),
-      home: mdiMainPage(
-        appBits: appBits,
+      home: Scaffold(
+        body: LayoutBuilder(builder: (context, constraints) {
+          print((constraints.maxWidth, constraints.maxHeight));
+          return StretchWidget(
+            child: Text('hello'),
+          );
+        }),
       ),
       shortcuts: _shortcuts,
     );
   }
 }
+
+

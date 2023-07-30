@@ -1,16 +1,35 @@
 syntax = "proto3";
 
-//import "mhu_dart_model.proto";
-
-message MdiConfigMsg {
-  repeated string package_paths = 5;
-  MdiBuildRunnerConfigMsg build_runner_config = 6;
-}
-
-message  MdiBuildRunnerConfigMsg {
-  string some_value = 1;
+message  MdiConfigMsg {
+  int32 ids = 1;
+  map<int32, MdiDartPackageMsg> dart_packages = 2;
 
 }
 
+message  MdiDartPackageMsg {
+
+}
+message MdiStateMsg {
+  MdiColumnMsg column = 1;
+}
+
+message MdiColumnMsg {
+  MdiColumnMsg parent = 1;
+  oneof type {
+    MdiMainMenuMsg main_menu = 2;
+  }
+}
+
+message  MdiMainMenuMsg {
+}
+message  MdiBuildRunnerMenuMsg {
+}
+
+message  MdiBuildRunnerPackagesMsg {
+}
+
+message  MdiBuildRunnerPackageMsg {
+  int32 package_id = 1;
+}
 
 

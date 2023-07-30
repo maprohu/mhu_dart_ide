@@ -14,50 +14,53 @@ class HwPaginatorController {
   final firstIndex = fw(0);
 }
 
-Widget hwPaginator({
+ColumnParts paginatorParts({
   double separator = 1,
+  required double height,
   required double itemHeight,
   required int itemCount,
-  required Iterable<Widget> Function(int from, int count) itemBuilder,
+  required Iterable<Widget> Function(int from, int count, DspReg disposers)
+      itemBuilder,
   required UiBuilder ui,
   required HwPaginatorController controller,
-  HWidget Function(HWidget controls)? header,
 }) {
-  HWidget defaultHeader(HWidget controls) {
-    return hwColumn(
-      children: [
-        controls.withPadding(),
-        hwDivider(separator + 1),
-      ],
+  final fitCount = itemFitCount(
+    available: height,
+    itemSize: itemHeight,
+    separator: separator,
+  );
+
+  if (itemCount <= fitCount) {
+    // single page
+
+    return ColumnParts(
+      body: flcDsp((disposers) {
+        return sepColumn(
+          itemBuilder(0, itemCount, disposers),
+          thickness: separator,
+        );
+      }),
+      header: null,
+    );
+  } else {
+    // paginate
+    return ColumnParts(
+      body: flcFrr(() {
+        final start = controller.firstIndex();
+        return flcDsp((disposers) {
+          return sepColumn(
+            itemBuilder(start, fitCount, disposers),
+            thickness: separator,
+            expand: true,
+          );
+        });
+      }),
+      header: flcFrr(() {
+        final start = controller.firstIndex();
+        return ui.itemText.text("$start [$itemCount]").widget;
+      }),
     );
   }
-
-  header ??= defaultHeader;
-
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      final height = constraints.maxHeight;
-
-      final fitCount = itemFitCount(
-        available: height,
-        itemSize: itemHeight,
-        separator: separator,
-      );
-
-      return flcFrr(() {
-        if (itemCount <= fitCount) {
-          // single page
-          return sepColumn(
-            itemBuilder(0, itemCount),
-            thickness: separator,
-          );
-        } else {
-          // paginate
-          throw "todo";
-        }
-      });
-    },
-  );
 }
 
 int itemFitCount({
@@ -80,7 +83,11 @@ class PaginatorBits with _$PaginatorBits {
   factory PaginatorBits({
     required double itemHeight,
     required int itemCount,
-    required Iterable<Widget> Function(int from, int count) itemBuilder,
+    required Iterable<Widget> Function(
+      int from,
+      int count,
+      DspReg disposers,
+    ) itemBuilder,
   }) = _PaginatorBits;
 }
 
@@ -102,12 +109,18 @@ class PaginatorBuilder
   late final widget = linkWidget(
     linker: linker,
     builder: (bits) {
-      return hwPaginator(
-        itemHeight: bits.itemHeight,
-        itemCount: bits.itemCount,
-        itemBuilder: bits.itemBuilder,
-        ui: ui,
-        controller: controller,
+      return ui.buildColumn(
+        column: (height) {
+          return paginatorParts(
+            height: height,
+            itemHeight: bits.itemHeight,
+            itemCount: bits.itemCount,
+            itemBuilder: bits.itemBuilder,
+            ui: ui,
+            controller: controller,
+          );
+        },
+        headerParts: ColumnHeaderParts(),
       );
     },
   );

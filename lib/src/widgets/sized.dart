@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/ui.dart';
 import 'package:mhu_dart_ide/src/widgets/text.dart';
+import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../op.dart';
 
@@ -13,14 +14,26 @@ part 'sized.freezed.dart';
 
 @freezedStruct
 class SizedWidget with _$SizedWidget implements HasSizedWidget {
-  SizedWidget._();
+  const SizedWidget._();
 
-  factory SizedWidget({
+  const factory SizedWidget({
     required Widget widget,
     required double width,
     required double height,
   }) = _SizedWidget;
+
+  factory SizedWidget.zero(Widget widget) => SizedWidget(
+        widget: widget,
+        width: 0,
+        height: 0,
+      );
 }
+
+const nullSizedWidget = SizedWidget(
+  widget: nullWidget,
+  width: 0,
+  height: 0,
+);
 
 Size mdiTextSize(String text, TextStyle style) {
   return TextSpan(
@@ -110,6 +123,19 @@ HWidget hwPadding({
       child: child.widget,
     ),
     height: child.height + top + bottom,
+  );
+}
+
+SizedWidget columnDivider([double thickness = 1]) {
+  return SizedWidget(
+    widget: Divider(
+      height: thickness,
+      thickness: thickness,
+      indent: 0,
+      endIndent: 0,
+    ),
+    height: thickness,
+    width: 0,
   );
 }
 
@@ -207,7 +233,7 @@ HasSizedWidget sizedKeys({
   required int pressedCount,
   required UiBuilder ui,
 }) {
-  final chars = keys?.chars.characters ?? <String>[];
+  final chars = keys?.chars.characters ?? <String>[' '];
   TextSpan Function(String text) span(TextStyle style) =>
       (text) => TextSpan(text: text, style: style);
   final spans = [
@@ -311,6 +337,21 @@ extension SizedWidgetX on HasSizedWidget {
   HasSizedWidget get expanded => withWidget(
         Expanded(child: widget),
       );
+
+  HasSizedWidget sizedBox({
+    double? width,
+    double? height,
+  }) {
+    if (width == null && height == null) return this;
+    return SizedBox(
+      width: width,
+      height: height,
+      child: widget,
+    ).withSize(
+      width: width ?? this.width,
+      height: height ?? this.height,
+    );
+  }
 }
 
 extension SizedTextSpanX on TextSpan {

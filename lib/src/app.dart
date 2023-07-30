@@ -60,6 +60,8 @@ class MdiAppBits with _$MdiAppBits {
   late final builtinTextStyle = const TextStyle(
     fontSize: 14,
   );
+
+  // late final textStyle = builtinTextStyle;
   late final textStyle = robotoSlabTextStyle;
 
   late final ui = UiBuilder(

@@ -65,7 +65,7 @@ ColumnWidgetBits mdiProtoFwEditor<M extends GeneratedMessage>({
             return PaginatorBits(
               itemHeight: itemHeight,
               itemCount: fields.length,
-              itemBuilder: (from, count) {
+              itemBuilder: (from, count, disposers) {
                 final sub = fields.sublist(from, from + count);
 
                 return sub.map((element) {

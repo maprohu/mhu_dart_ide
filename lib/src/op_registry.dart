@@ -14,6 +14,8 @@ part 'op_registry.freezed.dart';
 
 typedef OpState = Watch<Keys?>;
 
+typedef OpStates = IMap<OpId, Keys>;
+
 typedef OpOrder = IList<int>;
 
 int compareOpOrder(OpOrder a, OpOrder b) => iterableCompare<num>(b, a);
@@ -37,13 +39,24 @@ class OpReg {
   OpState register({
     required WatchAct action,
     required DspReg disposers,
-    Op? op,
+    OpId? op,
   }) {
     return _screen.register(
       order: _order,
       disposers: disposers,
       action: action,
       op: op,
+    );
+  }
+
+  List<T> registerMany<T>({
+    required DspReg disposers,
+    required List<(WatchAct, T Function(OpState state))> actions,
+  }) {
+    return _screen.registerMany(
+      order: _order,
+      disposers: disposers,
+      actions: actions,
     );
   }
 
@@ -99,7 +112,7 @@ class _Handle {
 class OpScreen {
   final DspReg _disposers;
 
-  static final _emptyOps = IMap<Op, _Handle>();
+  static final _emptyOps = IMap<OpId, _Handle>();
 
   late final _ops = _disposers.fw(_emptyOps);
 
@@ -111,7 +124,7 @@ class OpScreen {
   // used qwertyuiop
   // used asdfghjkl;
   // used \zxcvbnm,./
-  static const keyOrder = r"fjdksla;ghvnmruc,eix.woz/tybqp['\";
+  static const keyOrder = r"fjdksla;ghvnmruc,eix.woz/tybqp['";
   static final keyChars = keyOrder.characters;
   static const keyCount = keyOrder.length;
   static final keyLabelSet =
@@ -125,7 +138,7 @@ class OpScreen {
   late final _activeOps = _disposers.fr(() {
     final opHandles = _opsUnlessAsyncBusy();
 
-    final Iterable<({Act action, Op op, IList<int> order})> records =
+    final Iterable<({Act action, OpId op, IList<int> order})> records =
         opHandles.mapTo((op, handle) {
       final action = handle.action();
       if (action == null) {
@@ -224,7 +237,7 @@ class OpScreen {
       ),
     );
   });
-  late final _opStates = _disposers.fr(() {
+  late final Fr<IMap<OpId, Keys>> opStates = _disposers.fr(() {
     return _opActs().map(
       (key, value) => MapEntry(
         key,
@@ -233,13 +246,14 @@ class OpScreen {
     );
   });
 
+
   OpState register({
     required OpOrder order,
     required DspReg disposers,
     required WatchAct action,
-    Op? op,
+    OpId? op,
   }) {
-    final finalOp = op ?? Op();
+    final finalOp = op ?? OpId();
 
     _ops.update((ops) {
       var handle = ops[finalOp];
@@ -262,7 +276,38 @@ class OpScreen {
       return ops;
     });
 
-    return () => _opStates()[finalOp];
+    return () => opStates()[finalOp];
+  }
+
+  List<T> registerMany<T>({
+    required OpOrder order,
+    required DspReg disposers,
+    required List<(WatchAct, T Function(OpState state))> actions,
+  }) {
+    final result = <T>[];
+    _ops.update((ops) {
+      for (final (action, callback) in actions) {
+        final finalOp = OpId();
+        final handle = _Handle(
+          action: action,
+        );
+        ops = ops.add(finalOp, handle);
+
+        final finalHandle = handle;
+        finalHandle.addOrder(order);
+        disposers.add(() async {
+          await finalHandle.remove(order, () {
+            _ops.update((ops) => ops.remove(finalOp));
+          });
+        });
+        final elem = callback(() => opStates()[finalOp]);
+        result.add(elem);
+      }
+
+      return ops;
+    });
+
+    return result;
   }
 
   late final root = OpReg._(

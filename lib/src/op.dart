@@ -8,54 +8,7 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 // part 'op.freezed.dart';
 
-typedef Op = Object;
-// @Freezed(
-//   equal: false,
-//   when: FreezedWhenOptions.none,
-// )
-// class Op with _$Op {
-//   static const iconSize = 18.0;
-//
-//   const factory Op({
-//     Widget? icon,
-//     String? label,
-//   }) = _Op;
-//
-//   factory Op.icon({
-//     required IconData icon,
-//     String? label,
-//   }) =>
-//       Op(
-//         label: label,
-//         icon: Icon(
-//           icon,
-//           size: iconSize,
-//         ),
-//       );
-//
-//   factory Op.svg({
-//     required String asset,
-//     String? label,
-//   }) {
-//     return Op(
-//       label: label,
-//       icon: Builder(
-//         builder: (context) {
-//           final theme = IconTheme.of(context);
-//           return SvgPicture.asset(
-//             "assets/icons/$asset.svg",
-//             width: iconSize,
-//             height: iconSize,
-//             colorFilter: ui.ColorFilter.mode(
-//               theme.color ?? Colors.white,
-//               BlendMode.srcIn,
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
+typedef OpId = Object;
 
 typedef Keys = ({
   String chars,

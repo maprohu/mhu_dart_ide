@@ -25,7 +25,7 @@ class TextBuilder with _$TextBuilder {
     required TextStyle textStyle,
   }) = _TextBuilder;
 
-  late final height = mdiTextSize("", textStyle).height;
+  late final height = mdiTextSize(" ", textStyle).height;
 
   SizedWidget text(
     String text, {
@@ -33,7 +33,7 @@ class TextBuilder with _$TextBuilder {
     TextOverflow overflow = TextOverflow.fade,
   }) {
     return sizedTextSpan(
-       TextSpan(
+      TextSpan(
         text: text,
         style: textStyle,
       ),

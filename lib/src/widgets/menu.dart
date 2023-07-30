@@ -60,7 +60,7 @@ class MenuBuilder
   late final itemHeight = menuItem(
     label: itemLabel(""),
     keys: itemKeys(
-      keys: null,
+      keys: (chars: " "),
       pressedCount: 0,
     ),
   ).height;
@@ -71,43 +71,60 @@ class MenuBuilder
       final items = watchItems(widgetBits);
 
       return (disposers) {
-        final handles = items.map((itemBits) {
-          return (
-            widgetKey: itemBits.widgetKey,
-            label: itemLabel(itemBits.label),
-            state: opReg.register(
-              action: itemBits.action,
-              disposers: disposers,
-            )
-          );
-        }).toList();
-
         return PaginatorBits(
           itemHeight: itemHeight,
-          itemCount: handles.length,
-          itemBuilder: (from, count) {
-            final pressedCount = parent.opScreen.pressedCount();
-            final subHandles = handles.sublist(from, from + count);
+          itemCount: items.length,
+          itemBuilder: (from, count, disposers) {
+            // final List<
+            //     ({
+            //       HasSizedWidget label,
+            //       OpState state,
+            //       Object? widgetKey,
+            //     })> handles = [];
 
-            final widgets = subHandles.map((e) {
-              return (
-                widgetKey: e.widgetKey,
-                label: e.label,
-                keys: itemKeys(
-                  keys: e.state(),
-                  pressedCount: pressedCount,
-                ),
+            final handles = opReg.registerMany(
+              disposers: disposers,
+              actions: items.sublist(from, from + count).map((itemBits) {
+                return (
+                  itemBits.action,
+                  (state) {
+                    return (
+                      widgetKey: itemBits.widgetKey,
+                      label: itemLabel(itemBits.label),
+                      state: state,
+                    );
+                  },
+                );
+              }).toList(),
+            );
+
+            HasSizedWidget keyWidget(OpState state) {
+              final pressedCount = parent.opScreen.pressedCount();
+              return itemKeys(
+                keys: state(),
+                pressedCount: pressedCount,
               );
-            }).toList();
+            }
 
-            final keysWidth = widgets.map((e) => e.keys.width).maxOrNull ?? 0;
+            final maxWidth = disposers.fr(() {
+              return handles
+                      .map(
+                        (e) => keyWidget(e.state).width,
+                      )
+                      .maxOrNull ??
+                  0;
+            });
 
-            return widgets.map(
+            return handles.map(
               (e) => menuItem(
                 widgetKey: e.widgetKey,
                 label: e.label,
-                keys: e.keys.constrain(
-                  minWidth: keysWidth,
+                keys: SizedWidget.zero(
+                  flcFrr(() {
+                    return keyWidget(e.state)
+                        .sizedBox(width: maxWidth())
+                        .widget;
+                  }),
                 ),
               ).widget,
             );
