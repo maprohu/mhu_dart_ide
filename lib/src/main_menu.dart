@@ -12,7 +12,7 @@ ColumnWidgetBits mdiMainMenu({
     watchItems: (widgetBits) {
       return [
         widgetBits.opener(
-          label: "Builder Runner",
+          label: "build_runner",
           builder: (parent) {
             return mdiBuildRunnerMenu(
               parent: parent,

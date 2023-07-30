@@ -10,11 +10,21 @@ import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
 import 'op.dart';
 
+part 'op_registry.freezed.dart';
+
 typedef OpState = Watch<Keys?>;
 
 typedef OpOrder = IList<int>;
 
 int compareOpOrder(OpOrder a, OpOrder b) => iterableCompare<num>(b, a);
+
+typedef WatchAct = Watch<Act?>;
+
+@freezed
+sealed class Act with _$Act {
+  factory Act.busy() = ActBusy;
+  factory Act.act(VoidCallback action) = ActAct;
+}
 
 class OpReg {
   final OpScreen _screen;
@@ -24,7 +34,7 @@ class OpReg {
   late final _order = _orderBase.add(_index);
 
   OpState register({
-    required Watch<VoidCallback?> action,
+    required WatchAct action,
     required DspReg disposers,
     Op? op,
   }) {
@@ -99,7 +109,7 @@ extension OpRegX on OpReg {
 }
 
 class _Handle {
-  final Watch<VoidCallback?> action;
+  final WatchAct action;
   final disposers = DspImpl();
   final orders = HeapPriorityQueue<OpOrder>(compareOpOrder);
 
@@ -224,7 +234,7 @@ class OpScreen {
   OpState register({
     required OpOrder order,
     required DspReg disposers,
-    required Watch<VoidCallback?> action,
+    required WatchAct action,
     Op? op,
   }) {
     final finalOp = op ?? Op();

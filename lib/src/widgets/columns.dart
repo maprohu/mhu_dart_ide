@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/main_page.dart';
 import 'package:mhu_dart_ide/src/op_registry.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
@@ -80,7 +81,8 @@ class ForkBits with _$ForkBits, HasColumnBits, HasAppBits {
 }
 
 @freezedStruct
-class ColumnWidgetParent with _$ColumnWidgetParent, HasColumnBits, HasAppBits {
+class ColumnWidgetParent
+    with _$ColumnWidgetParent, HasColumnBits, HasAppBits, HasConfigBits {
   ColumnWidgetParent._();
 
   factory ColumnWidgetParent({
@@ -133,7 +135,7 @@ mixin ColumnWidgetBuilder {
 
   late final columnBits = widgetBits.columnBits;
 
-  // late final widgetParent = ColumnWidgetParent.fromWidget(widgetBits);
+// late final widgetParent = ColumnWidgetParent.fromWidget(widgetBits);
 }
 
 Widget sepColumn(

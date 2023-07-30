@@ -31,3 +31,9 @@ class MdiConfigBits with _$MdiConfigBits {
     );
   }
 }
+
+mixin HasConfigBits {
+  MdiConfigBits get configBits;
+
+  late final config = configBits.config;
+}

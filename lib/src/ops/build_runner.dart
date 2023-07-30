@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/op_registry.dart';
 import 'package:mhu_dart_ide/src/pfe/pfe.dart';
@@ -18,14 +20,61 @@ ColumnWidgetBits mdiBuildRunnerMenu({
     watchItems: (widgetBits) {
       return [
         widgetBits.opener(
-          label: "Settings",
+          label: "Packages",
           builder: (parent) {
-            return mdiProtoFwEditor(
-              parent: parent,
-              mfw: parent.configBits.config.buildRunnerConfig,
-            );
+            return mdiBuildRunnerPackagesMenu(parent: parent);
           },
         )
+      ];
+    },
+  ).widgetBits;
+}
+
+ColumnWidgetBits mdiBuildRunnerPackagesMenu({
+  required ColumnWidgetParent parent,
+}) {
+  return MenuBuilder(
+    parent: parent,
+    watchItems: (widgetBits) {
+      final packages = parent.config.packagePaths();
+      return [
+        widgetBits.opener(
+          label: "<add new>",
+          builder: (parent) {
+            return mdiBuildRunnerPackagesMenu(parent: parent);
+          },
+        ),
+        for (final package in packages)
+          MenuItemBits(
+            label: package,
+            action: () {
+              return () {};
+            },
+          ),
+      ];
+    },
+  ).widgetBits;
+}
+ColumnWidgetBits mdiBuildRunnerPackagesAddNewMenu({
+  required ColumnWidgetParent parent,
+}) {
+  return MenuBuilder(
+    parent: parent,
+    watchItems: (widgetBits) {
+      return [
+        widgetBits.opener(
+          label: "<add new>",
+          builder: (parent) {
+            return mdiBuildRunnerPackagesMenu(parent: parent);
+          },
+        ),
+        for (final package in packages)
+          MenuItemBits(
+            label: package,
+            action: () {
+              return () {};
+            },
+          ),
       ];
     },
   ).widgetBits;
