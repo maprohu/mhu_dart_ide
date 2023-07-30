@@ -11,6 +11,7 @@ part 'config.freezed.dart';
 class MdiConfigBits with _$MdiConfigBits {
   const factory MdiConfigBits({
     required MdiConfigMsg$Fw config,
+    required MdiStateMsg$Fw state,
   }) = _MdiConfigBits;
 
   static Future<MdiConfigBits> create({
@@ -22,8 +23,17 @@ class MdiConfigBits with _$MdiConfigBits {
       create: MdiConfigMsg.create,
       disposers: disposers,
     );
+    final stateFw = await isar.singletonFwProto(
+      id: MdiSingleton.state.index,
+      create: MdiStateMsg.create,
+      disposers: disposers,
+    );
 
     return MdiConfigBits(
+      state: MdiStateMsg$Fw(
+        stateFw,
+        disposers: disposers,
+      ),
       config: MdiConfigMsg$Fw(
         configFw,
         disposers: disposers,
@@ -36,4 +46,5 @@ mixin HasConfigBits {
   MdiConfigBits get configBits;
 
   late final config = configBits.config;
+  late final state = configBits.state;
 }

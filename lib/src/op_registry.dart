@@ -6,6 +6,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/op_shortucts.dart';
 import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
 import 'op.dart';
@@ -120,15 +121,6 @@ class OpScreen {
 
   OpScreen(this._disposers);
 
-  // unused
-  // used qwertyuiop
-  // used asdfghjkl;
-  // used \zxcvbnm,./
-  static const keyOrder = r"fjdksla;ghvnmruc,eix.woz/tybqp['";
-  static final keyChars = keyOrder.characters;
-  static const keyCount = keyOrder.length;
-  static final keyLabelSet =
-      OpScreen.keyChars.map((e) => e.toUpperCase()).toISet();
 
   late final pressedCount = _disposers.fr(() => _pressedChars().length);
   late final _opsUnlessAsyncBusy = _disposers.fr(() {
@@ -162,24 +154,7 @@ class OpScreen {
     final ops = _activeOps();
 
     final count = ops.length;
-    final keysQueue = DoubleLinkedQueue<String>.from(keyChars);
-    var availableKeysCount = keysQueue.length;
-
-    while (availableKeysCount < count) {
-      final first = keysQueue.removeFirst();
-
-      final firstLast = first.characters.last;
-
-      keysQueue.addAll(
-        [firstLast]
-            .followedBy(
-              keyChars.where((c) => c != firstLast),
-            )
-            .map((c) => "$first$c"),
-      );
-
-      availableKeysCount += keyCount - 1;
-    }
+    final keysQueue = OpShortcuts.generateShortcuts(count);
 
     final opsSorted = ops.values
         .sortedByCompare(
@@ -345,7 +320,7 @@ class OpScreen {
       keyHandlers() sync* {
     for (final key in LogicalKeyboardKey.knownLogicalKeys) {
       final keyLabel = key.keyLabel;
-      if (keyLabelSet.contains(keyLabel)) {
+      if (OpShortcuts.uppercaseKeyLabelSet.contains(keyLabel)) {
         final char = keyLabel.toLowerCase();
         yield (key: key, handler: () => charPressed(char));
       }

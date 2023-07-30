@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_commons/commons.dart';
@@ -6,8 +7,11 @@ import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/main_page.dart';
+import 'package:mhu_dart_ide/src/main_screen.dart';
 import 'package:mhu_dart_ide/src/op_registry.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+
+import 'src/state.dart';
 
 void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
@@ -23,16 +27,19 @@ void main() async {
     disposers: disposers,
   );
 
-  ScreenSizeObserver.stream(disposers).forEach(print);
-
-
   final appBits = MdiAppBits(
     isar: isar,
     configBits: configBits,
   );
+
+  final listenable = mdiState(
+    appBits: appBits,
+    disposers: disposers,
+  );
   runApp(
     MdiApp(
       appBits: appBits,
+      listenable: listenable,
     ),
   );
 }
@@ -40,9 +47,12 @@ void main() async {
 class MdiApp extends StatelessWidget {
   final MdiAppBits appBits;
 
+  final ValueListenable<Widget> listenable;
+
   MdiApp({
     super.key,
     required this.appBits,
+    required this.listenable,
   });
 
   late final _shortcuts = {
@@ -58,17 +68,8 @@ class MdiApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        body: LayoutBuilder(builder: (context, constraints) {
-          print((constraints.maxWidth, constraints.maxHeight));
-          return StretchWidget(
-            child: Text('hello'),
-          );
-        }),
-      ),
+      home: MdiMainScreen(listenable: listenable),
       shortcuts: _shortcuts,
     );
   }
 }
-
-

@@ -17,7 +17,7 @@ import 'widgets/columns.dart';
 part 'app.freezed.dart';
 
 @freezed
-class MdiAppBits with _$MdiAppBits {
+class MdiAppBits with _$MdiAppBits, HasConfigBits {
   MdiAppBits._();
 
   final _disposers = DspImpl();

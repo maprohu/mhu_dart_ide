@@ -7,10 +7,11 @@ message  MdiConfigMsg {
 }
 
 message  MdiDartPackageMsg {
-
 }
+
 message MdiStateMsg {
   MdiColumnMsg column = 1;
+  int32 column_count = 2;
 }
 
 message MdiColumnMsg {
