@@ -1,3 +1,4 @@
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/op_registry.dart';
 import 'package:mhu_dart_ide/src/ops/build_runner.dart';
@@ -19,6 +20,14 @@ ColumnWidgetBits mdiMainMenu({
             );
           },
         ),
+        ...Iterable.generate(35, identity).map((index) {
+          return MenuItemBits(
+            label: "$index",
+            action: () {
+              return Act.act(() {});
+            },
+          );
+        }),
       ];
     },
   ).widgetBits;

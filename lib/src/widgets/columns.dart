@@ -103,6 +103,8 @@ class ColumnWidgetBits
         _$ColumnWidgetBits,
         HasColumnBits,
         HasAppBits,
+        HasOpScreen,
+        HasConfigBits,
         HasParent<ColumnWidgetBits> {
   ColumnWidgetBits._();
 

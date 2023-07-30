@@ -17,21 +17,32 @@ class UiBuilder with _$UiBuilder {
     required TextBuilder itemText,
     required TextBuilder headerText,
     required TextBuilder keysText,
+    required TextBuilder keysPressedText,
   }) = _UiBuilder;
 }
 
 extension UiBuilderX on UiBuilder {
   UiBuilder withOpReg(OpReg opReg) => copyWith(opReg: opReg);
 
-  HasSizedWidget sizedKeys(Keys? keys) => sized.sizedKeys(keys: keys, ui: this);
+  HasSizedWidget sizedKeys({
+    required Keys? keys,
+    required int pressedCount,
+  }) =>
+      sized.sizedKeys(
+        keys: keys,
+        ui: this,
+        pressedCount: pressedCount,
+      );
 
   HasSizedWidget sizedOpIcon({
     required HasSizedWidget icon,
     required Keys? keys,
+    required int pressedCount,
   }) =>
       sized.sizedOpIcon(
         icon: icon,
         keys: keys,
         ui: this,
+        pressedCount: pressedCount,
       );
 }

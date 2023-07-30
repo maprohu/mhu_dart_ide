@@ -48,14 +48,19 @@ class MdiAppBits with _$MdiAppBits {
 
   late final columnCount = _disposers.fw(4);
 
+  late final robotoSlabTextStyle = GoogleFonts.robotoSlab().copyWith(
+    fontSize: 14,
+    color: Colors.white,
+  );
   late final monoTextStyle = GoogleFonts.robotoMono().copyWith(
     fontSize: 14,
     color: Colors.white,
   );
 
-  late final textStyle = const TextStyle(
+  late final builtinTextStyle = const TextStyle(
     fontSize: 14,
   );
+  late final textStyle = robotoSlabTextStyle;
 
   late final ui = UiBuilder(
     opReg: opScreen.root,
@@ -72,6 +77,11 @@ class MdiAppBits with _$MdiAppBits {
         color: Colors.yellow,
       ),
     ),
+    keysPressedText: TextBuilder(
+      textStyle: textStyle.apply(
+        color: Colors.red,
+      ),
+    ),
   );
 }
 
@@ -81,4 +91,6 @@ mixin HasAppBits {
   late final ui = appBits.ui;
 
   late final configBits = appBits.configBits;
+
+  late final opScreen = appBits.opScreen;
 }

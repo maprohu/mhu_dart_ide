@@ -47,6 +47,7 @@ ColumnWidgetBits mdiProtoFwEditor<M extends GeneratedMessage>({
       primary: ui.sizedOpIcon(
         icon: MdiIcons.help,
         keys: null,
+        pressedCount: 0,
       ),
     ),
   ).height;

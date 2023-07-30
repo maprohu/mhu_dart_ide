@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
@@ -41,20 +42,25 @@ ColumnWidgetBits mdiBuildRunnerPackagesMenu({
         widgetBits.opener(
           label: "<add new>",
           builder: (parent) {
-            return mdiBuildRunnerPackagesMenu(parent: parent);
+            return mdiBuildRunnerPackagesAddNewMenu(parent: parent);
           },
         ),
-        for (final package in packages)
-          MenuItemBits(
-            label: package,
-            action: () {
-              return () {};
-            },
-          ),
+        ...packages.mapIndexed((index, package) {
+          return
+            MenuItemBits(
+              widgetKey: index,
+              label: package,
+              action: () {
+                return Act.act(() {});
+              },
+            );
+
+        }),
       ];
     },
   ).widgetBits;
 }
+
 ColumnWidgetBits mdiBuildRunnerPackagesAddNewMenu({
   required ColumnWidgetParent parent,
 }) {
@@ -62,19 +68,20 @@ ColumnWidgetBits mdiBuildRunnerPackagesAddNewMenu({
     parent: parent,
     watchItems: (widgetBits) {
       return [
-        widgetBits.opener(
-          label: "<add new>",
-          builder: (parent) {
-            return mdiBuildRunnerPackagesMenu(parent: parent);
+        MenuItemBits(
+          label: "Paste",
+          action: () {
+            return Act.act(() {
+              widgetBits.screenTask(() async {
+                final data = await Clipboard.getData(Clipboard.kTextPlain);
+                final text = data?.text;
+                if (text != null) {
+                  widgetBits.config.packagePaths.add(text);
+                }
+              });
+            });
           },
         ),
-        for (final package in packages)
-          MenuItemBits(
-            label: package,
-            action: () {
-              return () {};
-            },
-          ),
       ];
     },
   ).widgetBits;

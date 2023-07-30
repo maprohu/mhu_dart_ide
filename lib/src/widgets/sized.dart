@@ -5,6 +5,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/ui.dart';
+import 'package:mhu_dart_ide/src/widgets/text.dart';
 
 import '../op.dart';
 
@@ -22,18 +23,10 @@ class SizedWidget with _$SizedWidget implements HasSizedWidget {
 }
 
 Size mdiTextSize(String text, TextStyle style) {
-  final TextPainter textPainter = TextPainter(
-    text: TextSpan(
-      text: text,
-      style: style,
-    ),
-    maxLines: 1,
-    textDirection: TextDirection.ltr,
-  )..layout(
-      minWidth: 0,
-      maxWidth: double.infinity,
-    );
-  return textPainter.size;
+  return TextSpan(
+    text: text,
+    style: style,
+  ).size;
 }
 
 abstract class HasWidget {
@@ -148,9 +141,11 @@ SizedWidget sizedColumn({
 
 SizedWidget sizedRow({
   required List<HasSizedWidget> children,
+  Object? widgetKey,
 }) {
   return SizedWidget(
     widget: Row(
+      key: widgetKey?.let(ValueKey.new),
       children: children.map((e) => e.widget).toList(),
     ),
     width: children.sumByDouble((e) => e.width),
@@ -192,12 +187,13 @@ extension HWidgetX on HWidget {
 }
 
 SizedWidget columnGap([double height = 1]) => SizedWidget(
-  widget: SizedBox(
-    height: height,
-  ),
-  height: height,
-  width: 0,
-);
+      widget: SizedBox(
+        height: height,
+      ),
+      height: height,
+      width: 0,
+    );
+
 SizedWidget rowGap([double width = 1]) => SizedWidget(
       widget: SizedBox(
         width: width,
@@ -208,22 +204,30 @@ SizedWidget rowGap([double width = 1]) => SizedWidget(
 
 HasSizedWidget sizedKeys({
   required Keys? keys,
+  required int pressedCount,
   required UiBuilder ui,
 }) {
-  final chars = keys?.chars ?? '';
-  return ui.keysText
-      .text(
-        chars,
-        textAlign: TextAlign.center,
-      )
-      // .constrain(minWidth: 16)
-  ;
+  final chars = keys?.chars.characters ?? <String>[];
+  TextSpan Function(String text) span(TextStyle style) =>
+      (text) => TextSpan(text: text, style: style);
+  final spans = [
+    ...chars.take(pressedCount).map(span(ui.keysPressedText.textStyle)),
+    ...chars.skip(pressedCount).map(span(ui.keysText.textStyle)),
+  ];
+
+  return sizedTextSpan(
+    TextSpan(
+      children: spans,
+    ),
+    textAlign: TextAlign.center,
+  );
 }
 
 SizedWidget sizedOpIcon({
   required HasSizedWidget icon,
   required Keys? keys,
   required UiBuilder ui,
+  required int pressedCount,
 }) {
   return sizedColumn(children: [
     icon,
@@ -231,6 +235,7 @@ SizedWidget sizedOpIcon({
     sizedKeys(
       keys: keys,
       ui: ui,
+      pressedCount: pressedCount,
     ),
   ]).withPadding(all: 2);
 }
@@ -306,4 +311,18 @@ extension SizedWidgetX on HasSizedWidget {
   HasSizedWidget get expanded => withWidget(
         Expanded(child: widget),
       );
+}
+
+extension SizedTextSpanX on TextSpan {
+  Size get size {
+    final TextPainter textPainter = TextPainter(
+      text: this,
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout(
+        minWidth: 0,
+        maxWidth: double.infinity,
+      );
+    return textPainter.size;
+  }
 }

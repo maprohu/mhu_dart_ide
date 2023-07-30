@@ -32,20 +32,33 @@ class TextBuilder with _$TextBuilder {
     TextAlign textAlign = TextAlign.start,
     TextOverflow overflow = TextOverflow.fade,
   }) {
-    final size = mdiTextSize(text, textStyle);
-    return SizedWidget(
-      widget: RichText(
-        text: TextSpan(
-          text: text,
-          style: textStyle,
-        ),
-        textAlign: textAlign,
-        softWrap: false,
-        overflow: overflow,
-        maxLines: 1,
+    return sizedTextSpan(
+       TextSpan(
+        text: text,
+        style: textStyle,
       ),
-      height: size.height,
-      width: size.width,
+      textAlign: textAlign,
+      overflow: overflow,
     );
   }
+}
+
+SizedWidget sizedTextSpan(
+  TextSpan textSpan, {
+  TextAlign textAlign = TextAlign.start,
+  TextOverflow overflow = TextOverflow.fade,
+}) {
+  final size = textSpan.size;
+
+  return SizedWidget(
+    widget: RichText(
+      text: textSpan,
+      textAlign: textAlign,
+      softWrap: false,
+      overflow: overflow,
+      maxLines: 1,
+    ),
+    height: size.height,
+    width: size.width,
+  );
 }

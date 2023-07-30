@@ -59,7 +59,6 @@ typedef Op = Object;
 
 typedef Keys = ({
   String chars,
-  int pressedCount,
 });
 
 class Ops {

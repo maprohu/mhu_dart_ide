@@ -10,6 +10,7 @@ import 'package:mhu_dart_ide/src/op_registry.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   mhuDartIdeLib.register();
 
   final disposers = DspImpl();

@@ -6,6 +6,7 @@ import 'package:mhu_dart_ide/src/widgets/sized.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import 'icons.dart';
+import 'op_registry.dart';
 
 const hline = Divider(
   height: 1,
@@ -34,9 +35,9 @@ Widget mdiMainPage({
         widget: MdiIcons.addColumn,
         state: opReg.register(
           action: () {
-            return () {
+            return Act.act(() {
               appBits.columnCount.update((v) => v + 1);
-            };
+            });
           },
           disposers: disposers,
         ),
@@ -48,9 +49,9 @@ Widget mdiMainPage({
             if (appBits.columnCount() <= 1) {
               return null;
             }
-            return () {
+            return Act.act(() {
               appBits.columnCount.update((v) => v - 1);
-            };
+            });
           },
           disposers: disposers,
         ),
@@ -59,9 +60,9 @@ Widget mdiMainPage({
         widget: MdiIcons.help,
         state: opReg.register(
           action: () {
-            return () {
+            return Act.act(() {
               print("help!");
-            };
+            });
           },
           disposers: disposers,
         ),
@@ -72,6 +73,7 @@ Widget mdiMainPage({
       body: Column(
         children: [
           flcFrr(() {
+            final pressedCount = appBits.opScreen.pressedCount();
             return sizedRow(
               children: handles.map((handle) {
                 final keys = handle.state();
@@ -80,6 +82,7 @@ Widget mdiMainPage({
                   icon: handle.widget,
                   keys: keys,
                   ui: ui,
+                  pressedCount: pressedCount,
                 );
               }).toList(),
             ).widget;

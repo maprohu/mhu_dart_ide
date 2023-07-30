@@ -23,6 +23,7 @@ typedef WatchAct = Watch<Act?>;
 @freezed
 sealed class Act with _$Act {
   factory Act.busy() = ActBusy;
+
   factory Act.act(VoidCallback action) = ActAct;
 }
 
@@ -56,45 +57,6 @@ class OpReg {
 }
 
 extension OpRegX on OpReg {
-  // Widget icon(Op op, Watch<VoidCallback?> action) {
-  //   return widget(
-  //     op: op,
-  //     action: action,
-  //     builder: (keys) => OpIcon(op: op, keys: keys),
-  //   );
-  // }
-
-  // Widget keys(Op op, Watch<VoidCallback?> action) {
-  //   return widget(
-  //     op: op,
-  //     action: action,
-  //     builder: (keys) => OpKeys(keys: keys),
-  //   );
-  // }
-
-  // Widget widget({
-  //   required Op op,
-  //   required Watch<VoidCallback?> action,
-  //   required Widget Function(Keys? keys) builder,
-  // }) {
-  //   return flcFrr(() {
-  //     final callback = action();
-  //
-  //     if (callback == null) {
-  //       return builder(null);
-  //     }
-  //
-  //     return flcDsp((disposers) {
-  //       final keysFr = register(
-  //         op: op,
-  //         action: callback,
-  //         disposers: disposers,
-  //       );
-  //       return keysFr.asKey(builder);
-  //     }).withKey(callback);
-  //   });
-  // }
-
   OpReg push() => OpReg._(
         screen: _screen,
         orderBase: _orderBase,
@@ -136,7 +98,10 @@ class _Handle {
 
 class OpScreen {
   final DspReg _disposers;
-  late final _ops = _disposers.fw(IMap<Op, _Handle>());
+
+  static final _emptyOps = IMap<Op, _Handle>();
+
+  late final _ops = _disposers.fw(_emptyOps);
 
   late final _pressedChars = _disposers.fw("");
 
@@ -152,10 +117,16 @@ class OpScreen {
   static final keyLabelSet =
       OpScreen.keyChars.map((e) => e.toUpperCase()).toISet();
 
-  late final _activeOps = _disposers.fr(() {
-    final opHandles = _ops();
+  late final pressedCount = _disposers.fr(() => _pressedChars().length);
+  late final _opsUnlessAsyncBusy = _disposers.fr(() {
+    return _taskQueue.busy() ? _emptyOps : _ops();
+  });
 
-    final records = opHandles.mapTo((op, handle) {
+  late final _activeOps = _disposers.fr(() {
+    final opHandles = _opsUnlessAsyncBusy();
+
+    final Iterable<({Act action, Op op, IList<int> order})> records =
+        opHandles.mapTo((op, handle) {
       final action = handle.action();
       if (action == null) {
         return null;
@@ -178,8 +149,8 @@ class OpScreen {
     final ops = _activeOps();
 
     final count = ops.length;
-    var availableKeysCount = count;
     final keysQueue = DoubleLinkedQueue<String>.from(keyChars);
+    var availableKeysCount = keysQueue.length;
 
     while (availableKeysCount < count) {
       final first = keysQueue.removeFirst();
@@ -187,7 +158,7 @@ class OpScreen {
       final firstLast = first.characters.last;
 
       keysQueue.addAll(
-        firstLast.toSingleElementIterable
+        [firstLast]
             .followedBy(
               keyChars.where((c) => c != firstLast),
             )
@@ -202,31 +173,62 @@ class OpScreen {
           (e) => e.order,
           compareOpOrder,
         )
-        .map((e) => e.op);
+        .map(
+          (e) => (
+            action: e.action,
+            op: e.op,
+          ),
+        );
 
-    return IMap<Op, String>.fromEntries(
-      opsSorted.zipMapWith(
+    return IMap.fromIterable(
+      opsSorted.zipWith(
         keysQueue,
-        mapper: MapEntry.new,
+      ),
+      keyMapper: (r) => r.$1.op,
+      valueMapper: (r) => (
+        action: r.$1.action,
+        chars: r.$2,
       ),
     );
   });
 
-  late final _opStates = _disposers.fr(() {
+  late final _opActs = _disposers.fr(() {
     final opChars = _opChars();
     final pressedChars = _pressedChars();
-    final pressedCount = pressedChars.length;
 
-    final entries = opChars.entries.where(
-      (e) => e.value.startsWith(pressedChars),
-    );
+    final entries = opChars.entries.map(
+      (e) {
+        switch (e.value.action) {
+          case ActBusy():
+            return null;
+          case ActAct(:final action):
+            final chars = e.value.chars;
+            if (!chars.startsWith(pressedChars)) {
+              return null;
+            }
+            return (
+              op: e.key,
+              chars: chars,
+              action: action,
+            );
+        }
+      },
+    ).whereNotNull();
 
     return IMap.fromIterable(
       entries,
-      keyMapper: (e) => e.key,
+      keyMapper: (e) => e.op,
       valueMapper: (e) => (
-        chars: e.value,
-        pressedCount: pressedCount,
+        chars: e.chars,
+        action: e.action,
+      ),
+    );
+  });
+  late final _opStates = _disposers.fr(() {
+    return _opActs().map(
+      (key, value) => MapEntry(
+        key,
+        (chars: value.chars),
       ),
     );
   });
@@ -273,7 +275,7 @@ class OpScreen {
     final alreadyTyped = _pressedChars.read();
     final newPressed = "$alreadyTyped$char";
 
-    final candidates = _opStates
+    final candidates = _opActs
         .read()
         .entries
         .where(
@@ -288,7 +290,7 @@ class OpScreen {
       case [final single]: // found a single match, execute
         assert(single.value.chars == newPressed);
         _pressedChars.value = '';
-        _activeOps.read()[single.key]!.action();
+        single.value.action();
       default: // multiple matches, wait for more chars
         _pressedChars.value = newPressed;
     }
@@ -304,9 +306,23 @@ class OpScreen {
       }
     }
   }
+
+  late final _taskQueue = TaskQueue(disposers: _disposers);
+
+  void screenTask(Future<void> Function() task) {
+    _taskQueue.submit(task);
+  }
 }
 
 typedef OpHandle = ({
   OpState state,
   HasSizedWidget widget,
 });
+
+mixin HasOpScreen {
+  OpScreen get opScreen;
+
+  void screenTask(Future<void> Function() task) {
+    opScreen.screenTask(task);
+  }
+}

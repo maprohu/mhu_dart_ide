@@ -11,6 +11,7 @@ import 'package:mhu_dart_ide/src/widgets/text.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../op.dart';
+import '../op_registry.dart';
 
 part 'menu.freezed.dart';
 
@@ -33,13 +34,20 @@ class MenuBuilder
     return ui.itemText.text(label);
   }
 
-  HasSizedWidget itemKeys(Keys? keys) {
-    return ui.sizedKeys(keys);
+  HasSizedWidget itemKeys({
+    required Keys? keys,
+    required int pressedCount,
+  }) {
+    return ui.sizedKeys(
+      keys: keys,
+      pressedCount: pressedCount,
+    );
   }
 
   HasSizedWidget menuItem({
     required HasSizedWidget label,
     required HasSizedWidget keys,
+    Object? widgetKey,
   }) {
     const itemPadding = 1.0;
 
@@ -51,7 +59,10 @@ class MenuBuilder
 
   late final itemHeight = menuItem(
     label: itemLabel(""),
-    keys: itemKeys(null),
+    keys: itemKeys(
+      keys: null,
+      pressedCount: 0,
+    ),
   ).height;
 
   late final paginatorBuilder = PaginatorBuilder(
@@ -62,6 +73,7 @@ class MenuBuilder
       return (disposers) {
         final handles = items.map((itemBits) {
           return (
+            widgetKey: itemBits.widgetKey,
             label: itemLabel(itemBits.label),
             state: opReg.register(
               action: itemBits.action,
@@ -74,12 +86,17 @@ class MenuBuilder
           itemHeight: itemHeight,
           itemCount: handles.length,
           itemBuilder: (from, count) {
+            final pressedCount = parent.opScreen.pressedCount();
             final subHandles = handles.sublist(from, from + count);
 
             final widgets = subHandles.map((e) {
               return (
+                widgetKey: e.widgetKey,
                 label: e.label,
-                keys: itemKeys(e.state()),
+                keys: itemKeys(
+                  keys: e.state(),
+                  pressedCount: pressedCount,
+                ),
               );
             }).toList();
 
@@ -87,6 +104,7 @@ class MenuBuilder
 
             return widgets.map(
               (e) => menuItem(
+                widgetKey: e.widgetKey,
                 label: e.label,
                 keys: e.keys.constrain(
                   minWidth: keysWidth,
@@ -101,55 +119,6 @@ class MenuBuilder
 
   @override
   late final widget = paginatorBuilder.widget;
-
-// @override
-// late final widget = flcFrr(() {
-//   final items = watchItems(widgetBits);
-//
-//   return flcDsp((disposers) {
-//     final handles = items.map((itemBits) {
-//       return (
-//         label: itemLabel(itemBits.label),
-//         state: opReg.register(
-//           action: itemBits.action,
-//           disposers: disposers,
-//         )
-//       );
-//     }).toList();
-//
-//     final itemCount = handles.length;
-//
-//     return flcFrr(() {
-//       return hwPaginator(
-//         itemHeight: itemHeight,
-//         itemCount: itemCount,
-//         itemBuilder: (from, count) {
-//           final subHandles = handles.sublist(from, from + count);
-//
-//           final widgets = subHandles.map((e) {
-//             return (
-//               label: e.label,
-//               keys: itemKeys(e.state()),
-//             );
-//           }).toList();
-//
-//           final keysWidth = widgets.map((e) => e.keys.width).maxOrNull ?? 0;
-//
-//           return widgets.map(
-//             (e) => menuItem(
-//               label: e.label,
-//               keys: e.keys.constrain(
-//                 minWidth: keysWidth,
-//               ),
-//             ).widget,
-//           );
-//         },
-//         ui: ui,
-//         controller: controller,
-//       );
-//     });
-//   });
-// });
 }
 
 @freezedStruct
@@ -158,8 +127,10 @@ class MenuItemBits with _$MenuItemBits {
 
   factory MenuItemBits({
     required String label,
-    required Watch<VoidCallback?> action,
+    String? value,
+    required WatchAct action,
     @Default(constantFalse) Watch<bool> isSelected,
+    Object? widgetKey,
   }) = _MenuItemBits;
 
   factory MenuItemBits.opener({
@@ -176,9 +147,9 @@ class MenuItemBits with _$MenuItemBits {
     return MenuItemBits(
       label: label,
       action: () {
-        return () {
+        return Act.act(() {
           appBits.columnBits.value = widgetBits;
-        };
+        });
       },
       isSelected: () {
         final current = selfFw();
