@@ -4,7 +4,13 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
 import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
-final mdiDefaultTheme = MdiThemeMsg$.create()..freeze();
+final mdiDefaultTheme = MdiThemeMsg$.create(
+  dividerThickness: MdiDividerThicknessThemeMsg$.create(
+    mainColumns: 2,
+    columnHeader: 2,
+    columnItems: 1,
+  ),
+)..freeze();
 
 class ThemeCalc {
   static const _sizerKeys = 'MM';
@@ -13,6 +19,8 @@ class ThemeCalc {
   ThemeCalc(this.theme);
 
   late final mainColumnsDividerThickness = theme.dividerThickness.mainColumns;
+  late final columnHeaderDividerThickness = theme.dividerThickness.columnHeader;
+  late final columnItemsDividerThickness = theme.dividerThickness.columnItems;
 
   late final monoTextStyle = GoogleFonts.robotoMono().copyWith(
     fontSize: 14,
@@ -40,4 +48,6 @@ class ThemeCalc {
     notPressed: _sizerKeys,
     themeCalc: this,
   ).size;
+
+  late final columnHeaderHeight =
 }

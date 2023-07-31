@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_ide/src/column/main_menu.dart';
+import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
 import '../proto.dart';
 import 'flex.dart';
@@ -27,3 +28,17 @@ FlexNode<Widget> mdiColumnFlexNode({
     },
   );
 }
+
+Widget buildColumn({
+
+required NodeBuildBits buildBits,
+required NodeBuilder header,
+required NodeBuilder body,
+}) {
+  final dividerThickness = buildBits.themeCalc.columnHeaderDividerThickness;
+  
+  buildFlex(availableSpace: buildBits.height, fixedSize: fixedSize, dividerThickness: dividerThickness, items: items)
+
+}
+
+SizedWidget buildColumnHeader

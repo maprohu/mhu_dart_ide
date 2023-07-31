@@ -41,4 +41,6 @@ message MdiThemeMsg {
 
 message MdiDividerThicknessThemeMsg {
   double main_columns = 1;
+  double column_header = 2;
+  double column_items = 3;
 }

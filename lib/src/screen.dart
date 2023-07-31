@@ -104,6 +104,8 @@ Widget mdiBuildScreen({
   );
 }
 
+typedef NodeBuilder = Widget Function(NodeBuildBits buildBits);
+
 @freezedStruct
 class NodeBuildBits with _$NodeBuildBits {
   NodeBuildBits._();
@@ -119,12 +121,15 @@ class NodeBuildBits with _$NodeBuildBits {
 
   late final themeCalc = configBits.themeCalc();
   late final stateCalc = configBits.stateCalc();
+
+  late final height = size.height;
+  late final width = size.width;
 }
 
 extension NodeBuildBitsX on NodeBuildBits {
   Widget sizedHeight({
     required double height,
-    required Widget Function(NodeBuildBits buildBits) builder,
+    required NodeBuilder builder,
   }) {
     return sizedBox(
       size: Size(
@@ -137,7 +142,7 @@ extension NodeBuildBitsX on NodeBuildBits {
 
   Widget sizedWidth({
     required double width,
-    required Widget Function(NodeBuildBits buildBits) builder,
+    required NodeBuilder builder,
   }) {
     return sizedBox(
       size: Size(
@@ -150,7 +155,7 @@ extension NodeBuildBitsX on NodeBuildBits {
 
   Widget sizedBox({
     required Size size,
-    required Widget Function(NodeBuildBits buildBits) builder,
+    required NodeBuilder builder,
   }) {
     return SizedBox.fromSize(
       size: size,
@@ -187,6 +192,13 @@ extension NodeBuildBitsX on NodeBuildBits {
         );
       }),
     );
+  }
+
+  Widget column({
+    required NodeBuilder header,
+    required NodeBuilder body,
+}) {
+
   }
 }
 
