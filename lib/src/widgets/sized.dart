@@ -1,14 +1,10 @@
-import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/ui.dart';
-import 'package:mhu_dart_ide/src/widgets/text.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-import '../op.dart';
 
 part 'sized.freezed.dart';
 
@@ -228,43 +224,7 @@ SizedWidget rowGap([double width = 1]) => SizedWidget(
       width: width,
     );
 
-HasSizedWidget sizedKeys({
-  required Keys? keys,
-  required int pressedCount,
-  required UiBuilder ui,
-}) {
-  final chars = keys?.chars.characters ?? <String>[' '];
-  TextSpan Function(String text) span(TextStyle style) =>
-      (text) => TextSpan(text: text, style: style);
-  final spans = [
-    ...chars.take(pressedCount).map(span(ui.keysPressedText.textStyle)),
-    ...chars.skip(pressedCount).map(span(ui.keysText.textStyle)),
-  ];
 
-  return sizedTextSpan(
-    TextSpan(
-      children: spans,
-    ),
-    textAlign: TextAlign.center,
-  );
-}
-
-SizedWidget sizedOpIcon({
-  required HasSizedWidget icon,
-  required Keys? keys,
-  required UiBuilder ui,
-  required int pressedCount,
-}) {
-  return sizedColumn(children: [
-    icon,
-    // rowGap(),
-    sizedKeys(
-      keys: keys,
-      ui: ui,
-      pressedCount: pressedCount,
-    ),
-  ]).withPadding(all: 2);
-}
 
 extension SizedWidgetWidgetX on Widget {
   HWidget withHwHeight(double height) => HWidget(

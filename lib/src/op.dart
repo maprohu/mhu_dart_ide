@@ -1,43 +1,77 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+// ignore_for_file: unused_import
+
+import 'package:collection/collection.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:flutter/services.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'dart:ui' as ui;
+import 'package:mhu_dart_ide/src/op_shortucts.dart';
 
-import 'package:mhu_dart_ide/src/widgets/columns.dart';
-import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+typedef OpShortcut = IList<ShortcutKey>;
+typedef OpCallback = VoidCallback? Function();
 
-// part 'op.freezed.dart';
+typedef OpState = int?;
 
-typedef OpId = Object;
-
-typedef Keys = ({
-  String chars,
+typedef OpBuildHandle = ({
+  OpShortcut Function() shortcut,
+  OpState Function() watchState,
 });
 
-class Ops {
-  const Ops._();
+class _BuildReg {
+  late final OpShortcut shortcut;
+  final OpCallback action;
 
-  static const instance = Ops._();
+  _BuildReg(this.action);
 }
 
-const ops = Ops.instance;
+class OpBuilder {
+  final _ops = <_BuildReg>[];
 
-typedef Registrar<T> = T Function(DspReg disposers);
-typedef WidgetLinker<T> = Registrar<T> Function();
+  final _pressed = fw(OpShortcut());
 
-Widget linkWidget<T>({
-  required WidgetLinker<T> linker,
-  required Widget Function(T bits) builder,
-}) {
-  return flcFrr(() {
-    final registrar = linker();
+  OpBuildHandle register(OpCallback callback) {
+    assert(!_built);
+    final reg = _BuildReg(callback);
+    _ops.add(reg);
 
-    return flcDsp((disposers) {
-      final bits = registrar(disposers);
+    return (
+      shortcut: () => reg.shortcut,
+      watchState: () {
+        final pressed = _pressed();
+        if (pressed.isEmpty) {
+          return 0;
+        }
+        final pressedCount = pressed.length;
+        final shortcut = reg.shortcut;
+        if (shortcut.length < pressedCount) {
+          return null;
+        }
+        if (shortcut.take(pressedCount) == pressed) {
+          return pressedCount;
+        }
+        return null;
+      },
+    );
+  }
 
-      return flcFrr(() {
-        return builder(bits);
-      });
+  var _built = false;
+
+  OpLookup build() {
+    assert(!_built);
+    _built = true;
+
+    final shortcuts = OpShortcuts.generateShortcuts(_ops.length);
+    _ops.zipForEachWith(shortcuts, (reg, shortcut) {
+      reg.shortcut = shortcut;
     });
-  });
+
+    return OpLookup(this);
+  }
+}
+
+class OpLookup {
+  final OpBuilder _builder;
+
+  OpLookup(this._builder);
+
+  void handleKey(LogicalKeyboardKey key) {}
 }

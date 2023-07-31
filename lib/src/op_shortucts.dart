@@ -3,7 +3,8 @@ import 'dart:collection';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 
 class OpShortcuts {
   // unused
@@ -27,26 +28,47 @@ class OpShortcuts {
       .map((e) => uppercaseCharToLogicalKey[e.toUpperCase()]!)
       .toIList();
 
-  static Iterable<String> generateShortcuts(int count) {
-    final keysQueue = DoubleLinkedQueue<String>.from(keyChars);
-    var availableKeysCount = keysQueue.length;
+  static final shortcutKeyOrder =
+      logicalKeyOrder.map((e) => ShortcutKey.of(e)).toIList();
+  static final IList<OpShortcut> singleShortcutKeyOrder =
+      shortcutKeyOrder.map((sk) => IList<ShortcutKey>([sk])).toIList();
 
-    while (availableKeysCount < count) {
-      final first = keysQueue.removeFirst();
+  static Iterable<OpShortcut> generateShortcuts(int count) {
+    final singleKeyOpShortcuts = singleShortcutKeyOrder;
 
-      final firstLast = first.characters.last;
+    final opShortcutsQueue = DoubleLinkedQueue.of(singleKeyOpShortcuts);
+    var availableShortcutsCount = opShortcutsQueue.length;
 
-      keysQueue.addAll(
-        [firstLast]
-            .followedBy(
-              keyChars.where((c) => c != firstLast),
-            )
-            .map((c) => "$first$c"),
+    while (availableShortcutsCount < count) {
+      final prefixShortcut = opShortcutsQueue.removeFirst();
+
+      final lastKeyOfPrefixShortcut = prefixShortcut.last;
+
+      final suffixSingleKeysWithDoubleFirst =
+          [lastKeyOfPrefixShortcut].followedBy(
+        shortcutKeyOrder.where((c) => c != lastKeyOfPrefixShortcut),
       );
 
-      availableKeysCount += keyCount - 1;
+      final newShortcuts = suffixSingleKeysWithDoubleFirst.map(
+        (suffix) => prefixShortcut.add(suffix),
+      );
+
+      opShortcutsQueue.addAll(newShortcuts);
+
+      availableShortcutsCount += keyCount - 1;
     }
 
-    return keysQueue;
+    return opShortcutsQueue;
   }
+}
+
+class ShortcutKey {
+  final LogicalKeyboardKey keyboardKey;
+
+  final String display;
+
+  ShortcutKey._(this.keyboardKey)
+      : display = keyboardKey.keyLabel.toLowerCase();
+
+  static final of = Cache(ShortcutKey._);
 }

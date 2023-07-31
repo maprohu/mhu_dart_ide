@@ -11,7 +11,7 @@ message  MdiDartPackageMsg {
 
 message MdiStateMsg {
   MdiColumnMsg column = 1;
-  int32 column_count = 2;
+  double min_column_width = 2;
 }
 
 message MdiColumnMsg {
@@ -34,3 +34,11 @@ message  MdiBuildRunnerPackageMsg {
 }
 
 
+message MdiThemeMsg {
+  MdiDividerThicknessThemeMsg divider_thickness = 1;
+
+}
+
+message MdiDividerThicknessThemeMsg {
+  double main_columns = 1;
+}

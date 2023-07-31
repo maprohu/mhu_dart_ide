@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 enum MdiSingleton {
   config,
   state,
+  theme,
 }
 Future<Isar> mdiCreateIsar() async {
   final dir = await getApplicationDocumentsDirectory();
