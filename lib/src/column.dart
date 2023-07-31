@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_ide/src/column/main_menu.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
-import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
 import '../proto.dart';
 import 'flex.dart';
@@ -32,35 +31,53 @@ FlexNode<Bx> mdiColumnFlexNode({
   );
 }
 
-Widget buildColumn({
-  required SizedNodeBuilderBits buildBits,
+Bx buildColumn({
+  required SizedNodeBuilderBits sizedBits,
   required NodeBuilder header,
   required NodeBuilder body,
 }) {
-  final themeCalc = buildBits.themeCalc;
+  final SizedNodeBuilderBits(
+    :width,
+    :height,
+    :themeCalc,
+    :nodeBits,
+  ) = sizedBits;
+
   final dividerThickness = themeCalc.columnHeaderDividerThickness;
 
-  return Column(
-    children: buildExpand(availableSpace: buildBits.height, items: [
+  final rows = buildExpand(availableSpace: height, items: [
+    ExpandNode.height(
+      Bx.col([
+        columnHeaderBx(
+          nodeBits: nodeBits,
+          columnWidth: width,
+          content: header,
+          themeCalc: themeCalc,
+        ),
+        Bx.horizontalDivider(
+          thickness: dividerThickness,
+          width: width,
+        )
+      ]),
+    ),
+  ]);
 
-
-    ]),
-
-  );
-  buildFlex(
-    availableSpace: buildBits.height,
-    fixedSize: themeCalc.columnHeaderHeight,
-    dividerThickness: dividerThickness,
-    items: [],
-  );
+  return Bx.col(rows.toList());
 }
 
-SizedWidget buildColumnHeader({
+Bx columnHeaderBx({
+  required NodeBuilderBits nodeBits,
   required double columnWidth,
   required NodeBuilder content,
   required ThemeCalc themeCalc,
 }) {
-  return Padding(padding: themeCalc.columnHeaderPadding,
-
+  final padding = themeCalc.columnHeaderPadding;
+  final contentSize = Size(
+    columnWidth - padding.horizontal,
+    themeCalc.columnHeaderContentHeight,
+  );
+  return Bx.pad(
+    padding: themeCalc.columnHeaderPadding,
+    child: content(nodeBits.sized(contentSize)),
   );
 }

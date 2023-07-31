@@ -4,8 +4,8 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/op_shortucts.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
-import 'package:mhu_dart_ide/src/widgets/sized.dart';
-import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+
+import 'boxed.dart';
 
 part 'shortcut.freezed.dart';
 
@@ -50,7 +50,7 @@ Widget shortcutWidget({
   );
 }
 
-SizedWidget sizedShortcutWidget({
+Bx shortcutBx({
   required ShortcutData? data,
   required ThemeCalc themeCalc,
 }) {
@@ -65,11 +65,9 @@ SizedWidget sizedShortcutWidget({
 
   final size = themeCalc.shortcutSize;
 
-  return SizedBox.fromSize(
+  return Bx.leaf(
     size: size,
-    child: child,
-  ).sizedWith(
-    size,
+    widget: child,
   );
 }
 
@@ -81,17 +79,30 @@ class ShortcutData with _$ShortcutData {
   }) = _ShortcutData;
 }
 
-SizedWidget sizedIconWidget({
+Bx shortcutWithIconBx({
   required ThemeCalc themeCalc,
-  required SizedWidget icon,
+  required Widget icon,
   required ShortcutData? shortcutData,
 }) {
-  return sizedColumn(children: [
-    icon,
-    columnGap(),
-    sizedShortcutWidget(
+  return Bx.colCentered([
+    iconBx(
+      icon: icon,
+      themeCalc: themeCalc,
+    ),
+    Bx.fillWith(height: themeCalc.shortcutIconGap),
+    shortcutBx(
       data: shortcutData,
       themeCalc: themeCalc,
     ),
   ]);
+}
+
+Bx iconBx({
+  required Widget icon,
+  required ThemeCalc themeCalc,
+}) {
+  return Bx.leaf(
+    size: themeCalc.shortcutIconSize,
+    widget: icon,
+  );
 }

@@ -1,8 +1,10 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/column.dart';
 import 'package:mhu_dart_ide/src/icons.dart';
+import 'package:mhu_dart_ide/src/op_shortucts.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
 import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
@@ -51,11 +53,21 @@ class ThemeCalc {
     themeCalc: this,
   ).size;
 
-  late final columnHeaderContentHeight = sizedIconWidget(
+  late final columnHeaderContentHeight = shortcutWithIconBx(
     themeCalc: this,
     icon: MdiIcons.help,
-    shortcutData: null,
+    shortcutData: ShortcutData(
+      shortcut: [
+        ShortcutKey.of(LogicalKeyboardKey.keyM),
+        ShortcutKey.of(LogicalKeyboardKey.keyM),
+      ].toIList(),
+      pressedCount: 1,
+    ),
   ).height;
 
   late final columnHeaderPadding = const EdgeInsets.all(2);
+
+  late final shortcutIconDimension = 12.0;
+  late final shortcutIconSize = Size.square(shortcutIconDimension);
+  late final shortcutIconGap = 1.0;
 }

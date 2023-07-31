@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/widgets/sized.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 part 'boxed.freezed.dart';
@@ -13,7 +12,7 @@ sealed class Bx with _$Bx, HasSize {
   @Assert("columns.map((e) => e.height).allRoughlyEqual()")
   factory Bx.row(List<Bx> columns) = BxRow;
 
-  @Assert("columns.map((e) => e.width).allRoughlyEqual()")
+  @Assert("rows.map((e) => e.width).allRoughlyEqual()")
   factory Bx.col(List<Bx> rows) = BxCol;
 
   factory Bx.pad({
@@ -30,6 +29,14 @@ sealed class Bx with _$Bx, HasSize {
   static Bx fill(Size size) => Bx.leaf(
         size: size,
         widget: null,
+      );
+
+  static Bx fillWith({
+    double width = 0,
+    double height = 0,
+  }) =>
+      Bx.fill(
+        Size(width, height),
       );
 
   @override
@@ -63,13 +70,11 @@ sealed class Bx with _$Bx, HasSize {
           ),
       };
 
-  Bx rowWithDividers({
+  static Bx rowWithDividers({
     required List<Bx> columns,
     required double thickness,
-    double? height,
+    required double height,
   }) {
-    height ??= columns.first.height;
-
     final divider = Bx.leaf(
       size: Size(thickness, height),
       widget: VerticalDivider(
@@ -84,14 +89,25 @@ sealed class Bx with _$Bx, HasSize {
     );
   }
 
-  Bx columnWithDividers({
+  static Bx columnWithDividers({
     required List<Bx> rows,
     required double thickness,
-    double? width,
+    required double width,
   }) {
-    width ??= rows.first.width;
+    final divider = horizontalDivider(
+      thickness: thickness,
+      width: width,
+    );
+    return Bx.col(
+      rows.separatedBy(divider).toList(),
+    );
+  }
 
-    final divider = Bx.leaf(
+  static Bx horizontalDivider({
+    required double thickness,
+    required double width,
+  }) {
+    return Bx.leaf(
       size: Size(width, thickness),
       widget: Divider(
         height: thickness,
@@ -100,8 +116,82 @@ sealed class Bx with _$Bx, HasSize {
         endIndent: 0,
       ),
     );
+  }
+
+  static Iterable<Bx> buildWithLargest(List<BxLargest> items) {
+    final size = items.map((e) => e.size).max;
+    return items.map((e) => e.builder(size));
+  }
+
+  static Bx colCentered(List<Bx> rows) {
     return Bx.col(
-      rows.separatedBy(divider).toList(),
+      buildWithLargest(
+        rows
+            .map(
+              (bx) => BxLargest(
+                size: bx.width,
+                builder: (width) => centerAlongX(
+                  bx: bx,
+                  width: width,
+                ),
+              ),
+            )
+            .toList(),
+      ).toList(),
     );
   }
+
+  static Bx rowCentered(List<Bx> columns) {
+    return Bx.col(
+      buildWithLargest(
+        columns
+            .map(
+              (bx) => BxLargest(
+                size: bx.height,
+                builder: (height) => centerAlongY(
+                  bx: bx,
+                  height: height,
+                ),
+              ),
+            )
+            .toList(),
+      ).toList(),
+    );
+  }
+
+  static Bx centerAlongX({
+    required Bx bx,
+    required double width,
+  }) {
+    final margin = (width - bx.width) / 2;
+    return Bx.pad(
+      padding: EdgeInsets.symmetric(
+        horizontal: margin,
+      ),
+      child: bx,
+    );
+  }
+
+  static Bx centerAlongY({
+    required Bx bx,
+    required double height,
+  }) {
+    final margin = (height - bx.height) / 2;
+    return Bx.pad(
+      padding: EdgeInsets.symmetric(
+        vertical: margin,
+      ),
+      child: bx,
+    );
+  }
+}
+
+@freezedStruct
+class BxLargest with _$BxLargest {
+  BxLargest._();
+
+  factory BxLargest({
+    required double size,
+    required Bx Function(double largest) builder,
+  }) = _BxLargest;
 }

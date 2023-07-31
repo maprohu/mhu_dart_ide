@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:ui' as ui;
-import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
 class MdiIcons {
   static const _size = 16.0;
 
-  static SizedWidget _svg(String asset) {
+  static Widget _svg(String asset) {
     return SvgPicture.asset(
       "assets/icons/$asset.svg",
       width: _size,
@@ -15,19 +14,13 @@ class MdiIcons {
         Colors.white,
         BlendMode.srcIn,
       ),
-    ).sizedFrom(
-      width: _size,
-      height: _size,
     );
   }
 
-  static SizedWidget _icon(IconData icon) {
+  static Widget _icon(IconData icon) {
     return Icon(
       icon,
       size: _size,
-    ).sizedFrom(
-      width: _size,
-      height: _size,
     );
   }
 

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/divider.dart';
 import 'package:mhu_dart_ide/src/flex.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/paginate.dart';
@@ -104,13 +103,14 @@ Bx mdiBuildScreen({
 
   opBuilder.build();
 
-  return rowWithDividers(
-    children: columnWidgets,
-    dividerThickness: mainColumnsDividerThickness,
+  return Bx.rowWithDividers(
+    columns: columnWidgets,
+    thickness: mainColumnsDividerThickness,
+    height: screenSize.height,
   );
 }
 
-typedef NodeBuilder = Widget Function(SizedNodeBuilderBits buildBits);
+typedef NodeBuilder = Bx Function(SizedNodeBuilderBits buildBits);
 
 @freezedStruct
 class NodeBuilderBits with _$NodeBuilderBits {
@@ -160,48 +160,12 @@ class SizedNodeBuilderBits with _$SizedNodeBuilderBits, HasColumnBuildBits {
 
   late final height = size.height;
   late final width = size.width;
+
+  SizedNodeBuilderBits withSize(Size size) => copyWith(size: size);
 }
 
 extension NodeBuildBitsX on SizedNodeBuilderBits {
-  Widget sizedHeight({
-    required double height,
-    required NodeBuilder builder,
-  }) {
-    return sizedBox(
-      size: Size(
-        size.width,
-        height,
-      ),
-      builder: builder,
-    );
-  }
 
-  Widget sizedWidth({
-    required double width,
-    required NodeBuilder builder,
-  }) {
-    return sizedBox(
-      size: Size(
-        width,
-        size.height,
-      ),
-      builder: builder,
-    );
-  }
-
-  Widget sizedBox({
-    required Size size,
-    required NodeBuilder builder,
-  }) {
-    return SizedBox.fromSize(
-      size: size,
-      child: builder(
-        copyWith(
-          size: size,
-        ),
-      ),
-    );
-  }
 
   Bx shortcut(VoidCallback action) {
     return shortcutFr(fw(action));
@@ -224,10 +188,10 @@ extension NodeBuildBitsX on SizedNodeBuilderBits {
             );
           }
         }
-        return sizedShortcutWidget(
+        return shortcutBx(
           data: data,
           themeCalc: themeCalc,
-        ).widget;
+        ).layout();
       }),
     );
   }

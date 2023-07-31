@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/widgets/sized.dart';
+
+import 'widgets/boxed.dart';
 
 part 'flex.freezed.dart';
 
@@ -76,20 +76,20 @@ sealed class ExpandNode<T> with _$ExpandNode<T> {
     required T Function(double size) builder,
   }) = ExpandNodeGrow;
 
-  static ExpandNode<Widget> height(
-    HasHWidget sizedWidget,
+  static ExpandNode<Bx> height(
+    Bx bx,
   ) =>
       ExpandNode.fix(
-        size: sizedWidget.height,
-        item: sizedWidget.widget,
+        size: bx.height,
+        item: bx,
       );
 
-  static ExpandNode<Widget> width(
-    HasVWidget sizedWidget,
+  static ExpandNode<Bx> width(
+    Bx bx,
   ) =>
       ExpandNode.fix(
-        size: sizedWidget.width,
-        item: sizedWidget.widget,
+        size: bx.width,
+        item: bx,
       );
 }
 
@@ -122,4 +122,3 @@ Iterable<T> buildExpand<T>({
     };
   });
 }
-
