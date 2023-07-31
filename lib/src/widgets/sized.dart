@@ -1,10 +1,8 @@
-
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
-
 
 part 'sized.freezed.dart';
 
@@ -12,6 +10,7 @@ part 'sized.freezed.dart';
 class SizedWidget with _$SizedWidget implements HasSizedWidget {
   const SizedWidget._();
 
+  @Assert("widget is! SizedBox")
   const factory SizedWidget({
     required Widget widget,
     required double width,
@@ -224,15 +223,18 @@ SizedWidget rowGap([double width = 1]) => SizedWidget(
       width: width,
     );
 
-
-
 extension SizedWidgetWidgetX on Widget {
   HWidget withHwHeight(double height) => HWidget(
         widget: this,
         height: height,
       );
 
-  SizedWidget withSize({
+  SizedWidget sizedWith(Size size) => sizedFrom(
+        width: size.width,
+        height: size.height,
+      );
+
+  SizedWidget sizedFrom({
     required double width,
     required double height,
   }) =>
@@ -307,7 +309,7 @@ extension SizedWidgetX on HasSizedWidget {
       width: width,
       height: height,
       child: widget,
-    ).withSize(
+    ).sizedFrom(
       width: width ?? this.width,
       height: height ?? this.height,
     );

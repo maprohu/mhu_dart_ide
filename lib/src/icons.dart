@@ -15,7 +15,7 @@ class MdiIcons {
         Colors.white,
         BlendMode.srcIn,
       ),
-    ).withSize(
+    ).sizedFrom(
       width: _size,
       height: _size,
     );
@@ -25,7 +25,7 @@ class MdiIcons {
     return Icon(
       icon,
       size: _size,
-    ).withSize(
+    ).sizedFrom(
       width: _size,
       height: _size,
     );

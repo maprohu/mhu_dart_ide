@@ -13,14 +13,20 @@ import 'app.dart';
 import 'column.dart';
 import 'op.dart';
 import 'state.dart';
+import 'widgets/boxed.dart';
 
 part 'screen.freezed.dart';
 
-ValueListenable<Widget> mdiScreenListenable({
+ValueListenable<Bx> mdiScreenListenable({
   required MdiAppBits appBits,
   required DspReg disposers,
 }) {
-  final notifier = ValueNotifier<Widget>(busyWidget);
+  final notifier = ValueNotifier<Bx>(
+    Bx.leaf(
+      size: Size.zero,
+      widget: null,
+    ),
+  );
 
   disposers
       .fr(() {
@@ -40,7 +46,7 @@ final _defaultMainMenuColumn = MdiColumnMsg()
 
 const _defaultColumnCount = 5;
 
-Widget mdiBuildScreen({
+Bx mdiBuildScreen({
   required MdiAppBits appBits,
 }) {
   final screenSize = appBits.screenSize();
@@ -48,20 +54,19 @@ Widget mdiBuildScreen({
 
   final opBuilder = OpBuilder();
 
-  final buildBits = NodeBuildBits(
+  final nodeBits = NodeBuilderBits(
     appBits: appBits,
     opBuilder: opBuilder,
     after: null,
-    size: screenSize,
   );
 
   final ThemeCalc(
     :mainColumnsDividerThickness,
-  ) = buildBits.themeCalc;
+  ) = nodeBits.themeCalc;
 
   final StateCalc(
     :state,
-  ) = buildBits.stateCalc;
+  ) = nodeBits.stateCalc;
 
   final minColumnWidth = state.minColumnWidthOpt ??
       (screenWidth -
@@ -81,16 +86,17 @@ Widget mdiBuildScreen({
       parent: after,
       column: column,
       flexNode: mdiColumnFlexNode(
-        buildBits: buildBits.copyWith(
+        nodeBits: nodeBits.copyWith(
           after: after,
         ),
+        height: screenSize.height,
         column: column,
       ),
     );
   });
 
   final columnWidgets = buildFlex(
-    availableSpace: buildBits.size.width,
+    availableSpace: screenWidth,
     fixedSize: minColumnWidth,
     items: columnsAfter.childToParentIterable.map((e) => e.flexNode).toList(),
     dividerThickness: mainColumnsDividerThickness,
@@ -104,29 +110,59 @@ Widget mdiBuildScreen({
   );
 }
 
-typedef NodeBuilder = Widget Function(NodeBuildBits buildBits);
+typedef NodeBuilder = Widget Function(SizedNodeBuilderBits buildBits);
 
 @freezedStruct
-class NodeBuildBits with _$NodeBuildBits {
-  NodeBuildBits._();
+class NodeBuilderBits with _$NodeBuilderBits {
+  NodeBuilderBits._();
 
-  factory NodeBuildBits({
+  factory NodeBuilderBits({
     required MdiAppBits appBits,
     required OpBuilder opBuilder,
     required ColumnsAfter? after,
-    required Size size,
-  }) = _NodeBuildBits;
+  }) = _NodeBuilderBits;
 
   late final configBits = appBits.configBits;
 
   late final themeCalc = configBits.themeCalc();
   late final stateCalc = configBits.stateCalc();
 
+  SizedNodeBuilderBits sized(Size size) => SizedNodeBuilderBits(
+        nodeBits: this,
+        size: size,
+      );
+
+  Bx sizedBox({
+    required Size size,
+    required Bx Function(SizedNodeBuilderBits sizedBits) builder,
+  }) {
+    return builder(sized(size));
+  }
+}
+
+mixin HasColumnBuildBits {
+  NodeBuilderBits get nodeBits;
+
+  late final opBuilder = nodeBits.opBuilder;
+  late final configBits = nodeBits.configBits;
+  late final themeCalc = nodeBits.themeCalc;
+  late final stateCalc = nodeBits.stateCalc;
+}
+
+@freezedStruct
+class SizedNodeBuilderBits with _$SizedNodeBuilderBits, HasColumnBuildBits {
+  SizedNodeBuilderBits._();
+
+  factory SizedNodeBuilderBits({
+    required NodeBuilderBits nodeBits,
+    required Size size,
+  }) = _SizedNodeBuilderBits;
+
   late final height = size.height;
   late final width = size.width;
 }
 
-extension NodeBuildBitsX on NodeBuildBits {
+extension NodeBuildBitsX on SizedNodeBuilderBits {
   Widget sizedHeight({
     required double height,
     required NodeBuilder builder,
@@ -167,38 +203,33 @@ extension NodeBuildBitsX on NodeBuildBits {
     );
   }
 
-  Widget shortcut(VoidCallback action) {
+  Bx shortcut(VoidCallback action) {
     return shortcutFr(fw(action));
   }
 
-  Widget shortcutFr(Fr<VoidCallback?> callback) {
+  Bx shortcutFr(Fr<VoidCallback?> callback) {
     final handle = opBuilder.register(callback.read);
 
-    return SizedBox.fromSize(
+    return Bx.leaf(
       size: themeCalc.shortcutSize,
-      child: flcFrr(() {
+      widget: flcFrr(() {
+        ShortcutData? data;
         final cb = callback();
-        if (cb == null) {
-          return nullWidget;
+        if (cb != null) {
+          final pressedCount = handle.watchState();
+          if (pressedCount != null) {
+            data = ShortcutData(
+              shortcut: handle.shortcut(),
+              pressedCount: pressedCount,
+            );
+          }
         }
-        final pressedCount = handle.watchState();
-        if (pressedCount == null) {
-          return nullWidget;
-        }
-        return shortcutWidget(
-          shortcut: handle.shortcut(),
-          pressedCount: pressedCount,
+        return sizedShortcutWidget(
+          data: data,
           themeCalc: themeCalc,
-        );
+        ).widget;
       }),
     );
-  }
-
-  Widget column({
-    required NodeBuilder header,
-    required NodeBuilder body,
-}) {
-
   }
 }
 
@@ -220,6 +251,6 @@ class ColumnsAfter with _$ColumnsAfter implements HasParent<ColumnsAfter> {
   factory ColumnsAfter({
     required ColumnsAfter? parent,
     required MdiColumnMsg column,
-    required FlexNode<Widget> flexNode,
+    required FlexNode<Bx> flexNode,
   }) = _ColumnsAfter;
 }

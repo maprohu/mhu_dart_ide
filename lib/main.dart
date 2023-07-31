@@ -9,6 +9,8 @@ import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/screen.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
+import 'src/widgets/boxed.dart';
+
 void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +53,7 @@ void main() async {
 class MdiApp extends StatelessWidget {
   final MdiAppBits appBits;
 
-  final ValueListenable<Widget> listenable;
+  final ValueListenable<Bx> listenable;
 
   MdiApp({
     super.key,
@@ -77,7 +79,7 @@ class MdiApp extends StatelessWidget {
           valueListenable: listenable,
           builder: (context, value, child) {
             return StretchWidget(
-              child: value,
+              child: value.layout(),
             );
           },
         ),

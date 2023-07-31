@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_dart_ide/src/column.dart';
+import 'package:mhu_dart_ide/src/icons.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
 import 'package:mhu_dart_ide/src/widgets/sized.dart';
 
@@ -49,5 +51,11 @@ class ThemeCalc {
     themeCalc: this,
   ).size;
 
-  late final columnHeaderHeight =
+  late final columnHeaderContentHeight = sizedIconWidget(
+    themeCalc: this,
+    icon: MdiIcons.help,
+    shortcutData: null,
+  ).height;
+
+  late final columnHeaderPadding = const EdgeInsets.all(2);
 }
