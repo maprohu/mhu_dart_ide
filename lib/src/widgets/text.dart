@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/screen.dart';
+import 'package:mhu_dart_ide/src/widgets/boxed.dart';
 
-import 'sized.dart';
 
-part 'text.freezed.dart';
+// part 'text.freezed.dart';
 
 Widget mdiText({
   required String text,
@@ -17,48 +18,78 @@ Widget mdiText({
   );
 }
 
-@freezedStruct
-class TextBuilder with _$TextBuilder {
-  TextBuilder._();
+// @freezedStruct
+// class TextBuilder with _$TextBuilder {
+//   TextBuilder._();
+//
+//   factory TextBuilder({
+//     required TextStyle textStyle,
+//   }) = _TextBuilder;
+//
+//   late final height = mdiTextSize(" ", textStyle).height;
+//
+//   SizedWidget text(
+//     String text, {
+//     TextAlign textAlign = TextAlign.start,
+//     TextOverflow overflow = TextOverflow.fade,
+//   }) {
+//     return sizedTextSpan(
+//       TextSpan(
+//         text: text,
+//         style: textStyle,
+//       ),
+//       textAlign: textAlign,
+//       overflow: overflow,
+//     );
+//   }
+// }
 
-  factory TextBuilder({
-    required TextStyle textStyle,
-  }) = _TextBuilder;
+// SizedWidget sizedTextSpan(
+//   TextSpan textSpan, {
+//   TextAlign textAlign = TextAlign.start,
+//   TextOverflow overflow = TextOverflow.fade,
+// }) {
+//   final size = textSpan.size;
+//
+//   return SizedWidget(
+//     widget: RichText(
+//       text: textSpan,
+//       textAlign: textAlign,
+//       softWrap: false,
+//       overflow: overflow,
+//       maxLines: 1,
+//     ),
+//     height: size.height,
+//     width: size.width,
+//   );
+// }
 
-  late final height = mdiTextSize(" ", textStyle).height;
-
-  SizedWidget text(
-    String text, {
-    TextAlign textAlign = TextAlign.start,
-    TextOverflow overflow = TextOverflow.fade,
-  }) {
-    return sizedTextSpan(
-      TextSpan(
-        text: text,
-        style: textStyle,
-      ),
-      textAlign: textAlign,
-      overflow: overflow,
+extension TextSizedBuilderX on SizedNodeBuilderBits {
+  Bx text(String text) {
+    return leaf(
+      Text(text),
     );
   }
 }
 
-SizedWidget sizedTextSpan(
-  TextSpan textSpan, {
-  TextAlign textAlign = TextAlign.start,
-  TextOverflow overflow = TextOverflow.fade,
-}) {
-  final size = textSpan.size;
 
-  return SizedWidget(
-    widget: RichText(
-      text: textSpan,
-      textAlign: textAlign,
-      softWrap: false,
-      overflow: overflow,
+extension SizedTextSpanX on TextSpan {
+  Size get size {
+    final TextPainter textPainter = TextPainter(
+      text: this,
       maxLines: 1,
-    ),
-    height: size.height,
-    width: size.width,
-  );
+      textDirection: TextDirection.ltr,
+    )..layout(
+      minWidth: 0,
+      maxWidth: double.infinity,
+    );
+    return textPainter.size;
+  }
+}
+
+Size mdiTextSize(String text, TextStyle style) {
+  return TextSpan(
+    text: text,
+    style: style,
+  ).size;
 }

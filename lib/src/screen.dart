@@ -9,7 +9,7 @@ import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import 'app.dart';
-import 'column.dart';
+import 'shaft.dart';
 import 'op.dart';
 import 'state.dart';
 import 'widgets/boxed.dart';
@@ -39,7 +39,7 @@ ValueListenable<Bx> mdiScreenListenable({
   return notifier;
 }
 
-final _defaultMainMenuColumn = MdiColumnMsg()
+final _defaultMainMenuShaft = MdiShaftMsg()
   ..ensureMainMenu()
   ..freeze();
 
@@ -51,66 +51,64 @@ Bx mdiBuildScreen({
   final screenSize = appBits.screenSize();
   final screenWidth = screenSize.width;
 
-  final opBuilder = OpBuilder();
+  return OpBuilder.build((opBuilder) {
+    final nodeBits = NodeBuilderBits(
+      appBits: appBits,
+      opBuilder: opBuilder,
+      after: null,
+    );
 
-  final nodeBits = NodeBuilderBits(
-    appBits: appBits,
-    opBuilder: opBuilder,
-    after: null,
-  );
+    final ThemeCalc(
+      shaftsDividerThickness: mainColumnsDividerThickness,
+    ) = nodeBits.themeCalc;
 
-  final ThemeCalc(
-    :mainColumnsDividerThickness,
-  ) = nodeBits.themeCalc;
+    final StateCalc(
+      :state,
+    ) = nodeBits.stateCalc;
 
-  final StateCalc(
-    :state,
-  ) = nodeBits.stateCalc;
+    final minColumnWidth = state.minShaftWidthOpt ??
+        (screenWidth -
+                ((_defaultColumnCount - 1) * mainColumnsDividerThickness)) /
+            _defaultColumnCount;
 
-  final minColumnWidth = state.minColumnWidthOpt ??
-      (screenWidth -
-              ((_defaultColumnCount - 1) * mainColumnsDividerThickness)) /
-          _defaultColumnCount;
+    final columnCount = itemFitCount(
+      available: screenWidth,
+      itemSize: minColumnWidth,
+      dividerThickness: mainColumnsDividerThickness,
+    );
 
-  final columnCount = itemFitCount(
-    available: screenWidth,
-    itemSize: minColumnWidth,
-    dividerThickness: mainColumnsDividerThickness,
-  );
+    final columns = state.columnOpt.columnsIterable.take(columnCount);
 
-  final columns = state.columnOpt.columnsIterable.take(columnCount);
-
-  final columnsAfter = columns.fold<ColumnsAfter?>(null, (after, column) {
-    return ColumnsAfter(
-      parent: after,
-      column: column,
-      flexNode: mdiColumnFlexNode(
-        nodeBits: nodeBits.copyWith(
-          after: after,
-        ),
-        height: screenSize.height,
+    final columnsAfter = columns.fold<ColumnsAfter?>(null, (after, column) {
+      return ColumnsAfter(
+        parent: after,
         column: column,
-      ),
+        flexNode: mdiColumnFlexNode(
+          nodeBits: nodeBits.copyWith(
+            after: after,
+          ),
+          height: screenSize.height,
+          column: column,
+        ),
+      );
+    });
+
+    final columnWidgets = buildFlex(
+      availableSpace: screenWidth,
+      fixedSize: minColumnWidth,
+      items: columnsAfter.childToParentIterable.map((e) => e.flexNode).toList(),
+      dividerThickness: mainColumnsDividerThickness,
+    ).toList();
+
+    return Bx.rowWithDividers(
+      columns: columnWidgets,
+      thickness: mainColumnsDividerThickness,
+      height: screenSize.height,
     );
   });
-
-  final columnWidgets = buildFlex(
-    availableSpace: screenWidth,
-    fixedSize: minColumnWidth,
-    items: columnsAfter.childToParentIterable.map((e) => e.flexNode).toList(),
-    dividerThickness: mainColumnsDividerThickness,
-  ).toList();
-
-  opBuilder.build();
-
-  return Bx.rowWithDividers(
-    columns: columnWidgets,
-    thickness: mainColumnsDividerThickness,
-    height: screenSize.height,
-  );
 }
 
-typedef NodeBuilder = Bx Function(SizedNodeBuilderBits buildBits);
+typedef NodeBuilder = Bx Function(SizedNodeBuilderBits sizedBits);
 
 @freezedStruct
 class NodeBuilderBits with _$NodeBuilderBits {
@@ -132,7 +130,23 @@ class NodeBuilderBits with _$NodeBuilderBits {
         size: size,
       );
 
-  Bx sizedBox({
+  SizedNodeBuilderBits sizedFrom({
+    required double width,
+    required double height,
+  }) =>
+      sized(Size(width, height));
+
+  Bx sizedBxFrom({
+    required double width,
+    required double height,
+    required Bx Function(SizedNodeBuilderBits sizedBits) builder,
+  }) =>
+      sizedBx(
+        size: Size(width, height),
+        builder: builder,
+      );
+
+  Bx sizedBx({
     required Size size,
     required Bx Function(SizedNodeBuilderBits sizedBits) builder,
   }) {
@@ -165,7 +179,10 @@ class SizedNodeBuilderBits with _$SizedNodeBuilderBits, HasColumnBuildBits {
 }
 
 extension NodeBuildBitsX on SizedNodeBuilderBits {
-
+  Bx leaf(Widget widget) => Bx.leaf(
+        size: size,
+        widget: widget,
+      );
 
   Bx shortcut(VoidCallback action) {
     return shortcutFr(fw(action));
@@ -197,14 +214,14 @@ extension NodeBuildBitsX on SizedNodeBuilderBits {
   }
 }
 
-extension _MdiStateMsgX on MdiColumnMsg? {
-  Iterable<MdiColumnMsg> get columnsIterable sync* {
+extension _MdiShaftMsgX on MdiShaftMsg? {
+  Iterable<MdiShaftMsg> get columnsIterable sync* {
     var c = this;
     while (c != null) {
       yield c;
       c = c.parentOpt;
     }
-    yield _defaultMainMenuColumn;
+    yield _defaultMainMenuShaft;
   }
 }
 
@@ -214,7 +231,7 @@ class ColumnsAfter with _$ColumnsAfter implements HasParent<ColumnsAfter> {
 
   factory ColumnsAfter({
     required ColumnsAfter? parent,
-    required MdiColumnMsg column,
+    required MdiShaftMsg column,
     required FlexNode<Bx> flexNode,
   }) = _ColumnsAfter;
 }

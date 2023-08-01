@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/screen.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 part 'boxed.freezed.dart';
@@ -194,4 +195,12 @@ class BxLargest with _$BxLargest {
     required double size,
     required Bx Function(double largest) builder,
   }) = _BxLargest;
+}
+
+extension BxSizedBuilderX on SizedNodeBuilderBits {
+  Bx col(
+    Iterable<Bx> Function(double width) builder,
+  ) {
+    return Bx.col(builder(width).toList());
+  }
 }

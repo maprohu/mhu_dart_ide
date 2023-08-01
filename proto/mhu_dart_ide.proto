@@ -10,12 +10,12 @@ message  MdiDartPackageMsg {
 }
 
 message MdiStateMsg {
-  MdiColumnMsg column = 1;
-  double min_column_width = 2;
+  MdiShaftMsg column = 1;
+  double min_shaft_width = 2;
 }
 
-message MdiColumnMsg {
-  MdiColumnMsg parent = 1;
+message MdiShaftMsg {
+  MdiShaftMsg parent = 1;
   oneof type {
     MdiMainMenuMsg main_menu = 2;
   }
@@ -40,7 +40,7 @@ message MdiThemeMsg {
 }
 
 message MdiDividerThicknessThemeMsg {
-  double main_columns = 1;
-  double column_header = 2;
-  double column_items = 3;
+  double shafts = 1;
+  double shaft_header = 2;
+  double shaft_items = 3;
 }

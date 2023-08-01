@@ -24,6 +24,8 @@ class _BuildReg {
 }
 
 class OpBuilder {
+  OpBuilder._();
+
   final _ops = <_BuildReg>[];
 
   final _pressed = fw(OpShortcut());
@@ -55,7 +57,7 @@ class OpBuilder {
 
   var _built = false;
 
-  OpLookup build() {
+  OpLookup _build() {
     assert(!_built);
     _built = true;
 
@@ -65,6 +67,15 @@ class OpBuilder {
     });
 
     return OpLookup(this);
+  }
+
+  static T build<T>(T Function(OpBuilder opBuilder) builder) {
+    final opBuilder = OpBuilder._();
+    try {
+      return builder(opBuilder);
+    } finally {
+      opBuilder._build();
+    }
   }
 }
 

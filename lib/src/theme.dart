@@ -6,13 +6,13 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/icons.dart';
 import 'package:mhu_dart_ide/src/op_shortucts.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
-import 'package:mhu_dart_ide/src/widgets/sized.dart';
+import 'package:mhu_dart_ide/src/widgets/text.dart';
 
 final mdiDefaultTheme = MdiThemeMsg$.create(
   dividerThickness: MdiDividerThicknessThemeMsg$.create(
-    mainColumns: 2,
-    columnHeader: 2,
-    columnItems: 1,
+    shafts: 2,
+    shaftHeader: 2,
+    shaftItems: 1,
   ),
 )..freeze();
 
@@ -22,11 +22,11 @@ class ThemeCalc {
 
   ThemeCalc(this.theme);
 
-  late final mainColumnsDividerThickness = theme.dividerThickness.mainColumns;
-  late final columnHeaderDividerThickness = theme.dividerThickness.columnHeader;
-  late final columnItemsDividerThickness = theme.dividerThickness.columnItems;
+  late final shaftsDividerThickness = theme.dividerThickness.shafts;
+  late final shaftHeaderDividerThickness = theme.dividerThickness.shaftHeader;
+  late final shaftItemsDividerThickness = theme.dividerThickness.shaftItems;
 
-  late final monoTextStyle = GoogleFonts.robotoMono().copyWith(
+  late final robotoMonoTextStyle = GoogleFonts.robotoMono().copyWith(
     fontSize: 14,
     color: Colors.white,
   );
@@ -40,10 +40,12 @@ class ThemeCalc {
     color: Colors.white,
   );
 
-  late final shortcutTextStyle = robotoSlabTextStyle.copyWith(
+  late final defaultTextStyle = robotoMonoTextStyle;
+
+  late final shortcutTextStyle = defaultTextStyle.copyWith(
     color: Colors.yellow,
   );
-  late final shortcutPressedTextStyle = robotoSlabTextStyle.copyWith(
+  late final shortcutPressedTextStyle = defaultTextStyle.copyWith(
     color: Colors.red,
   );
 
@@ -53,7 +55,7 @@ class ThemeCalc {
     themeCalc: this,
   ).size;
 
-  late final columnHeaderContentHeight = shortcutWithIconBx(
+  late final shaftHeaderContentHeight = shortcutWithIconBx(
     themeCalc: this,
     icon: MdiIcons.help,
     shortcutData: ShortcutData(
@@ -65,7 +67,7 @@ class ThemeCalc {
     ),
   ).height;
 
-  late final columnHeaderPadding = const EdgeInsets.all(2);
+  late final shaftHeaderPadding = const EdgeInsets.all(2);
 
   late final shortcutIconDimension = 12.0;
   late final shortcutIconSize = Size.square(shortcutIconDimension);

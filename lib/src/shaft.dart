@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:mhu_dart_ide/src/column/main_menu.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 
 import '../proto.dart';
 import 'flex.dart';
 import 'screen.dart';
+import 'shaft/main_menu.dart';
 import 'widgets/boxed.dart';
 
 FlexNode<Bx> mdiColumnFlexNode({
   required NodeBuilderBits nodeBits,
   required double height,
-  required MdiColumnMsg column,
+  required MdiShaftMsg column,
 }) {
   return FlexNode(
     grow: false,
     builder: (width) {
-      return nodeBits.sizedBox(
-        size: Size(width, height),
+      return nodeBits.sizedBxFrom(
+        width: width,
+        height: height,
         builder: (sizedBits) {
           return switch (column.type) {
-            MdiColumnMsg_Type$mainMenu(:final value) => mdiMainMenuColumn(
-                buildBits: sizedBits,
+            MdiShaftMsg_Type$mainMenu(:final value) => mdiMainMenuShaftBx(
+                sizedBits: sizedBits,
                 value: value,
               ),
             _ => throw column,
@@ -31,7 +32,7 @@ FlexNode<Bx> mdiColumnFlexNode({
   );
 }
 
-Bx buildColumn({
+Bx shaftBx({
   required SizedNodeBuilderBits sizedBits,
   required NodeBuilder header,
   required NodeBuilder body,
@@ -43,7 +44,7 @@ Bx buildColumn({
     :nodeBits,
   ) = sizedBits;
 
-  final dividerThickness = themeCalc.columnHeaderDividerThickness;
+  final dividerThickness = themeCalc.shaftHeaderDividerThickness;
 
   final rows = buildExpand(availableSpace: height, items: [
     ExpandNode.height(
@@ -71,13 +72,13 @@ Bx columnHeaderBx({
   required NodeBuilder content,
   required ThemeCalc themeCalc,
 }) {
-  final padding = themeCalc.columnHeaderPadding;
+  final padding = themeCalc.shaftHeaderPadding;
   final contentSize = Size(
     columnWidth - padding.horizontal,
-    themeCalc.columnHeaderContentHeight,
+    themeCalc.shaftHeaderContentHeight,
   );
   return Bx.pad(
-    padding: themeCalc.columnHeaderPadding,
+    padding: themeCalc.shaftHeaderPadding,
     child: content(nodeBits.sized(contentSize)),
   );
 }
