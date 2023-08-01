@@ -12,7 +12,7 @@ final mdiDefaultTheme = MdiThemeMsg$.create(
   dividerThickness: MdiDividerThicknessThemeMsg$.create(
     shafts: 2,
     shaftHeader: 2,
-    shaftItems: 1,
+    menuItems: 1,
   ),
 )..freeze();
 
@@ -24,7 +24,7 @@ class ThemeCalc {
 
   late final shaftsDividerThickness = theme.dividerThickness.shafts;
   late final shaftHeaderDividerThickness = theme.dividerThickness.shaftHeader;
-  late final shaftItemsDividerThickness = theme.dividerThickness.shaftItems;
+  late final menuItemsDividerThickness = theme.dividerThickness.menuItems;
 
   late final robotoMonoTextStyle = GoogleFonts.robotoMono().copyWith(
     fontSize: 14,
@@ -49,6 +49,9 @@ class ThemeCalc {
     color: Colors.red,
   );
 
+  late final shaftHeaderTextStyle = defaultTextStyle;
+  late final menuItemTextStyle = defaultTextStyle;
+
   late final shortcutSize = shortcutTextSpan(
     pressed: "",
     notPressed: _sizerKeys,
@@ -72,4 +75,12 @@ class ThemeCalc {
   late final shortcutIconDimension = 12.0;
   late final shortcutIconSize = Size.square(shortcutIconDimension);
   late final shortcutIconGap = 1.0;
+
+  late final shaftHeaderWithDividerHeight = shaftHeaderContentHeight +
+      shaftHeaderPadding.vertical +
+      shaftHeaderDividerThickness;
+
+  late final menuItemHeight = menuItemPadding.inflateSize(shortcutSize).height;
+
+  late final menuItemPadding = const EdgeInsets.all(2);
 }

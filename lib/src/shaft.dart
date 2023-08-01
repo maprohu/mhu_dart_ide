@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
+import 'package:mhu_dart_ide/src/widgets/menu.dart';
+import 'package:mhu_dart_ide/src/widgets/paginate.dart';
+import 'package:mhu_dart_ide/src/widgets/text.dart';
 
 import '../proto.dart';
 import 'flex.dart';
 import 'screen.dart';
 import 'shaft/main_menu.dart';
 import 'widgets/boxed.dart';
+
+part 'shaft.freezed.dart';
 
 FlexNode<Bx> mdiColumnFlexNode({
   required NodeBuilderBits nodeBits,
@@ -32,38 +38,50 @@ FlexNode<Bx> mdiColumnFlexNode({
   );
 }
 
+typedef ShaftParts = ({
+  Bx header,
+  Bx content,
+});
+
 Bx shaftBx({
   required SizedNodeBuilderBits sizedBits,
-  required NodeBuilder header,
-  required NodeBuilder body,
+  required ShaftParts Function(
+    SizedNodeBuilderBits headerBits,
+    SizedNodeBuilderBits contentBits,
+  ) builder,
 }) {
   final SizedNodeBuilderBits(
     :width,
     :height,
     :themeCalc,
-    :nodeBits,
   ) = sizedBits;
 
-  final dividerThickness = themeCalc.shaftHeaderDividerThickness;
+  final ThemeCalc(
+    :shaftHeaderDividerThickness,
+    :shaftHeaderWithDividerHeight,
+    :shaftHeaderPadding,
+    :shaftHeaderContentHeight,
+  ) = themeCalc;
 
-  final rows = buildExpand(availableSpace: height, items: [
-    ExpandNode.height(
-      Bx.col([
-        columnHeaderBx(
-          nodeBits: nodeBits,
-          columnWidth: width,
-          content: header,
-          themeCalc: themeCalc,
-        ),
-        Bx.horizontalDivider(
-          thickness: dividerThickness,
-          width: width,
-        )
-      ]),
+  final headerContentWidth = width - shaftHeaderPadding.horizontal;
+  final contentHeight = height - shaftHeaderWithDividerHeight;
+
+  final parts = builder(
+    sizedBits.withSize(Size(headerContentWidth, shaftHeaderContentHeight)),
+    sizedBits.withSize(Size(width, contentHeight)),
+  );
+
+  return Bx.col([
+    Bx.pad(
+      padding: shaftHeaderPadding,
+      child: parts.header,
     ),
+    Bx.horizontalDivider(
+      thickness: shaftHeaderDividerThickness,
+      width: width,
+    ),
+    parts.content,
   ]);
-
-  return Bx.col(rows.toList());
 }
 
 Bx columnHeaderBx({
@@ -81,4 +99,53 @@ Bx columnHeaderBx({
     padding: themeCalc.shaftHeaderPadding,
     child: content(nodeBits.sized(contentSize)),
   );
+}
+
+@freezedStruct
+class MenuItem with _$MenuItem {
+  MenuItem._();
+
+  factory MenuItem({
+    required String label,
+    required ShortcutFr callback,
+  }) = _MenuItem;
+}
+
+extension ShaftSizedBitsX on SizedNodeBuilderBits {
+  Bx menuShaft({
+    required String label,
+    required List<MenuItem> items,
+  }) {
+    return shaftBx(
+      sizedBits: this,
+      builder: (headerBits, contentBits) {
+        final pageBx = menuBx(
+          sizedBits: contentBits,
+          itemCount: items.length,
+          itemBuilder: (index, sizedBits) {
+            return menuItemBx(
+              menuItem: items[index],
+              sizedBits: sizedBits,
+            );
+          },
+        );
+
+        if (pageBx.showPaginator) {
+          // TODO
+        }
+
+        return (
+          header: headerBits.left(
+            headerBits.centerAlongY(
+              textBx(
+                text: label,
+                style: themeCalc.shaftHeaderTextStyle,
+              ),
+            ),
+          ),
+          content: pageBx.bx,
+        );
+      },
+    );
+  }
 }

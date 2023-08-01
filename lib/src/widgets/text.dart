@@ -3,7 +3,6 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/screen.dart';
 import 'package:mhu_dart_ide/src/widgets/boxed.dart';
 
-
 // part 'text.freezed.dart';
 
 Widget mdiText({
@@ -72,7 +71,6 @@ extension TextSizedBuilderX on SizedNodeBuilderBits {
   }
 }
 
-
 extension SizedTextSpanX on TextSpan {
   Size get size {
     final TextPainter textPainter = TextPainter(
@@ -80,9 +78,9 @@ extension SizedTextSpanX on TextSpan {
       maxLines: 1,
       textDirection: TextDirection.ltr,
     )..layout(
-      minWidth: 0,
-      maxWidth: double.infinity,
-    );
+        minWidth: 0,
+        maxWidth: double.infinity,
+      );
     return textPainter.size;
   }
 }
@@ -92,4 +90,21 @@ Size mdiTextSize(String text, TextStyle style) {
     text: text,
     style: style,
   ).size;
+}
+
+Bx textBx({
+  required String text,
+  required TextStyle style,
+}) {
+  final textSpan = TextSpan(
+    text: text,
+    style: style,
+  );
+
+  return Bx.leaf(
+    size: textSpan.size,
+    widget: RichText(
+      text: textSpan,
+    ),
+  );
 }

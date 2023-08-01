@@ -6,16 +6,24 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 part 'boxed.freezed.dart';
 
+extension _Assert on Iterable<double> {
+  bool _assertEqual() {
+    assert(allRoughlyEqual(), toString());
+    return true;
+  }
+}
+
 @freezedStruct
 sealed class Bx with _$Bx, HasSize {
   Bx._();
 
-  @Assert("columns.map((e) => e.height).allRoughlyEqual()")
+  @Assert("columns.map((e) => e.height)._assertEqual()")
   factory Bx.row(List<Bx> columns) = BxRow;
 
-  @Assert("rows.map((e) => e.width).allRoughlyEqual()")
+  @Assert("rows.map((e) => e.width)._assertEqual()")
   factory Bx.col(List<Bx> rows) = BxCol;
 
+  @Assert("padding.isNonNegative, padding.toString()")
   factory Bx.pad({
     required EdgeInsets padding,
     required Bx child,

@@ -42,5 +42,5 @@ message MdiThemeMsg {
 message MdiDividerThicknessThemeMsg {
   double shafts = 1;
   double shaft_header = 2;
-  double shaft_items = 3;
+  double menu_items = 3;
 }

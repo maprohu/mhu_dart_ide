@@ -176,19 +176,20 @@ class SizedNodeBuilderBits with _$SizedNodeBuilderBits, HasColumnBuildBits {
   late final width = size.width;
 
   SizedNodeBuilderBits withSize(Size size) => copyWith(size: size);
+
+  SizedNodeBuilderBits withHeight(double height) => copyWith(
+        size: size.withHeight(height),
+      );
 }
 
-extension NodeBuildBitsX on SizedNodeBuilderBits {
-  Bx leaf(Widget widget) => Bx.leaf(
-        size: size,
-        widget: widget,
-      );
+typedef ShortcutFr = Fr<VoidCallback?>;
 
+extension NodeBuildBitxX on NodeBuilderBits {
   Bx shortcut(VoidCallback action) {
     return shortcutFr(fw(action));
   }
 
-  Bx shortcutFr(Fr<VoidCallback?> callback) {
+  Bx shortcutFr(ShortcutFr callback) {
     final handle = opBuilder.register(callback.read);
 
     return Bx.leaf(
@@ -210,6 +211,43 @@ extension NodeBuildBitsX on SizedNodeBuilderBits {
           themeCalc: themeCalc,
         ).layout();
       }),
+    );
+  }
+}
+
+extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
+  Bx fillHeight(double height) => withHeight(height).fill();
+
+  Bx fill() => leaf(null);
+
+  Bx leaf(Widget? widget) => Bx.leaf(
+        size: size,
+        widget: widget,
+      );
+
+  Bx padding({
+    required EdgeInsets padding,
+    required NodeBuilder builder,
+  }) {
+    return Bx.pad(
+      padding: padding,
+      child: builder(
+        withSize(
+          padding.deflateSize(size),
+        ),
+      ),
+    );
+  }
+
+  Bx centerAlongY(Bx child) => Bx.centerAlongY(
+        bx: child,
+        height: height,
+      );
+
+  Bx left(Bx child) {
+    return Bx.pad(
+      padding: EdgeInsets.only(right: width - child.width),
+      child: child,
     );
   }
 }
