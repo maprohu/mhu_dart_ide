@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/generated/mhu_dart_ide.pbjson.dart';
 import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
+import 'package:mhu_dart_ide/src/shaft/config.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/menu.dart';
 import 'package:mhu_dart_ide/src/widgets/paginate.dart';
@@ -29,14 +30,20 @@ FlexNode<Bx> mdiColumnFlexNode({
         builder: (sizedBits) {
           return switch (column.type) {
             MdiShaftMsg_Type$mainMenu(:final value) => mdiMainMenuShaftBx(
-              sizedBits: sizedBits,
-              value: value,
-            ),
-            MdiShaftMsg_Type$buildRunner(:final value) => mdiBuildRunnerMenuShaftBx(
                 sizedBits: sizedBits,
                 value: value,
               ),
-            _ => throw column,
+            MdiShaftMsg_Type$buildRunner(:final value) =>
+                mdiBuildRunnerMenuShaftBx(
+                  sizedBits: sizedBits,
+                  value: value,
+                ),
+            MdiShaftMsg_Type$config(:final value) =>
+              mdiConfigMenuShaftBx(
+                sizedBits: sizedBits,
+                value: value,
+              ),
+            _ => throw "no view for shaft: $column",
           };
         },
       );
@@ -152,6 +159,22 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
           content: pageBx.bx,
         );
       },
+    );
+  }
+
+  MenuItem opener({
+    required String label,
+    required void Function(MdiShaftMsg shaft) builder,
+  }) {
+    return MenuItem(
+      label: label,
+      callback: fw(() {
+        configBits.state.rebuild((message) {
+          message.topShaft = MdiShaftMsg$.create(
+            parent: shaftMsg,
+          ).also(builder);
+        });
+      }),
     );
   }
 }

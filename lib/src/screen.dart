@@ -250,9 +250,10 @@ extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
       );
 
   Bx left(Bx child) {
-    return Bx.pad(
+    return Bx.padOrFill(
       padding: EdgeInsets.only(right: width - child.width),
       child: child,
+      size: size,
     );
   }
 

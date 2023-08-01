@@ -17,7 +17,7 @@ final mdiDefaultTheme = MdiThemeMsg$.create(
 )..freeze();
 
 class ThemeCalc {
-  static const _sizerKeys = 'MM';
+  static const _sizerKeys = 'MMM';
   final MdiThemeMsg theme;
 
   ThemeCalc(this.theme);

@@ -12,6 +12,18 @@ Bx mdiMainMenuShaftBx({
   return sizedBits.menuShaft(
     label: "Main Menu",
     items: [
+      sizedBits.opener(
+        label: "config",
+        builder: (shaft) => shaft.ensureConfig(),
+      ),
+      MenuItem(
+        label: "theme",
+        callback: fw(() {}),
+      ),
+      MenuItem(
+        label: "state",
+        callback: fw(() {}),
+      ),
       MenuItem(
         label: "build_runner",
         callback: fw(() {
@@ -23,19 +35,6 @@ Bx mdiMainMenuShaftBx({
           });
         }),
       ),
-      ...integers().take(100).map((i) {
-        return MenuItem(
-          label: "item $i",
-          callback: fw(() {
-            sizedBits.configBits.state.rebuild((message) {
-              message.topShaft = MdiShaftMsg$.create(
-                mainMenu: MdiMainMenuMsg(),
-                parent: sizedBits.shaftMsg,
-              );
-            });
-          }),
-        );
-      }),
     ],
   );
 }

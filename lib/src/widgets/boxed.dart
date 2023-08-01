@@ -35,6 +35,17 @@ sealed class Bx with _$Bx, HasSize {
     required Widget? widget,
   }) = BxLeaf;
 
+  static const overflow = Placeholder();
+
+  static Bx padOrFill({
+    required EdgeInsets padding,
+    required Bx child,
+    required Size size,
+  }) =>
+      padding.isNonNegative
+          ? Bx.pad(padding: padding, child: child)
+          : Bx.leaf(size: size, widget: overflow);
+
   static Bx fill(Size size) => Bx.leaf(
         size: size,
         widget: null,

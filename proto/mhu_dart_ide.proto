@@ -14,18 +14,7 @@ message MdiStateMsg {
   double min_shaft_width = 2;
 }
 
-message MdiShaftMsg {
-  MdiShaftMsg parent = 1;
-  oneof type {
-    MdiMainMenuMsg main_menu = 2;
-    MdiBuildRunnerMenuMsg build_runner = 3;
-  }
-}
 
-message  MdiMainMenuMsg {
-}
-message  MdiBuildRunnerMenuMsg {
-}
 
 message  MdiBuildRunnerPackagesMsg {
 }
@@ -44,4 +33,22 @@ message MdiDividerThicknessThemeMsg {
   double shafts = 1;
   double shaft_header = 2;
   double menu_items = 3;
+}
+
+// shafts
+
+message MdiShaftMsg {
+  MdiShaftMsg parent = 1;
+  oneof type {
+    MdiMainMenuMsg main_menu = 2;
+    MdiBuildRunnerMenuMsg build_runner = 3;
+    MdiConfigShaftMsg config = 4;
+  }
+}
+
+message  MdiMainMenuMsg {
+}
+message  MdiBuildRunnerMenuMsg {
+}
+message  MdiConfigShaftMsg {
 }
