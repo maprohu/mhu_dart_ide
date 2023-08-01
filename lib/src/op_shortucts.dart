@@ -33,8 +33,10 @@ class OpShortcuts {
   static final IList<OpShortcut> singleShortcutKeyOrder =
       shortcutKeyOrder.map((sk) => IList<ShortcutKey>([sk])).toIList();
 
-
-  static final allShortcutKeys = shortcutKeyOrder;
+  static final allShortcutKeys = IList([
+    ...shortcutKeyOrder,
+    ShortcutKey.of(LogicalKeyboardKey.escape),
+  ]);
 
   static Iterable<OpShortcut> generateShortcuts(int count) {
     final singleKeyOpShortcuts = singleShortcutKeyOrder;
@@ -79,4 +81,82 @@ class ShortcutKey {
   String toString() {
     return 'ShortcutKey{$display}';
   }
+
+  static final escape = of(LogicalKeyboardKey.escape);
+}
+
+class ShortcutSet with HasNext<ShortcutSet> {
+  final IList<ShortcutKey> _keys;
+  final IList<OpShortcut> shortcutList;
+
+  @override
+  late final ShortcutSet next = ShortcutSet(
+    keys: _keys,
+    shortcutList: nextList(
+      keys: _keys,
+      list: shortcutList,
+    ),
+  );
+
+  int get count => shortcutList.length;
+
+  // TODO I could "merge" sorted lists instead of doing set operations
+  late final ISet<OpShortcut> shortcutSet = shortcutList.toISet();
+
+  static IList<OpShortcut> nextList({
+    required IList<ShortcutKey> keys,
+    required IList<OpShortcut> list,
+  }) {
+    final prefixShortcut = list.first;
+
+    final lastKeyOfPrefixShortcut = prefixShortcut.last;
+
+    final suffixSingleKeysWithDoubleFirst =
+        lastKeyOfPrefixShortcut.toSingleElementIterable.followedBy(
+      keys.where((c) => c != lastKeyOfPrefixShortcut),
+    );
+
+    final newShortcuts = suffixSingleKeysWithDoubleFirst.map(
+      (suffix) => prefixShortcut.add(suffix),
+    );
+
+    return IList(
+      list.skip(1).followedBy(newShortcuts),
+    );
+  }
+
+  bool collectExcluding({
+    required int count,
+    required Set<OpShortcut> exclude,
+    required List<OpShortcut> target,
+  }) {
+    if (count == 0) {
+      return true;
+    }
+    for (final sc in shortcutList) {
+      if (!exclude.contains(sc)) {
+        target.add(sc);
+        count--;
+        if (count == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  ShortcutSet({
+    required this.shortcutList,
+    required IList<ShortcutKey> keys,
+  }) : _keys = keys;
+
+  ShortcutSet.first(IList<ShortcutKey> keys)
+      : this(
+          keys: keys,
+          shortcutList: IList(
+            keys.map(
+              (element) => IList([element]),
+            ),
+          ),
+        );
 }

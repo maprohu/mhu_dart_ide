@@ -15,14 +15,24 @@ Bx mdiMainMenuShaftBx({
       MenuItem(
         label: "build_runner",
         callback: fw(() {
-          print('hello');
+          sizedBits.configBits.state.rebuild((message) {
+            message.topShaft = MdiShaftMsg$.create(
+              buildRunner: MdiBuildRunnerMenuMsg(),
+              parent: sizedBits.shaftMsg,
+            );
+          });
         }),
       ),
       ...integers().take(100).map((i) {
         return MenuItem(
           label: "item $i",
           callback: fw(() {
-            print('hello');
+            sizedBits.configBits.state.rebuild((message) {
+              message.topShaft = MdiShaftMsg$.create(
+                mainMenu: MdiMainMenuMsg(),
+                parent: sizedBits.shaftMsg,
+              );
+            });
           }),
         );
       }),

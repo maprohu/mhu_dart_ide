@@ -11,6 +11,8 @@ typedef OpCallback = VoidCallback? Function();
 
 typedef OpState = int?;
 
+final emptyShortcut = OpShortcut();
+
 typedef OpBuildHandle = ({
   OpShortcut Function() shortcut,
   OpState Function() watchState,
@@ -20,83 +22,187 @@ class _BuildReg {
   late final OpShortcut shortcut;
   final OpCallback action;
 
+  final pressed = fw<int?>(0);
+
   _BuildReg(this.action);
 }
 
-class OpScreen {
-  final _pressed = fw(OpShortcut());
+class _OpBuild {
+  final OpBuilder builder;
+  final ops = <_BuildReg>[];
 
-  final allShortcutKeys = OpShortcuts.allShortcutKeys;
+  _OpBuild(this.builder);
 
-  void keyPressed(ShortcutKey key) {
-    print(key);
-
-  }
+  late final node = _OpNode(
+    regs: ops,
+    level: 0,
+    build: this,
+  );
 }
 
-class OpBuilder {
-  final OpScreen _screen;
+class _OpNode {
+  final Iterable<_BuildReg> regs;
+  final int level;
+  final _OpBuild build;
 
-  OpBuilder._(this._screen);
+  _OpNode({
+    required this.regs,
+    required this.level,
+    required this.build,
+  });
 
-  final _ops = <_BuildReg>[];
+  late final map = regs
+      .where((r) => r.shortcut.length > level)
+      .groupListsBy((r) => r.shortcut[level])
+      .map(
+        (key, value) => MapEntry(
+          key,
+          _OpNode(
+            regs: value,
+            level: level + 1,
+            build: build,
+          ),
+        ),
+      );
 
-  OpBuildHandle register(OpCallback callback) {
-    assert(!_built);
-    final reg = _BuildReg(callback);
-    _ops.add(reg);
-
-    return (
-      shortcut: () => reg.shortcut,
-      watchState: () {
-        final pressed = _screen._pressed();
-        if (pressed.isEmpty) {
-          return 0;
-        }
-        final pressedCount = pressed.length;
-        final shortcut = reg.shortcut;
-        if (shortcut.length < pressedCount) {
-          return null;
-        }
-        if (shortcut.take(pressedCount) == pressed) {
-          return pressedCount;
-        }
-        return null;
-      },
-    );
+  void keyPressed(ShortcutKey key) {
+    map[key]?.click(this, key);
   }
 
-  var _built = false;
+  late final isLeaf = regs.length == 1;
 
-  OpLookup _build() {
-    assert(!_built);
-    _built = true;
-
-    final shortcuts = OpShortcuts.generateShortcuts(_ops.length);
-    _ops.zipForEachWith(shortcuts, (reg, shortcut) {
-      reg.shortcut = shortcut;
-    });
-
-    return OpLookup(this);
-  }
-
-  static T build<T>(
-    OpScreen opScreen,
-    T Function(OpBuilder opBuilder) builder,
-  ) {
-    final opBuilder = OpBuilder._(opScreen);
-    try {
-      return builder(opBuilder);
-    } finally {
-      opBuilder._build();
+  void click(_OpNode parent, ShortcutKey key) {
+    if (!isLeaf) {
+      for (final reg in regs) {
+        reg.pressed.value = level;
+      }
+      for (final entry in parent.map.entries) {
+        if (entry.key != key) {
+          for (final reg in entry.value.regs) {
+            reg.pressed.value = null;
+          }
+        }
+      }
+      build.builder._node = this;
+    } else {
+      final action = regs.single.action();
+      if (action != null) {
+        build.builder._clearPressed();
+        action();
+      }
     }
   }
 }
 
-class OpLookup {
-  final OpBuilder _builder;
+class OpBuilder {
+  late _OpBuild _opBuild;
+  late _OpNode _node;
 
-  OpLookup(this._builder);
+  // final _pressed = fw(emptyShortcut);
 
-  void handleKey(LogicalKeyboardKey key) {}
+  final allShortcutKeys = OpShortcuts.allShortcutKeys;
+
+  final _exclude = <OpShortcut>{};
+
+  late final shortcutKeysInOrder = OpShortcuts.shortcutKeyOrder;
+
+  late final _shortcutChain = ShortcutSet.first(
+    shortcutKeysInOrder,
+  );
+
+  void _clearPressed() {
+    _node = _opBuild.node;
+    for (final reg in _opBuild.ops) {
+      reg.pressed.value = 0;
+    }
+  }
+
+
+  void keyPressed(ShortcutKey key) {
+    if (key == ShortcutKey.escape) {
+      _clearPressed();
+      return;
+    }
+
+    _node.keyPressed(key);
+  }
+
+  static const shortuctEq = IterableEquality<ShortcutKey>();
+
+  OpBuildHandle register(OpCallback callback) {
+    assert(!_built);
+    final reg = _BuildReg(callback);
+
+    _opBuild.ops.add(reg);
+
+    return (
+      shortcut: () => reg.shortcut,
+      watchState: () {
+        return reg.pressed();
+        // final pressed = _pressed();
+        // if (pressed.isEmpty) {
+        //   return 0;
+        // }
+        // final pressedCount = pressed.length;
+        // final shortcut = reg.shortcut;
+        // if (shortcut.length < pressedCount) {
+        //   return null;
+        // }
+        // if (shortuctEq.equals(shortcut.take(pressedCount), pressed)) {
+        //   return pressedCount;
+        // }
+        // return null;
+      },
+    );
+  }
+
+  var _built = true;
+
+  Iterable<OpShortcut> _findShortcuts(int count) {
+    final exclude = _exclude;
+    if (exclude.isEmpty) {
+      return _shortcutChain.iterable
+          .firstWhere((s) => s.count >= count)
+          .shortcutList;
+    } else {
+      final target = <OpShortcut>[];
+      for (final set in _shortcutChain.iterable) {
+        final found = set.collectExcluding(
+          count: count,
+          exclude: exclude,
+          target: target,
+        );
+        if (found) {
+          return target;
+        }
+        target.clear();
+      }
+      throw "never";
+    }
+  }
+
+  void _build() {
+    assert(!_built);
+    _built = true;
+
+    final shortcuts = _findShortcuts(_opBuild.ops.length);
+    _opBuild.ops.zipForEachWith(shortcuts, (reg, shortcut) {
+      reg.shortcut = shortcut;
+    });
+    _node = _opBuild.node;
+  }
+
+  T build<T>(
+    T Function() builder,
+  ) {
+    assert(_built);
+    _built = false;
+    _opBuild = _OpBuild(this);
+
+    try {
+      return builder();
+    } finally {
+      _build();
+    }
+  }
 }

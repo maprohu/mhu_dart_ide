@@ -51,20 +51,17 @@ Bx mdiBuildScreen({
   final screenSize = appBits.screenSize();
   final screenWidth = screenSize.width;
 
-  return OpBuilder.build(appBits.opScreen, (opBuilder) {
-    final nodeBits = NodeBuilderBits(
-      appBits: appBits,
-      opBuilder: opBuilder,
-      after: null,
-    );
+  final opBuilder = appBits.opBuilder;
+
+  return opBuilder.build(() {
 
     final ThemeCalc(
       shaftsDividerThickness: mainColumnsDividerThickness,
-    ) = nodeBits.themeCalc;
+    ) = appBits.themeCalc();
 
     final StateCalc(
       :state,
-    ) = nodeBits.stateCalc;
+    ) = appBits.stateCalc();
 
     final minColumnWidth = state.minShaftWidthOpt ??
         (screenWidth -
@@ -77,16 +74,20 @@ Bx mdiBuildScreen({
       dividerThickness: mainColumnsDividerThickness,
     );
 
-    final columns = state.columnOpt.columnsIterable.take(columnCount);
+    final columns = state.topShaftOpt.columnsIterable.take(columnCount);
 
     final columnsAfter = columns.fold<ColumnsAfter?>(null, (after, column) {
+      final nodeBits = NodeBuilderBits(
+        appBits: appBits,
+        opBuilder: opBuilder,
+        after: after,
+        shaftMsg: column,
+      );
       return ColumnsAfter(
         parent: after,
         column: column,
         flexNode: mdiColumnFlexNode(
-          nodeBits: nodeBits.copyWith(
-            after: after,
-          ),
+          nodeBits: nodeBits,
           height: screenSize.height,
           column: column,
         ),
@@ -118,6 +119,7 @@ class NodeBuilderBits with _$NodeBuilderBits {
     required MdiAppBits appBits,
     required OpBuilder opBuilder,
     required ColumnsAfter? after,
+    required MdiShaftMsg shaftMsg,
   }) = _NodeBuilderBits;
 
   late final configBits = appBits.configBits;
@@ -161,6 +163,8 @@ mixin HasColumnBuildBits {
   late final configBits = nodeBits.configBits;
   late final themeCalc = nodeBits.themeCalc;
   late final stateCalc = nodeBits.stateCalc;
+
+  late final shaftMsg = nodeBits.shaftMsg;
 }
 
 @freezedStruct
@@ -247,6 +251,12 @@ extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
   Bx left(Bx child) {
     return Bx.pad(
       padding: EdgeInsets.only(right: width - child.width),
+      child: child,
+    );
+  }
+  Bx top(Bx child) {
+    return Bx.pad(
+      padding: EdgeInsets.only(bottom: height - child.height),
       child: child,
     );
   }

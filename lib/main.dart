@@ -62,11 +62,11 @@ class MdiApp extends StatelessWidget {
   });
 
   late final _shortcuts = {
-    ...WidgetsApp.defaultShortcuts,
-    for (final kh in appBits.opScreen.allShortcutKeys)
+    // ...WidgetsApp.defaultShortcuts,
+    for (final kh in appBits.opBuilder.allShortcutKeys)
       SingleActivator(kh.keyboardKey): VoidCallbackIntent(
-        appBits.opScreen.let(
-          (scr) => () => scr.keyPressed(kh),
+        appBits.opBuilder.let(
+          (opBuilder) => () => opBuilder.keyPressed(kh),
         ),
       ),
   };
@@ -82,9 +82,7 @@ class MdiApp extends StatelessWidget {
         body: ValueListenableBuilder(
           valueListenable: listenable,
           builder: (context, value, child) {
-            return StretchWidget(
-              child: value.layout(),
-            );
+            return value.layout();
           },
         ),
       ),

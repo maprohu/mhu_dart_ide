@@ -72,6 +72,10 @@ mixin HasConfigBits {
   late final config = configBits.config;
   late final state = configBits.state;
   late final theme = configBits.theme;
+
+  late final stateCalc = configBits.stateCalc;
+  late final themeCalc = configBits.themeCalc;
+
 }
 class ConfigCalc {
   final MdiConfigMsg config;

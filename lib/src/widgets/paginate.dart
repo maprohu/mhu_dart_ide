@@ -72,27 +72,25 @@ PaginatorBx paginatorAlongYBx({
 
   final itemsLeft = itemCount - startAt;
 
-  Iterable<int> itemIndices() => integers(from: startAt).take(fitCount);
+  Iterable<int> itemIndices() => integers(from: startAt);
 
   bool hasItemsBefore = startAt > 0;
 
-  Iterable<Bx> bxs(SizedNodeBuilderBits itemBits) {
-    return itemIndices()
+  Iterable<Bx> bxs(SizedNodeBuilderBits itemBits, int count) {
+    return itemIndices().take(count)
         .map((index) => itemBuilder(index, itemBits))
         .separatedBy(divider);
   }
 
   if (itemsLeft < fitCount) {
-    final dividerCount = itemsLeft - 1;
-    final itemsHeight =
-        itemsLeft * itemHeight + dividerCount * dividerThickness;
-    final fillHeight = height - itemsHeight;
     final itemBits = sizedBits.withHeight(itemHeight);
+
     return (
-      bx: Bx.col([
-        ...bxs(itemBits),
-        sizedBits.fillHeight(fillHeight),
-      ]),
+      bx: sizedBits.top(
+        Bx.col(
+          bxs(itemBits, itemsLeft).toList(),
+        ),
+      ),
       showPaginator: hasItemsBefore,
     );
   } else {
@@ -102,7 +100,9 @@ PaginatorBx paginatorAlongYBx({
 
     bool hasItemsAfter = itemsLeft > fitCount;
     return (
-      bx: Bx.col(bxs(itemBits).toList()),
+      bx: Bx.col(
+        bxs(itemBits, fitCount).toList(),
+      ),
       showPaginator: hasItemsBefore || hasItemsAfter,
     );
   }

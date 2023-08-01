@@ -17,7 +17,7 @@ class MdiAppBits with _$MdiAppBits, HasConfigBits {
     required Fr<Size> screenSize,
   }) = _MdiAppBits;
 
-  final OpScreen opScreen = OpScreen();
+  final OpBuilder opBuilder = OpBuilder();
 }
 
 mixin HasAppBits {

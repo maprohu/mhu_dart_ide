@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/generated/mhu_dart_ide.pbjson.dart';
+import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/menu.dart';
 import 'package:mhu_dart_ide/src/widgets/paginate.dart';
@@ -27,6 +29,10 @@ FlexNode<Bx> mdiColumnFlexNode({
         builder: (sizedBits) {
           return switch (column.type) {
             MdiShaftMsg_Type$mainMenu(:final value) => mdiMainMenuShaftBx(
+              sizedBits: sizedBits,
+              value: value,
+            ),
+            MdiShaftMsg_Type$buildRunner(:final value) => mdiBuildRunnerMenuShaftBx(
                 sizedBits: sizedBits,
                 value: value,
               ),
