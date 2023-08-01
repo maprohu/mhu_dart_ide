@@ -82,7 +82,8 @@ class MdiApp extends StatelessWidget {
         body: ValueListenableBuilder(
           valueListenable: listenable,
           builder: (context, value, child) {
-            return value.layout();
+            final widget = value.layout();
+            return widget.withKey(widget);
           },
         ),
       ),

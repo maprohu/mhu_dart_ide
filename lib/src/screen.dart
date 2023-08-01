@@ -43,7 +43,7 @@ final _defaultMainMenuShaft = MdiShaftMsg()
   ..ensureMainMenu()
   ..freeze();
 
-const _defaultColumnCount = 5;
+const _defaultColumnCount = 15;
 
 Bx mdiBuildScreen({
   required MdiAppBits appBits,
@@ -54,7 +54,6 @@ Bx mdiBuildScreen({
   final opBuilder = appBits.opBuilder;
 
   return opBuilder.build(() {
-
     final ThemeCalc(
       shaftsDividerThickness: mainColumnsDividerThickness,
     ) = appBits.themeCalc();
@@ -74,7 +73,9 @@ Bx mdiBuildScreen({
       dividerThickness: mainColumnsDividerThickness,
     );
 
-    final columns = state.topShaftOpt.columnsIterable.take(columnCount);
+    final columns = (state.topShaftOpt ?? _defaultMainMenuShaft)
+        .columnsIterable
+        .take(columnCount);
 
     final columnsAfter = columns.fold<ColumnsAfter?>(null, (after, column) {
       final nodeBits = NodeBuilderBits(
@@ -97,12 +98,12 @@ Bx mdiBuildScreen({
     final columnWidgets = buildFlex(
       availableSpace: screenWidth,
       fixedSize: minColumnWidth,
-      items: columnsAfter.childToParentIterable.map((e) => e.flexNode).toList(),
+      items: columnsAfter.childToParentIterable.map((e) => e.flexNode).toList().reversed.toList(),
       dividerThickness: mainColumnsDividerThickness,
     ).toList();
 
     return Bx.rowWithDividers(
-      columns: columnWidgets,
+      columns: columnWidgets.reversed.toList(),
       thickness: mainColumnsDividerThickness,
       height: screenSize.height,
     );
@@ -119,7 +120,7 @@ class NodeBuilderBits with _$NodeBuilderBits {
     required MdiAppBits appBits,
     required OpBuilder opBuilder,
     required ColumnsAfter? after,
-    required MdiShaftMsg shaftMsg,
+    required MdiShaftMsg? shaftMsg,
   }) = _NodeBuilderBits;
 
   late final configBits = appBits.configBits;
@@ -254,6 +255,7 @@ extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
       child: child,
     );
   }
+
   Bx top(Bx child) {
     return Bx.pad(
       padding: EdgeInsets.only(bottom: height - child.height),
@@ -269,7 +271,6 @@ extension _MdiShaftMsgX on MdiShaftMsg? {
       yield c;
       c = c.parentOpt;
     }
-    yield _defaultMainMenuShaft;
   }
 }
 
