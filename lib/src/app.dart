@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 
 part 'app.freezed.dart';
 
@@ -15,6 +16,8 @@ class MdiAppBits with _$MdiAppBits, HasConfigBits {
     required MdiConfigBits configBits,
     required Fr<Size> screenSize,
   }) = _MdiAppBits;
+
+  final OpScreen opScreen = OpScreen();
 }
 
 mixin HasAppBits {

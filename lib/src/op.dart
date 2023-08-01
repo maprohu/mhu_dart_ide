@@ -23,12 +23,23 @@ class _BuildReg {
   _BuildReg(this.action);
 }
 
+class OpScreen {
+  final _pressed = fw(OpShortcut());
+
+  final allShortcutKeys = OpShortcuts.allShortcutKeys;
+
+  void keyPressed(ShortcutKey key) {
+    print(key);
+
+  }
+}
+
 class OpBuilder {
-  OpBuilder._();
+  final OpScreen _screen;
+
+  OpBuilder._(this._screen);
 
   final _ops = <_BuildReg>[];
-
-  final _pressed = fw(OpShortcut());
 
   OpBuildHandle register(OpCallback callback) {
     assert(!_built);
@@ -38,7 +49,7 @@ class OpBuilder {
     return (
       shortcut: () => reg.shortcut,
       watchState: () {
-        final pressed = _pressed();
+        final pressed = _screen._pressed();
         if (pressed.isEmpty) {
           return 0;
         }
@@ -69,8 +80,11 @@ class OpBuilder {
     return OpLookup(this);
   }
 
-  static T build<T>(T Function(OpBuilder opBuilder) builder) {
-    final opBuilder = OpBuilder._();
+  static T build<T>(
+    OpScreen opScreen,
+    T Function(OpBuilder opBuilder) builder,
+  ) {
+    final opBuilder = OpBuilder._(opScreen);
     try {
       return builder(opBuilder);
     } finally {

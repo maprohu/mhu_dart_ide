@@ -60,7 +60,7 @@ PaginatorBx paginatorAlongYBx({
   startAt = min(startAt, itemCount - 1);
 
   final fitCount = itemFitCount(
-    available: sizedBits.height,
+    available: height,
     itemSize: itemHeight,
     dividerThickness: dividerThickness,
   );
@@ -72,12 +72,12 @@ PaginatorBx paginatorAlongYBx({
 
   final itemsLeft = itemCount - startAt;
 
-  Iterable<int> itemIndices(int count) => integers(from: startAt).take(count);
+  Iterable<int> itemIndices() => integers(from: startAt).take(fitCount);
 
   bool hasItemsBefore = startAt > 0;
 
   Iterable<Bx> bxs(SizedNodeBuilderBits itemBits) {
-    return itemIndices(itemsLeft)
+    return itemIndices()
         .map((index) => itemBuilder(index, itemBits))
         .separatedBy(divider);
   }

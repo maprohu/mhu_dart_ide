@@ -33,6 +33,9 @@ class OpShortcuts {
   static final IList<OpShortcut> singleShortcutKeyOrder =
       shortcutKeyOrder.map((sk) => IList<ShortcutKey>([sk])).toIList();
 
+
+  static final allShortcutKeys = shortcutKeyOrder;
+
   static Iterable<OpShortcut> generateShortcuts(int count) {
     final singleKeyOpShortcuts = singleShortcutKeyOrder;
 
@@ -71,4 +74,9 @@ class ShortcutKey {
       : display = keyboardKey.keyLabel.toLowerCase();
 
   static final of = Cache(ShortcutKey._);
+
+  @override
+  String toString() {
+    return 'ShortcutKey{$display}';
+  }
 }

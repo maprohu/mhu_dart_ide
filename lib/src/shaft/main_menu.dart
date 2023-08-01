@@ -18,6 +18,14 @@ Bx mdiMainMenuShaftBx({
           print('hello');
         }),
       ),
+      ...integers().take(100).map((i) {
+        return MenuItem(
+          label: "item $i",
+          callback: fw(() {
+            print('hello');
+          }),
+        );
+      }),
     ],
   );
 }

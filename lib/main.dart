@@ -63,8 +63,12 @@ class MdiApp extends StatelessWidget {
 
   late final _shortcuts = {
     ...WidgetsApp.defaultShortcuts,
-    // for (final kh in appBits.opScreen.keyHandlers())
-    //   SingleActivator(kh.key): VoidCallbackIntent(kh.handler)
+    for (final kh in appBits.opScreen.allShortcutKeys)
+      SingleActivator(kh.keyboardKey): VoidCallbackIntent(
+        appBits.opScreen.let(
+          (scr) => () => scr.keyPressed(kh),
+        ),
+      ),
   };
 
   @override

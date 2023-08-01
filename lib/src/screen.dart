@@ -51,7 +51,7 @@ Bx mdiBuildScreen({
   final screenSize = appBits.screenSize();
   final screenWidth = screenSize.width;
 
-  return OpBuilder.build((opBuilder) {
+  return OpBuilder.build(appBits.opScreen, (opBuilder) {
     final nodeBits = NodeBuilderBits(
       appBits: appBits,
       opBuilder: opBuilder,
