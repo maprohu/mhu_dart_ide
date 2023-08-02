@@ -14,8 +14,6 @@ message MdiStateMsg {
   double min_shaft_width = 2;
 }
 
-
-
 message  MdiBuildRunnerPackagesMsg {
 }
 
@@ -23,10 +21,8 @@ message  MdiBuildRunnerPackageMsg {
   int32 package_id = 1;
 }
 
-
 message MdiThemeMsg {
   MdiDividerThicknessThemeMsg divider_thickness = 1;
-
 }
 
 message MdiDividerThicknessThemeMsg {
@@ -43,6 +39,8 @@ message MdiShaftMsg {
     MdiMainMenuMsg main_menu = 2;
     MdiBuildRunnerMenuMsg build_runner = 3;
     MdiConfigShaftMsg config = 4;
+    MdiPfeConcreteFieldShaftMsg pfe_concrete_field = 6;
+    MdiPfeOneofFieldShaftMsg pfe_oneof_field = 7;
   }
 }
 
@@ -51,4 +49,12 @@ message  MdiMainMenuMsg {
 message  MdiBuildRunnerMenuMsg {
 }
 message  MdiConfigShaftMsg {
+}
+
+message  MdiPfeConcreteFieldShaftMsg {
+  int32 tag_number = 1;
+
+}
+message  MdiPfeOneofFieldShaftMsg {
+  int32 oneof_index = 1;
 }

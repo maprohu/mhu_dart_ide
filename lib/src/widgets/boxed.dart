@@ -223,3 +223,28 @@ extension BxSizedBuilderX on SizedNodeBuilderBits {
     return Bx.col(builder(width).toList());
   }
 }
+
+class Paddings {
+  static EdgeInsets topLeft({
+    required Size outer,
+    required Size inner,
+  }) {
+    return EdgeInsets.only(
+      right: outer.width - inner.width,
+      bottom: outer.height - inner.height,
+    );
+  }
+
+  static EdgeInsets centerLeft({
+    required Size outer,
+    required Size inner,
+  }) {
+    final vertical = (outer.height - inner.height) / 2;
+    return EdgeInsets.only(
+      right: outer.width - inner.width,
+      top: vertical,
+      bottom: vertical,
+    );
+  }
+}
+

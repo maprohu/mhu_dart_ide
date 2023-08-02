@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/generated/mhu_dart_ide.pbjson.dart';
 import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
 import 'package:mhu_dart_ide/src/shaft/config.dart';
+import 'package:mhu_dart_ide/src/shaft/error.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/menu.dart';
-import 'package:mhu_dart_ide/src/widgets/paginate.dart';
 import 'package:mhu_dart_ide/src/widgets/text.dart';
 
 import '../proto.dart';
@@ -34,16 +34,24 @@ FlexNode<Bx> mdiColumnFlexNode({
                 value: value,
               ),
             MdiShaftMsg_Type$buildRunner(:final value) =>
-                mdiBuildRunnerMenuShaftBx(
-                  sizedBits: sizedBits,
-                  value: value,
-                ),
-            MdiShaftMsg_Type$config(:final value) =>
-              mdiConfigMenuShaftBx(
+              mdiBuildRunnerMenuShaftBx(
                 sizedBits: sizedBits,
                 value: value,
               ),
-            _ => throw "no view for shaft: $column",
+            MdiShaftMsg_Type$config(:final value) => mdiConfigMenuShaftBx(
+                sizedBits: sizedBits,
+                value: value,
+              ),
+            MdiShaftMsg_Type$pfeConcreteField(:final value) =>
+              mdiPfeConcreteFieldShaftBx(
+                sizedBits: sizedBits,
+                value: value,
+              ),
+            final other => errorShaftBx(
+                sizedBits: sizedBits,
+                message: "no shaft: ${column.whichType().name}",
+                stackTrace: StackTrace.current,
+              )
           };
         },
       );
@@ -51,17 +59,24 @@ FlexNode<Bx> mdiColumnFlexNode({
   );
 }
 
-typedef ShaftParts = ({
-  Bx header,
-  Bx content,
-});
+@freezedStruct
+class ShaftParts with _$ShaftParts {
+  ShaftParts._();
+
+  factory ShaftParts({
+    required Bx header,
+    required Bx content,
+  }) = _ShaftParts;
+}
+
+typedef ShaftBuilder = ShaftParts Function(
+    SizedNodeBuilderBits headerBits,
+    SizedNodeBuilderBits contentBits,
+    );
 
 Bx shaftBx({
   required SizedNodeBuilderBits sizedBits,
-  required ShaftParts Function(
-    SizedNodeBuilderBits headerBits,
-    SizedNodeBuilderBits contentBits,
-  ) builder,
+  required ShaftBuilder builder,
 }) {
   final SizedNodeBuilderBits(
     :width,
@@ -124,14 +139,23 @@ class MenuItem with _$MenuItem {
   }) = _MenuItem;
 }
 
+
 extension ShaftSizedBitsX on SizedNodeBuilderBits {
+  Bx shaft(
+    ShaftBuilder builder,
+  ) {
+    return shaftBx(
+      sizedBits: this,
+      builder: builder,
+    );
+  }
+
   Bx menuShaft({
     required String label,
     required List<MenuItem> items,
   }) {
-    return shaftBx(
-      sizedBits: this,
-      builder: (headerBits, contentBits) {
+    return shaft(
+      (headerBits, contentBits) {
         final pageBx = menuBx(
           sizedBits: contentBits,
           itemCount: items.length,
@@ -147,7 +171,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
           // TODO
         }
 
-        return (
+        return ShaftParts(
           header: headerBits.left(
             headerBits.centerAlongY(
               textBx(
@@ -164,7 +188,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
 
   MenuItem opener({
     required String label,
-    required void Function(MdiShaftMsg shaft) builder,
+    required ShaftOpener builder,
   }) {
     return MenuItem(
       label: label,
@@ -177,4 +201,23 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
       }),
     );
   }
+
+  MenuItem openerFr({
+    required String label,
+    required ShaftOpener builder,
+  }) {
+    return MenuItem(
+      label: label,
+      callback: fw(() {
+        configBits.state.rebuild((message) {
+          message.topShaft = MdiShaftMsg$.create(
+            parent: shaftMsg,
+          ).also(builder);
+        });
+      }),
+    );
+  }
+
 }
+
+typedef ShaftOpener = void Function(MdiShaftMsg shaft);

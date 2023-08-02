@@ -98,7 +98,11 @@ Bx mdiBuildScreen({
     final columnWidgets = buildFlex(
       availableSpace: screenWidth,
       fixedSize: minColumnWidth,
-      items: columnsAfter.childToParentIterable.map((e) => e.flexNode).toList().reversed.toList(),
+      items: columnsAfter.childToParentIterable
+          .map((e) => e.flexNode)
+          .toList()
+          .reversed
+          .toList(),
       dividerThickness: mainColumnsDividerThickness,
     ).toList();
 
@@ -120,7 +124,7 @@ class NodeBuilderBits with _$NodeBuilderBits {
     required MdiAppBits appBits,
     required OpBuilder opBuilder,
     required ColumnsAfter? after,
-    required MdiShaftMsg? shaftMsg,
+    required MdiShaftMsg shaftMsg,
   }) = _NodeBuilderBits;
 
   late final configBits = appBits.configBits;
@@ -160,6 +164,8 @@ class NodeBuilderBits with _$NodeBuilderBits {
 mixin HasColumnBuildBits {
   NodeBuilderBits get nodeBits;
 
+  late final appBits = nodeBits.appBits;
+
   late final opBuilder = nodeBits.opBuilder;
   late final configBits = nodeBits.configBits;
   late final themeCalc = nodeBits.themeCalc;
@@ -169,7 +175,8 @@ mixin HasColumnBuildBits {
 }
 
 @freezedStruct
-class SizedNodeBuilderBits with _$SizedNodeBuilderBits, HasColumnBuildBits {
+class SizedNodeBuilderBits
+    with _$SizedNodeBuilderBits, HasColumnBuildBits, HasSize {
   SizedNodeBuilderBits._();
 
   factory SizedNodeBuilderBits({
@@ -177,14 +184,17 @@ class SizedNodeBuilderBits with _$SizedNodeBuilderBits, HasColumnBuildBits {
     required Size size,
   }) = _SizedNodeBuilderBits;
 
-  late final height = size.height;
-  late final width = size.width;
-
   SizedNodeBuilderBits withSize(Size size) => copyWith(size: size);
 
   SizedNodeBuilderBits withHeight(double height) => copyWith(
         size: size.withHeight(height),
       );
+}
+
+mixin HasSizedBits {
+  SizedNodeBuilderBits get sizedBits;
+
+  late final size = sizedBits.size;
 }
 
 typedef ShortcutFr = Fr<VoidCallback?>;
@@ -277,6 +287,8 @@ extension _MdiShaftMsgX on MdiShaftMsg? {
 
 @freezedStruct
 class ColumnsAfter with _$ColumnsAfter implements HasParent<ColumnsAfter> {
+  final inherited = TypedCache();
+
   ColumnsAfter._();
 
   factory ColumnsAfter({

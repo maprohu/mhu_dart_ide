@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/icons.dart';
 import 'package:mhu_dart_ide/src/op_shortucts.dart';
+import 'package:mhu_dart_ide/src/string.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
 import 'package:mhu_dart_ide/src/widgets/text.dart';
 
@@ -83,4 +84,6 @@ class ThemeCalc {
   late final menuItemHeight = menuItemPadding.inflateSize(shortcutSize).height;
 
   late final menuItemPadding = const EdgeInsets.all(2);
+
+  late final stringTextStyle = MonoTextStyle.from(robotoMonoTextStyle);
 }

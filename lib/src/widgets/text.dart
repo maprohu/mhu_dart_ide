@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/screen.dart';
+import 'package:mhu_dart_ide/src/string.dart';
 import 'package:mhu_dart_ide/src/widgets/boxed.dart';
+import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-// part 'text.freezed.dart';
+part 'text.freezed.dart';
 
 Widget mdiText({
   required String text,
@@ -83,6 +85,13 @@ extension SizedTextSpanX on TextSpan {
       );
     return textPainter.size;
   }
+
+  Bx leaf([Size? size]) => Bx.leaf(
+        size: size ?? this.size,
+        widget: RichText(
+          text: this,
+        ),
+      );
 }
 
 Size mdiTextSize(String text, TextStyle style) {
@@ -107,4 +116,37 @@ Bx textBx({
       text: textSpan,
     ),
   );
+}
+
+@freezedStruct
+class TextBuilderBits
+    with _$TextBuilderBits, HasTextStyle, HasSizedBits, HasSize {
+  TextBuilderBits._();
+
+  factory TextBuilderBits({
+    required SizedNodeBuilderBits sizedBits,
+    required TextStyle textStyle,
+  }) = _TextBuilderBits;
+
+  Bx centerLeft(String text) {
+    final span = this.span(text);
+    final textSize = span.size;
+    return Bx.pad(
+      padding: Paddings.centerLeft(
+        outer: sizedBits.size,
+        inner: textSize,
+      ),
+      child: span.leaf(textSize),
+    );
+  }
+}
+
+extension TextSizedBitsX on SizedNodeBuilderBits {
+  TextBuilderBits withTextStyle(TextStyle textStyle) => TextBuilderBits(
+        sizedBits: this,
+        textStyle: textStyle,
+      );
+
+  TextBuilderBits get headerText =>
+      withTextStyle(themeCalc.shaftHeaderTextStyle);
 }
