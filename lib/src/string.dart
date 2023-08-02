@@ -20,9 +20,23 @@ class MonoTextStyle with _$MonoTextStyle, HasSize, HasTextStyle {
     required TextStyle textStyle,
   }) = _MonoTextStyle;
 
+  static const _calcCount = 10000;
+
   static MonoTextStyle from(TextStyle textStyle) => MonoTextStyle(
-        size: mdiTextSize("M", textStyle),
-        textStyle: textStyle,
+        size: mdiTextSize(
+          Iterable.generate(
+            _calcCount,
+            (_) => "M",
+          ).join(),
+          textStyle,
+        ).let((s) {
+          return Size(s.width / _calcCount, s.height);
+        }),
+        textStyle: textStyle.apply(
+          fontFeatures: [
+            FontFeature.tabularFigures(),
+          ],
+        ),
       );
 }
 
@@ -32,7 +46,9 @@ Bx stringBx({
 }) {
   final style = sizedBits.themeCalc.stringTextStyle;
 
-  final fitWidth = sizedBits.width ~/ style.width;
+  final styleWidth = style.width;
+
+  final fitWidth = sizedBits.width ~/ styleWidth;
   final fitHeight = sizedBits.height ~/ style.height;
 
   final lines = string.characters
@@ -54,9 +70,28 @@ Bx stringBx({
   );
 
   final linesCol = Bx.col(lines.map((line) {
+    final lineSpan = style.span(line);
+    // assert(run(() {
+    //   final lineSpanSize = lineSpan.size;
+    //   final lineLength = line.length;
+    //   final mWidth = style.span("MMM").size.width;
+    //   final lineCalculatedWidth = lineLength * styleWidth;
+    //
+    //   final msWidth = style
+    //       .span(Iterable.generate(lineLength, (_) => "M").join())
+    //       .size
+    //       .width;
+    //
+    //   return true;
+    //   return doubleEqualWithin3Decimals(
+    //     lineSpanSize.width,
+    //     lineCalculatedWidth,
+    //   );
+    // }));
     return lineBits.leaf(
       RichText(
-        text: style.span(line),
+        text: lineSpan,
+        softWrap: false,
       ),
     );
   }).toList());

@@ -7,7 +7,7 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/op_shortucts.dart';
 
 typedef OpShortcut = IList<ShortcutKey>;
-typedef OpCallback = VoidCallback? Function();
+typedef OpCallback = VoidCallback;
 
 typedef OpState = int?;
 
@@ -85,11 +85,9 @@ class _OpNode {
       }
       build.builder._node = this;
     } else {
-      final action = regs.single.action();
-      if (action != null) {
-        build.builder._clearPressed();
-        action();
-      }
+      final action = regs.single.action;
+      build.builder._clearPressed();
+      action();
     }
   }
 }

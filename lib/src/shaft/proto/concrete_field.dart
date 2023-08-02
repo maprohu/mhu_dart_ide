@@ -1,6 +1,7 @@
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/shaft.dart';
 import 'package:mhu_dart_ide/src/shaft/error.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
 import 'package:mhu_dart_ide/src/widgets/text.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
@@ -24,8 +25,10 @@ Bx mdiPfeConcreteFieldShaftBx({
   final calc = fieldKey.calc;
 
 
+  final access = calc.access;
 
-  final ShaftBuilder? shaftBuilder = switch (calc.access) {
+  final ShaftBuilder? shaftBuilder = switch (access) {
+    MapFieldAccess() => mdiPfeMapFieldShaftBuilder(),
     _ => null,
   };
 

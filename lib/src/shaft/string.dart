@@ -12,7 +12,7 @@ Bx stringShaftBx({
 }) {
   return sizedBits.shaft((headerBits, contentBits) {
     return ShaftParts(
-      header: headerBits.text(label),
+      header: headerBits.headerText.centerLeft(label),
       content: stringBx(
         sizedBits: contentBits,
         string: string,

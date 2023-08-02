@@ -7,6 +7,7 @@ import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/screen.dart';
+import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import 'src/widgets/boxed.dart';
@@ -19,6 +20,8 @@ void main() async {
   final app = flcAsyncDisposeWidget(
     waiting: nullWidget,
     builder: (disposers) async {
+      await ThemeCalc.init();
+
       final isar = await mdiCreateIsar();
 
       final configBits = await MdiConfigBits.create(

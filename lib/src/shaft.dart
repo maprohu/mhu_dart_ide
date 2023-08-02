@@ -135,7 +135,7 @@ class MenuItem with _$MenuItem {
 
   factory MenuItem({
     required String label,
-    required ShortcutFr callback,
+    required ShortcutCallback callback,
   }) = _MenuItem;
 }
 
@@ -192,7 +192,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
   }) {
     return MenuItem(
       label: label,
-      callback: fw(() {
+      callback: (() {
         configBits.state.rebuild((message) {
           message.topShaft = MdiShaftMsg$.create(
             parent: shaftMsg,
@@ -208,7 +208,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
   }) {
     return MenuItem(
       label: label,
-      callback: fw(() {
+      callback: (() {
         configBits.state.rebuild((message) {
           message.topShaft = MdiShaftMsg$.create(
             parent: shaftMsg,

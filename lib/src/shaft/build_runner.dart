@@ -14,9 +14,9 @@ Bx mdiBuildRunnerMenuShaftBx({
     items: [
       MenuItem(
         label: "Settings",
-        callback: fw(() {
+        callback: () {
           print('settings');
-        }),
+        },
       ),
     ],
   );

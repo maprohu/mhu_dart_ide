@@ -197,29 +197,22 @@ mixin HasSizedBits {
   late final size = sizedBits.size;
 }
 
-typedef ShortcutFr = Fr<VoidCallback?>;
+typedef ShortcutCallback = VoidCallback;
 
 extension NodeBuildBitxX on NodeBuilderBits {
-  Bx shortcut(VoidCallback action) {
-    return shortcutFr(fw(action));
-  }
-
-  Bx shortcutFr(ShortcutFr callback) {
-    final handle = opBuilder.register(callback.read);
+  Bx shortcut(VoidCallback callback) {
+    final handle = opBuilder.register(callback);
 
     return Bx.leaf(
       size: themeCalc.shortcutSize,
       widget: flcFrr(() {
         ShortcutData? data;
-        final cb = callback();
-        if (cb != null) {
-          final pressedCount = handle.watchState();
-          if (pressedCount != null) {
-            data = ShortcutData(
-              shortcut: handle.shortcut(),
-              pressedCount: pressedCount,
-            );
-          }
+        final pressedCount = handle.watchState();
+        if (pressedCount != null) {
+          data = ShortcutData(
+            shortcut: handle.shortcut(),
+            pressedCount: pressedCount,
+          );
         }
         return shortcutBx(
           data: data,

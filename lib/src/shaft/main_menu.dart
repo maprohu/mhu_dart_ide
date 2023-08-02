@@ -18,15 +18,15 @@ Bx mdiMainMenuShaftBx({
       ),
       MenuItem(
         label: "theme",
-        callback: fw(() {}),
+        callback: (() {}),
       ),
       MenuItem(
         label: "state",
-        callback: fw(() {}),
+        callback: (() {}),
       ),
       MenuItem(
         label: "build_runner",
-        callback: fw(() {
+        callback: (() {
           sizedBits.configBits.state.rebuild((message) {
             message.topShaft = MdiShaftMsg$.create(
               buildRunner: MdiBuildRunnerMenuMsg(),

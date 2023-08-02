@@ -17,7 +17,19 @@ final mdiDefaultTheme = MdiThemeMsg$.create(
   ),
 )..freeze();
 
+class FontAssets {
+  final robotoMono = GoogleFonts.robotoMono();
+  final robotoSlab = GoogleFonts.robotoSlab();
+}
+
 class ThemeCalc {
+  static Future<void> init() async {
+    _fontAssets = FontAssets();
+    await GoogleFonts.pendingFonts();
+  }
+
+  static late final FontAssets _fontAssets;
+
   static const _sizerKeys = 'MMM';
   final MdiThemeMsg theme;
 
@@ -27,18 +39,18 @@ class ThemeCalc {
   late final shaftHeaderDividerThickness = theme.dividerThickness.shaftHeader;
   late final menuItemsDividerThickness = theme.dividerThickness.menuItems;
 
-  late final robotoMonoTextStyle = GoogleFonts.robotoMono().copyWith(
+  static final robotoMonoTextStyle = _fontAssets.robotoMono.copyWith(
+    fontSize: 14,
+    color: Colors.white,
+  );
+
+  static final robotoSlabTextStyle = _fontAssets.robotoSlab.copyWith(
     fontSize: 14,
     color: Colors.white,
   );
 
   late final builtinTextStyle = const TextStyle(
     fontSize: 14,
-  );
-
-  late final robotoSlabTextStyle = GoogleFonts.robotoSlab().copyWith(
-    fontSize: 14,
-    color: Colors.white,
   );
 
   late final defaultTextStyle = robotoMonoTextStyle;

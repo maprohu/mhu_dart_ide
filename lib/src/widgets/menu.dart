@@ -49,7 +49,7 @@ Bx menuItemBx({
       return sizedBits.left(
         Bx.row([
           sizedBits.centerAlongY(
-            sizedBits.nodeBits.shortcutFr(callback),
+            sizedBits.nodeBits.shortcut(callback),
           ),
           sizedBits.centerAlongY(
             textBx(

@@ -10,11 +10,19 @@ Bx errorShaftBx({
   dynamic error,
   StackTrace? stackTrace,
 }) {
-  logger.e(
-    message,
-    error,
-    stackTrace ?? StackTrace.current,
-  );
+  if (stackTrace == null) {
+    MhuLogger.cut1.e(
+      message,
+      error,
+      StackTrace.current,
+    );
+  } else {
+    logger.e(
+      message,
+      error,
+      stackTrace,
+    );
+  }
 
   return stringShaftBx(
     sizedBits: sizedBits,
