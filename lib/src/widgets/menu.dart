@@ -46,18 +46,13 @@ Bx menuItemBx({
         :label,
       ) = menuItem;
 
-      return sizedBits.left(
-        Bx.row([
-          sizedBits.centerAlongY(
-            sizedBits.nodeBits.shortcut(callback),
-          ),
-          sizedBits.centerAlongY(
-            textBx(
-              text: label,
-              style: themeCalc.menuItemTextStyle,
-            ),
-          ),
-        ]),
+      return sizedBits.fillRight(
+        left: sizedBits.centerHeight(
+          sizedBits.nodeBits.shortcut(callback),
+        ),
+        right: (sizedBits) {
+          return sizedBits.itemText.centerLeft(label);
+        },
       );
     },
   );

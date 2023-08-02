@@ -29,6 +29,7 @@ message MdiDividerThicknessThemeMsg {
   double shafts = 1;
   double shaft_header = 2;
   double menu_items = 3;
+  double paginator_footer = 4;
 }
 
 // shafts

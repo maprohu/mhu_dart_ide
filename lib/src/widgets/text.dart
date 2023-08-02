@@ -137,6 +137,7 @@ class TextBuilderBits
         inner: textSize,
       ),
       child: span.leaf(textSize),
+      size: size,
     );
   }
 }
@@ -149,4 +150,6 @@ extension TextSizedBitsX on SizedNodeBuilderBits {
 
   TextBuilderBits get headerText =>
       withTextStyle(themeCalc.shaftHeaderTextStyle);
+  TextBuilderBits get itemText =>
+      withTextStyle(themeCalc.menuItemTextStyle);
 }

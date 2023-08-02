@@ -6,7 +6,9 @@ import 'package:mhu_dart_ide/src/shaft/error.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/menu.dart';
+import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
 import 'package:mhu_dart_ide/src/widgets/text.dart';
+import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../proto.dart';
 import 'flex.dart';
@@ -70,15 +72,16 @@ class ShaftParts with _$ShaftParts {
 }
 
 typedef ShaftBuilder = ShaftParts Function(
-    SizedNodeBuilderBits headerBits,
-    SizedNodeBuilderBits contentBits,
-    );
+  SizedNodeBuilderBits headerBits,
+  SizedNodeBuilderBits contentBits,
+);
 
 Bx shaftBx({
   required SizedNodeBuilderBits sizedBits,
   required ShaftBuilder builder,
 }) {
   final SizedNodeBuilderBits(
+    :size,
     :width,
     :height,
     :themeCalc,
@@ -89,6 +92,7 @@ Bx shaftBx({
     :shaftHeaderWithDividerHeight,
     :shaftHeaderPadding,
     :shaftHeaderContentHeight,
+    :shaftHeaderOuterHeight,
   ) = themeCalc;
 
   final headerContentWidth = width - shaftHeaderPadding.horizontal;
@@ -99,33 +103,20 @@ Bx shaftBx({
     sizedBits.withSize(Size(width, contentHeight)),
   );
 
-  return Bx.col([
-    Bx.pad(
-      padding: shaftHeaderPadding,
-      child: parts.header,
-    ),
-    Bx.horizontalDivider(
-      thickness: shaftHeaderDividerThickness,
-      width: width,
-    ),
-    parts.content,
-  ]);
-}
-
-Bx columnHeaderBx({
-  required NodeBuilderBits nodeBits,
-  required double columnWidth,
-  required NodeBuilder content,
-  required ThemeCalc themeCalc,
-}) {
-  final padding = themeCalc.shaftHeaderPadding;
-  final contentSize = Size(
-    columnWidth - padding.horizontal,
-    themeCalc.shaftHeaderContentHeight,
-  );
-  return Bx.pad(
-    padding: themeCalc.shaftHeaderPadding,
-    child: content(nodeBits.sized(contentSize)),
+  return Bx.col(
+    size: size,
+    rows: [
+      Bx.pad(
+        padding: shaftHeaderPadding,
+        child: parts.header,
+        size: size.withHeight(shaftHeaderOuterHeight),
+      ),
+      Bx.horizontalDivider(
+        thickness: shaftHeaderDividerThickness,
+        width: width,
+      ),
+      parts.content,
+    ],
   );
 }
 
@@ -138,7 +129,6 @@ class MenuItem with _$MenuItem {
     required ShortcutCallback callback,
   }) = _MenuItem;
 }
-
 
 extension ShaftSizedBitsX on SizedNodeBuilderBits {
   Bx shaft(
@@ -173,7 +163,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
 
         return ShaftParts(
           header: headerBits.left(
-            headerBits.centerAlongY(
+            headerBits.centerHeight(
               textBx(
                 text: label,
                 style: themeCalc.shaftHeaderTextStyle,
@@ -218,6 +208,61 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
     );
   }
 
+  Bx header({required String label, VoidCallback? callback}) {
+    if (callback == null) {
+      return headerText.centerLeft(label);
+    }
+
+    return fillLeft(
+      left: (sizedBits) => sizedBits.headerText.centerLeft(label),
+      right: centerHeight(
+        nodeBits.shortcut(callback),
+      ),
+    );
+  }
+
+  Bx fillLeft({
+    required NodeBuilder left,
+    required Bx right,
+  }) {
+    return Bx.row(
+      columns: [
+        left(
+          withWidth(width - right.width),
+        ),
+        right,
+      ],
+      size: size,
+    );
+  }
+
+  Bx fillRight({
+    required Bx left,
+    required NodeBuilder right,
+  }) {
+    return Bx.row(
+      columns: [
+        left,
+        right(
+          withWidth(width - left.width),
+        ),
+      ],
+      size: size,
+    );
+  }
+
+  Bx fillBottom({
+    required Bx top,
+    required NodeBuilder bottom,
+  }) {
+    return Bx.col(
+      rows: [
+        top,
+        bottom(withHeight(height - top.height)),
+      ],
+      size: size,
+    );
+  }
 }
 
 typedef ShaftOpener = void Function(MdiShaftMsg shaft);

@@ -17,14 +17,21 @@ extension _Assert on Iterable<double> {
 sealed class Bx with _$Bx, HasSize {
   Bx._();
 
-  @Assert("columns.map((e) => e.height)._assertEqual()")
-  factory Bx.row(List<Bx> columns) = BxRow;
+  @Assert("Bx.calculateRowSize(columns).assertEqual(size)")
+  factory Bx.row({
+    required List<Bx> columns,
+    required Size size,
+  }) = BxRow;
 
-  @Assert("rows.map((e) => e.width)._assertEqual()")
-  factory Bx.col(List<Bx> rows) = BxCol;
+  @Assert("Bx.calculateColumnSize(rows).assertEqual(size)")
+  factory Bx.col({
+    required List<Bx> rows,
+    required Size size,
+  }) = BxCol;
 
-  @Assert("padding.isNonNegative, padding.toString()")
+  @Assert("Bx.calculatePadSize(padding, child).assertEqual(size)")
   factory Bx.pad({
+    required Size size,
     required EdgeInsets padding,
     required Bx child,
   }) = BxPad;
@@ -43,7 +50,7 @@ sealed class Bx with _$Bx, HasSize {
     required Size size,
   }) =>
       padding.isNonNegative
-          ? Bx.pad(padding: padding, child: child)
+          ? Bx.pad(padding: padding, child: child, size: size)
           : Bx.leaf(size: size, widget: overflow);
 
   static Bx fill(Size size) => Bx.leaf(
@@ -59,19 +66,40 @@ sealed class Bx with _$Bx, HasSize {
         Size(width, height),
       );
 
-  @override
-  late final Size size = switch (this) {
-    BxLeaf(:final size) => size,
-    BxPad(:final padding, :final child) => padding.inflateSize(child.size),
-    BxRow(:final columns) => Size(
-        columns.map((e) => e.width).sum,
-        columns.first.height,
-      ),
-    BxCol(:final rows) => Size(
-        rows.first.width,
-        rows.map((e) => e.height).sum,
-      ),
-  };
+  static Size calculatePadSize(
+    EdgeInsets padding,
+    Bx child,
+  ) {
+    assert(padding.isNonNegative, padding.toString());
+    return padding.inflateSize(child.size);
+  }
+
+  static Size calculateColumnSize(
+    Iterable<Bx> rows,
+  ) {
+    rows.map((e) => e.width)._assertEqual();
+    return Size(
+      rows.first.width,
+      rows.map((e) => e.height).sum,
+    );
+  }
+
+  static Size calculateRowSize(
+    Iterable<Bx> columns,
+  ) {
+    columns.map((e) => e.height)._assertEqual();
+    return Size(
+      columns.map((e) => e.width).sum,
+      columns.first.height,
+    );
+  }
+
+  Size calculateSize() => switch (this) {
+        BxLeaf(:final size) => size,
+        BxPad(:final padding, :final child) => calculatePadSize(padding, child),
+        BxRow(:final columns) => calculateRowSize(columns),
+        BxCol(:final rows) => calculateColumnSize(rows),
+      };
 
   Widget layout() => switch (this) {
         BxLeaf(:final size, :final widget) => SizedBox.fromSize(
@@ -94,6 +122,7 @@ sealed class Bx with _$Bx, HasSize {
     required List<Bx> columns,
     required double thickness,
     required double height,
+    required Size size,
   }) {
     final divider = Bx.leaf(
       size: Size(thickness, height),
@@ -105,7 +134,8 @@ sealed class Bx with _$Bx, HasSize {
       ),
     );
     return Bx.row(
-      columns.separatedBy(divider).toList(),
+      columns: columns.separatedBy(divider).toList(),
+      size: size,
     );
   }
 
@@ -113,13 +143,15 @@ sealed class Bx with _$Bx, HasSize {
     required List<Bx> rows,
     required double thickness,
     required double width,
+    required Size size,
   }) {
     final divider = horizontalDivider(
       thickness: thickness,
       width: width,
     );
     return Bx.col(
-      rows.separatedBy(divider).toList(),
+      rows: rows.separatedBy(divider).toList(),
+      size: size,
     );
   }
 
@@ -143,67 +175,67 @@ sealed class Bx with _$Bx, HasSize {
     return items.map((e) => e.builder(size));
   }
 
-  static Bx colCentered(List<Bx> rows) {
-    return Bx.col(
-      buildWithLargest(
-        rows
-            .map(
-              (bx) => BxLargest(
-                size: bx.width,
-                builder: (width) => centerAlongX(
-                  bx: bx,
-                  width: width,
-                ),
-              ),
-            )
-            .toList(),
-      ).toList(),
-    );
-  }
+// static Bx colCentered(List<Bx> rows) {
+//   return Bx.col(
+//     buildWithLargest(
+//       rows
+//           .map(
+//             (bx) => BxLargest(
+//               size: bx.width,
+//               builder: (width) => centerAlongX(
+//                 bx: bx,
+//                 width: width,
+//               ),
+//             ),
+//           )
+//           .toList(),
+//     ).toList(),
+//   );
+// }
 
-  static Bx rowCentered(List<Bx> columns) {
-    return Bx.col(
-      buildWithLargest(
-        columns
-            .map(
-              (bx) => BxLargest(
-                size: bx.height,
-                builder: (height) => centerAlongY(
-                  bx: bx,
-                  height: height,
-                ),
-              ),
-            )
-            .toList(),
-      ).toList(),
-    );
-  }
+// static Bx rowCentered(List<Bx> columns) {
+//   return Bx.col(
+//     buildWithLargest(
+//       columns
+//           .map(
+//             (bx) => BxLargest(
+//               size: bx.height,
+//               builder: (height) => centerAlongY(
+//                 bx: bx,
+//                 height: height,
+//               ),
+//             ),
+//           )
+//           .toList(),
+//     ).toList(),
+//   );
+// }
 
-  static Bx centerAlongX({
-    required Bx bx,
-    required double width,
-  }) {
-    final margin = (width - bx.width) / 2;
-    return Bx.pad(
-      padding: EdgeInsets.symmetric(
-        horizontal: margin,
-      ),
-      child: bx,
-    );
-  }
+// static Bx centerAlongX({
+//   required Bx bx,
+//   required double width,
+// }) {
+//   final margin = (width - bx.width) / 2;
+//   return Bx.pad(
+//     padding: EdgeInsets.symmetric(
+//       horizontal: margin,
+//     ),
+//     child: bx,
+//   );
+// }
 
-  static Bx centerAlongY({
-    required Bx bx,
-    required double height,
-  }) {
-    final margin = (height - bx.height) / 2;
-    return Bx.pad(
-      padding: EdgeInsets.symmetric(
-        vertical: margin,
-      ),
-      child: bx,
-    );
-  }
+// static Bx centerAlongY({
+//   required Bx bx,
+//   required double height,
+// }) {
+//   final margin = (height - bx.height) / 2;
+//   return Bx.pad(
+//     padding: EdgeInsets.symmetric(
+//       vertical: margin,
+//     ),
+//     child: bx,
+//   );
+// }
 }
 
 @freezedStruct
@@ -220,7 +252,10 @@ extension BxSizedBuilderX on SizedNodeBuilderBits {
   Bx col(
     Iterable<Bx> Function(double width) builder,
   ) {
-    return Bx.col(builder(width).toList());
+    return Bx.col(
+      rows: builder(width).toList(),
+      size: size,
+    );
   }
 }
 
@@ -246,5 +281,37 @@ class Paddings {
       bottom: vertical,
     );
   }
+
+  static EdgeInsets centerY({
+    required double outer,
+    required double inner,
+  }) {
+    final half = (outer - inner) / 2;
+    return EdgeInsets.only(
+      top: half,
+      bottom: half,
+    );
+  }
 }
 
+// @freezedStruct
+// class SizedBx with _$SizedBx {
+//   SizedBx._();
+//
+//   @Assert("assertSizeRoughlyEqual(bx.size, size)")
+//   factory SizedBx({
+//     required Bx bx,
+//     required Size size,
+//   }) = _SizedBx;
+// }
+//
+// extension SizedBxHasSizeX on HasSize {
+//   SizedBx sizedBx(Bx bx) => SizedBx(
+//         bx: bx,
+//         size: size,
+//       );
+// }
+//
+// extension BxSizedBitsX on Bx {
+//   SizedBx sizedWith(HasSize size) => size.sizedBx(this);
+// }

@@ -21,10 +21,7 @@ Bx mdiPfeConcreteFieldShaftBx({
     messageType: mfw.read().runtimeType,
     tagNumber: value.tagNumber,
   );
-
   final calc = fieldKey.calc;
-
-
   final access = calc.access;
 
   final ShaftBuilder? shaftBuilder = switch (access) {

@@ -189,6 +189,10 @@ class SizedNodeBuilderBits
   SizedNodeBuilderBits withHeight(double height) => copyWith(
         size: size.withHeight(height),
       );
+
+  SizedNodeBuilderBits withWidth(double width) => copyWith(
+        size: size.withWidth(width),
+      );
 }
 
 mixin HasSizedBits {
@@ -247,9 +251,13 @@ extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
     );
   }
 
-  Bx centerAlongY(Bx child) => Bx.centerAlongY(
-        bx: child,
-        height: height,
+  Bx centerHeight(Bx child) => Bx.padOrFill(
+        padding: Paddings.centerY(outer: height, inner: child.height),
+        child: child,
+        size: Size(
+          child.width,
+          height,
+        ),
       );
 
   Bx left(Bx child) {

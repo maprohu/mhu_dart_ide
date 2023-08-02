@@ -35,9 +35,13 @@ class ThemeCalc {
 
   ThemeCalc(this.theme);
 
-  late final shaftsDividerThickness = theme.dividerThickness.shafts;
-  late final shaftHeaderDividerThickness = theme.dividerThickness.shaftHeader;
-  late final menuItemsDividerThickness = theme.dividerThickness.menuItems;
+  late final shaftsDividerThickness = theme.dividerThicknessOpt?.shaftsOpt ?? 3;
+  late final shaftHeaderDividerThickness =
+      theme.dividerThicknessOpt?.shaftHeaderOpt ?? 2;
+  late final menuItemsDividerThickness =
+      theme.dividerThicknessOpt?.menuItems ?? 1;
+  late final paginatorFooterDividerThickness =
+      theme.dividerThicknessOpt?.paginatorFooterOpt ?? 2;
 
   static final robotoMonoTextStyle = _fontAssets.robotoMono.copyWith(
     fontSize: 14,
@@ -89,13 +93,20 @@ class ThemeCalc {
   late final shortcutIconSize = Size.square(shortcutIconDimension);
   late final shortcutIconGap = 1.0;
 
-  late final shaftHeaderWithDividerHeight = shaftHeaderContentHeight +
-      shaftHeaderPadding.vertical +
-      shaftHeaderDividerThickness;
+  late final shaftHeaderOuterHeight =
+      shaftHeaderContentHeight + shaftHeaderPadding.vertical;
+  late final shaftHeaderWithDividerHeight =
+      shaftHeaderOuterHeight + shaftHeaderDividerThickness;
 
   late final menuItemHeight = menuItemPadding.inflateSize(shortcutSize).height;
 
   late final menuItemPadding = const EdgeInsets.all(2);
 
   late final stringTextStyle = MonoTextStyle.from(robotoMonoTextStyle);
+
+  late final paginatorFooterTextStyle = MonoTextStyle.from(robotoMonoTextStyle);
+
+  late final paginatorFooterInnerHeight = paginatorFooterTextStyle.height;
+
+  late final paginatorFooterPadding = const EdgeInsets.all(2);
 }

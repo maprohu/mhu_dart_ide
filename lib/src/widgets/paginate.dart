@@ -37,7 +37,7 @@ typedef PaginatorBx = ({
   bool showPaginator,
 });
 
-PaginatorBx paginatorAlongYBx({
+Bx paginatorAlongYBx({
   required SizedNodeBuilderBits sizedBits,
   required double itemHeight,
   required int itemCount,
@@ -51,13 +51,8 @@ PaginatorBx paginatorAlongYBx({
   ) = sizedBits;
 
   if (itemCount == 0) {
-    return (
-      bx: sizedBits.fill(),
-      showPaginator: false,
-    );
+    return sizedBits.fill();
   }
-
-  startAt = min(startAt, itemCount - 1);
 
   final fitCount = itemFitCount(
     available: height,
@@ -65,12 +60,17 @@ PaginatorBx paginatorAlongYBx({
     dividerThickness: dividerThickness,
   );
 
+  startAt = min(startAt, itemCount - fitCount);
+  startAt = max(startAt, 0);
+
+  final itemsLeft = itemCount - startAt;
+  final displayCount =
+
   final divider = Bx.horizontalDivider(
     thickness: dividerThickness,
     width: width,
   );
 
-  final itemsLeft = itemCount - startAt;
 
   Iterable<int> itemIndices() => integers(from: startAt);
 
@@ -84,6 +84,7 @@ PaginatorBx paginatorAlongYBx({
 
   if (itemsLeft < fitCount) {
     final itemBits = sizedBits.withHeight(itemHeight);
+    final dividerCount = itemsLeft - 1;
 
     return (
       bx: sizedBits.top(
