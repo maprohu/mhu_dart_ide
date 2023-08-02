@@ -8,7 +8,7 @@ import '../screen.dart';
 import '../theme.dart';
 import 'boxed.dart';
 
-PaginatorBx menuBx({
+Bx menuBx({
   required SizedNodeBuilderBits sizedBits,
   required int itemCount,
   required Bx Function(int index, SizedNodeBuilderBits sizedBits) itemBuilder,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
@@ -84,17 +86,28 @@ Bx shortcutWithIconBx({
   required Widget icon,
   required ShortcutData? shortcutData,
 }) {
-  return Bx.colCentered([
-    iconBx(
-      icon: icon,
-      themeCalc: themeCalc,
-    ),
-    Bx.fillWith(height: themeCalc.shortcutIconGap),
-    shortcutBx(
-      data: shortcutData,
-      themeCalc: themeCalc,
-    ),
-  ]);
+  final size = themeCalc.shortcutWithIconSize;
+  final iconItemBx = iconBx(
+    icon: icon,
+    themeCalc: themeCalc,
+  );
+  final shortcutItemBx = shortcutBx(
+    data: shortcutData,
+    themeCalc: themeCalc,
+  );
+
+  final width = size.width;
+  return Bx.col(
+    rows: [
+      iconItemBx.centerAlongX(width),
+      Bx.fillWith(
+        width: width,
+        height: themeCalc.shortcutIconGap,
+      ),
+      shortcutItemBx.centerAlongX(width),
+    ],
+    size: size,
+  );
 }
 
 Bx iconBx({

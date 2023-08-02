@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/screen.dart';
+
+import 'widgets/boxed.dart';
 
 Widget rowWithDividers({
   required Iterable<Widget> children,
@@ -13,17 +16,18 @@ Widget rowWithDividers({
     return Row(
       children: children
           .separatedBy(
-        VerticalDivider(
-          width: dividerThickness,
-          thickness: dividerThickness,
-          indent: 0,
-          endIndent: 0,
-        ),
-      )
+            VerticalDivider(
+              width: dividerThickness,
+              thickness: dividerThickness,
+              indent: 0,
+              endIndent: 0,
+            ),
+          )
           .toList(),
     );
   }
 }
+
 Widget columnWithDividers({
   required Iterable<Widget> children,
   required double? dividerThickness,
@@ -44,6 +48,15 @@ Widget columnWithDividers({
             ),
           )
           .toList(),
+    );
+  }
+}
+
+extension DividerSizedBits on SizedNodeBuilderBits {
+  Bx horizontalDivider(double thickness) {
+    return Bx.horizontalDivider(
+      thickness: thickness,
+      width: width,
     );
   }
 }

@@ -157,10 +157,6 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
           },
         );
 
-        if (pageBx.showPaginator) {
-          // TODO
-        }
-
         return ShaftParts(
           header: headerBits.left(
             headerBits.centerHeight(
@@ -170,7 +166,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
               ),
             ),
           ),
-          content: pageBx.bx,
+          content: pageBx,
         );
       },
     );
@@ -259,6 +255,18 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
       rows: [
         top,
         bottom(withHeight(height - top.height)),
+      ],
+      size: size,
+    );
+  }
+  Bx fillTop({
+    required NodeBuilder top,
+    required Bx bottom,
+  }) {
+    return Bx.col(
+      rows: [
+        top(withHeight(height - bottom.height)),
+        bottom,
       ],
       size: size,
     );

@@ -155,6 +155,21 @@ sealed class Bx with _$Bx, HasSize {
     );
   }
 
+  static Bx verticalDivider({
+    required double thickness,
+    required double height,
+  }) {
+    return Bx.leaf(
+      size: Size(thickness, height),
+      widget: VerticalDivider(
+        width: thickness,
+        thickness: thickness,
+        indent: 0,
+        endIndent: 0,
+      ),
+    );
+  }
+
   static Bx horizontalDivider({
     required double thickness,
     required double width,
@@ -282,36 +297,41 @@ class Paddings {
     );
   }
 
+  static EdgeInsets top({
+    required double outer,
+    required double inner,
+  }) {
+    return EdgeInsets.only(
+      bottom: outer - inner,
+    );
+  }
+
   static EdgeInsets centerY({
     required double outer,
     required double inner,
   }) {
-    final half = (outer - inner) / 2;
-    return EdgeInsets.only(
-      top: half,
-      bottom: half,
+    return EdgeInsets.symmetric(
+      vertical: (outer - inner) / 2,
+    );
+  }
+
+  static EdgeInsets centerX({
+    required double outer,
+    required double inner,
+  }) {
+    return EdgeInsets.symmetric(
+      horizontal: (outer - inner) / 2,
     );
   }
 }
 
-// @freezedStruct
-// class SizedBx with _$SizedBx {
-//   SizedBx._();
-//
-//   @Assert("assertSizeRoughlyEqual(bx.size, size)")
-//   factory SizedBx({
-//     required Bx bx,
-//     required Size size,
-//   }) = _SizedBx;
-// }
-//
-// extension SizedBxHasSizeX on HasSize {
-//   SizedBx sizedBx(Bx bx) => SizedBx(
-//         bx: bx,
-//         size: size,
-//       );
-// }
-//
-// extension BxSizedBitsX on Bx {
-//   SizedBx sizedWith(HasSize size) => size.sizedBx(this);
-// }
+extension BxX on Bx {
+  Bx centerAlongX(double width) => Bx.padOrFill(
+        padding: Paddings.centerX(
+          outer: width,
+          inner: this.width,
+        ),
+        child: this,
+        size: size.withWidth(width),
+      );
+}

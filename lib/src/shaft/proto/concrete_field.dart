@@ -25,7 +25,10 @@ Bx mdiPfeConcreteFieldShaftBx({
   final access = calc.access;
 
   final ShaftBuilder? shaftBuilder = switch (access) {
-    MapFieldAccess() => mdiPfeMapFieldShaftBuilder(),
+    MapFieldAccess() => mdiPfeMapFieldShaftBuilder(
+        access: access,
+        mfw: mfw,
+      ),
     _ => null,
   };
 

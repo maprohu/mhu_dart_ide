@@ -106,10 +106,16 @@ Bx mdiBuildScreen({
       dividerThickness: mainColumnsDividerThickness,
     ).toList();
 
-    return Bx.rowWithDividers(
-      columns: columnWidgets.reversed.toList(),
-      thickness: mainColumnsDividerThickness,
-      height: screenSize.height,
+    return Bx.row(
+      columns: columnWidgets.reversed
+          .separatedBy(
+            Bx.verticalDivider(
+              thickness: mainColumnsDividerThickness,
+              height: screenSize.height,
+            ),
+          )
+          .toList(),
+      size: screenSize,
     );
   });
 }
@@ -248,6 +254,7 @@ extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
           padding.deflateSize(size),
         ),
       ),
+      size: size,
     );
   }
 
@@ -269,9 +276,24 @@ extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
   }
 
   Bx top(Bx child) {
-    return Bx.pad(
-      padding: EdgeInsets.only(bottom: height - child.height),
+    return Bx.padOrFill(
+      padding: Paddings.top(
+        outer: height,
+        inner: child.height,
+      ),
       child: child,
+      size: size,
+    );
+  }
+
+  Bx topLeft(Bx child) {
+    return Bx.padOrFill(
+      padding: Paddings.topLeft(
+        outer: size,
+        inner: child.size,
+      ),
+      child: child,
+      size: size,
     );
   }
 }

@@ -69,40 +69,22 @@ Bx stringBx({
     style.height * lines.length,
   );
 
-  final linesCol = Bx.col(lines.map((line) {
-    final lineSpan = style.span(line);
-    // assert(run(() {
-    //   final lineSpanSize = lineSpan.size;
-    //   final lineLength = line.length;
-    //   final mWidth = style.span("MMM").size.width;
-    //   final lineCalculatedWidth = lineLength * styleWidth;
-    //
-    //   final msWidth = style
-    //       .span(Iterable.generate(lineLength, (_) => "M").join())
-    //       .size
-    //       .width;
-    //
-    //   return true;
-    //   return doubleEqualWithin3Decimals(
-    //     lineSpanSize.width,
-    //     lineCalculatedWidth,
-    //   );
-    // }));
-    return lineBits.leaf(
-      RichText(
-        text: lineSpan,
-        softWrap: false,
-      ),
-    );
-  }).toList());
-
-  return Bx.pad(
-    padding: Paddings.topLeft(
-      outer: sizedBits.size,
-      inner: linesSize,
-    ),
-    child: linesCol,
+  final linesCol = Bx.col(
+    rows: lines.map(
+      (line) {
+        final lineSpan = style.span(line);
+        return lineBits.leaf(
+          RichText(
+            text: lineSpan,
+            softWrap: false,
+          ),
+        );
+      },
+    ).toList(),
+    size: linesSize,
   );
+
+  return sizedBits.topLeft(linesCol);
 }
 
 mixin HasTextStyle {

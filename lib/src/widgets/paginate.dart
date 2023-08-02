@@ -1,9 +1,13 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/divider.dart';
 import 'package:mhu_dart_ide/src/icons.dart';
 import 'package:mhu_dart_ide/src/screen.dart';
+import 'package:mhu_dart_ide/src/shaft.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
+import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../theme.dart';
 import 'boxed.dart';
@@ -46,65 +50,104 @@ Bx paginatorAlongYBx({
   required double dividerThickness,
 }) {
   final SizedNodeBuilderBits(
-    :width,
-    :height,
+    :themeCalc,
   ) = sizedBits;
+  Bx page({
+    required SizedNodeBuilderBits sizedBits,
+    required int startAt,
+    required int count,
+    required bool stretch,
+  }) {
+    int dividerCount = count - 1;
+
+    var itemBits = sizedBits.withHeight(itemHeight);
+
+    final divider = Bx.horizontalDivider(
+      thickness: dividerThickness,
+      width: sizedBits.width,
+    );
+    Bx itemsBx(Size size) {
+      return Bx.col(
+        rows: integers(from: startAt)
+            .take(count)
+            .map(
+              (index) => itemBuilder(index, itemBits),
+            )
+            .separatedBy(divider)
+            .toList(),
+        size: size,
+      );
+    }
+
+    if (stretch) {
+      itemBits = itemBits.withHeight(
+        (sizedBits.height - (dividerCount * dividerThickness)) / count,
+      );
+
+      return itemsBx(sizedBits.size);
+    } else {
+      return sizedBits.top(
+        itemsBx(
+          sizedBits.size.withHeight(
+            dividerCount * dividerThickness + itemHeight * count,
+          ),
+        ),
+      );
+    }
+  }
 
   if (itemCount == 0) {
     return sizedBits.fill();
   }
 
   final fitCount = itemFitCount(
-    available: height,
+    available: sizedBits.height,
     itemSize: itemHeight,
     dividerThickness: dividerThickness,
   );
 
-  startAt = min(startAt, itemCount - fitCount);
-  startAt = max(startAt, 0);
-
-  final itemsLeft = itemCount - startAt;
-  final displayCount =
-
-  final divider = Bx.horizontalDivider(
-    thickness: dividerThickness,
-    width: width,
-  );
-
-
-  Iterable<int> itemIndices() => integers(from: startAt);
-
-  bool hasItemsBefore = startAt > 0;
-
-  Iterable<Bx> bxs(SizedNodeBuilderBits itemBits, int count) {
-    return itemIndices().take(count)
-        .map((index) => itemBuilder(index, itemBits))
-        .separatedBy(divider);
-  }
-
-  if (itemsLeft < fitCount) {
-    final itemBits = sizedBits.withHeight(itemHeight);
-    final dividerCount = itemsLeft - 1;
-
-    return (
-      bx: sizedBits.top(
-        Bx.col(
-          bxs(itemBits, itemsLeft).toList(),
-        ),
-      ),
-      showPaginator: hasItemsBefore,
+  if (itemCount == fitCount) {
+    return page(
+      sizedBits: sizedBits,
+      startAt: 0,
+      count: itemCount,
+      stretch: true,
+    );
+  } else if (itemCount < fitCount) {
+    return page(
+      sizedBits: sizedBits,
+      startAt: 0,
+      count: itemCount,
+      stretch: false,
     );
   } else {
-    final dividerCount = fitCount - 1;
-    final itemHeight = (height - (dividerCount * dividerThickness)) / fitCount;
-    final itemBits = sizedBits.withHeight(itemHeight);
+    final footer = Bx.fillWith(
+      width: sizedBits.width,
+      height: themeCalc.paginatorFooterOuterHeight,
+    );
+    return sizedBits.fillTop(
+      top: (sizedBits) => sizedBits.fillTop(
+        top: (sizedBits) {
+          final fitCount = itemFitCount(
+            available: sizedBits.height,
+            itemSize: itemHeight,
+            dividerThickness: dividerThickness,
+          );
 
-    bool hasItemsAfter = itemsLeft > fitCount;
-    return (
-      bx: Bx.col(
-        bxs(itemBits, fitCount).toList(),
+          startAt = min(startAt, itemCount - fitCount);
+
+          return page(
+            sizedBits: sizedBits,
+            startAt: startAt,
+            count: fitCount,
+            stretch: true,
+          );
+        },
+        bottom: sizedBits.horizontalDivider(
+          themeCalc.paginatorFooterDividerThickness,
+        ),
       ),
-      showPaginator: hasItemsBefore || hasItemsAfter,
+      bottom: footer,
     );
   }
 }

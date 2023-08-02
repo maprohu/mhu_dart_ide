@@ -3,13 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:ui' as ui;
 
 class MdiIcons {
-  static const _size = 16.0;
+  static const iconSize = 16.0;
 
   static Widget _svg(String asset) {
     return SvgPicture.asset(
       "assets/icons/$asset.svg",
-      width: _size,
-      height: _size,
+      width: iconSize,
+      height: iconSize,
       colorFilter: const ui.ColorFilter.mode(
         Colors.white,
         BlendMode.srcIn,
@@ -20,7 +20,7 @@ class MdiIcons {
   static Widget _icon(IconData icon) {
     return Icon(
       icon,
-      size: _size,
+      size: iconSize,
     );
   }
 

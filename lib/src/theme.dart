@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,6 +77,12 @@ class ThemeCalc {
     themeCalc: this,
   ).size;
 
+
+  late final shortcutWithIconSize = Size(
+    max(shortcutIconSize.width, shortcutSize.width),
+    shortcutSize.height + shortcutIconSize.height + shortcutIconGap,
+  );
+
   late final shaftHeaderContentHeight = shortcutWithIconBx(
     themeCalc: this,
     icon: MdiIcons.help,
@@ -107,6 +115,8 @@ class ThemeCalc {
   late final paginatorFooterTextStyle = MonoTextStyle.from(robotoMonoTextStyle);
 
   late final paginatorFooterInnerHeight = paginatorFooterTextStyle.height;
+  late final paginatorFooterOuterHeight =
+      paginatorFooterInnerHeight + paginatorFooterPadding.vertical;
 
   late final paginatorFooterPadding = const EdgeInsets.all(2);
 }
