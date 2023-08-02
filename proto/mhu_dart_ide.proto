@@ -42,6 +42,7 @@ message MdiShaftMsg {
     MdiConfigShaftMsg config = 4;
     MdiPfeConcreteFieldShaftMsg pfe_concrete_field = 6;
     MdiPfeOneofFieldShaftMsg pfe_oneof_field = 7;
+    MdiOptionsShaftMsg options = 8;
   }
 }
 
@@ -58,4 +59,7 @@ message  MdiPfeConcreteFieldShaftMsg {
 }
 message  MdiPfeOneofFieldShaftMsg {
   int32 oneof_index = 1;
+}
+
+message  MdiOptionsShaftMsg {
 }

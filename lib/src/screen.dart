@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/flex.dart';
+import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/paginate.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
@@ -73,27 +74,35 @@ Bx mdiBuildScreen({
       dividerThickness: mainColumnsDividerThickness,
     );
 
-    final columns = (state.topShaftOpt ?? _defaultMainMenuShaft)
-        .columnsIterable
-        .take(columnCount);
+    final topShaftMsg = (state.topShaftOpt ?? _defaultMainMenuShaft);
 
-    final columnsAfter = columns.fold<ColumnsAfter?>(null, (after, column) {
-      final nodeBits = NodeBuilderBits(
-        appBits: appBits,
-        opBuilder: opBuilder,
-        after: after,
-        shaftMsg: column,
-      );
-      return ColumnsAfter(
-        parent: after,
-        column: column,
-        flexNode: mdiColumnFlexNode(
-          nodeBits: nodeBits,
-          height: screenSize.height,
-          column: column,
-        ),
-      );
-    });
+    final calcChain = ShaftCalcChain(
+      appBits: appBits,
+      shaftMsg: topShaftMsg,
+    );
+
+    final columnsAfter =
+        calcChain.childToParentIterable.take(columnCount).fold<ColumnsAfter?>(
+      null,
+      (after, calcChain) {
+        final shaftMsg = calcChain.shaftMsg;
+        final nodeBits = NodeBuilderBits(
+          appBits: appBits,
+          opBuilder: opBuilder,
+          after: after,
+          shaftMsg: shaftMsg,
+        );
+        return ColumnsAfter(
+          parent: after,
+          shaftMsg: shaftMsg,
+          flexNode: mdiShaftFlexNode(
+            nodeBits: nodeBits,
+            height: screenSize.height,
+            calcChain: calcChain,
+          ),
+        );
+      },
+    );
 
     final columnWidgets = buildFlex(
       availableSpace: screenWidth,
@@ -316,7 +325,7 @@ class ColumnsAfter with _$ColumnsAfter implements HasParent<ColumnsAfter> {
 
   factory ColumnsAfter({
     required ColumnsAfter? parent,
-    required MdiShaftMsg column,
+    required MdiShaftMsg shaftMsg,
     required FlexNode<Bx> flexNode,
   }) = _ColumnsAfter;
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
 import 'package:mhu_dart_ide/src/shaft/config.dart';
 import 'package:mhu_dart_ide/src/shaft/error.dart';
@@ -18,11 +19,12 @@ import 'widgets/boxed.dart';
 
 part 'shaft.freezed.dart';
 
-FlexNode<Bx> mdiColumnFlexNode({
+FlexNode<Bx> mdiShaftFlexNode({
   required NodeBuilderBits nodeBits,
   required double height,
-  required MdiShaftMsg column,
+  required ShaftCalcChain calcChain,
 }) {
+  final shaftMsg = calcChain.shaftMsg;
   return FlexNode(
     grow: false,
     builder: (width) {
@@ -30,7 +32,7 @@ FlexNode<Bx> mdiColumnFlexNode({
         width: width,
         height: height,
         builder: (sizedBits) {
-          return switch (column.type) {
+          return switch (shaftMsg.type) {
             MdiShaftMsg_Type$mainMenu(:final value) => mdiMainMenuShaftBx(
                 sizedBits: sizedBits,
                 value: value,
@@ -49,9 +51,9 @@ FlexNode<Bx> mdiColumnFlexNode({
                 sizedBits: sizedBits,
                 value: value,
               ),
-            final other => errorShaftBx(
+            _ => errorShaftBx(
                 sizedBits: sizedBits,
-                message: "no shaft: ${column.whichType().name}",
+                message: "no shaft: ${shaftMsg.whichType().name}",
                 stackTrace: StackTrace.current,
               )
           };
