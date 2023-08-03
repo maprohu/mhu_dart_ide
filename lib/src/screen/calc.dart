@@ -1,6 +1,9 @@
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/screen.dart';
+
+import '../widgets/boxed.dart';
 
 class ShaftCalcChain with HasParent<ShaftCalcChain> {
   final MdiAppBits appBits;
@@ -19,7 +22,9 @@ class ShaftCalcChain with HasParent<ShaftCalcChain> {
   });
 }
 
-mixin ShaftCalc {}
+mixin ShaftCalc {
+  Bx bx(SizedNodeBuilderBits sizedBits);
+}
 
 ShaftCalc calculateShaft(ShaftCalcChain chain) {
   final type = chain.shaftMsg.type;
