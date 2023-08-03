@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/screen/options.dart';
+import 'package:mhu_dart_ide/src/screen/screen.dart';
 import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
 import 'package:mhu_dart_ide/src/shaft/config.dart';
 import 'package:mhu_dart_ide/src/shaft/error.dart';
@@ -19,50 +21,6 @@ import 'widgets/boxed.dart';
 
 part 'shaft.freezed.dart';
 
-FlexNode<Bx> mdiShaftFlexNode({
-  required NodeBuilderBits nodeBits,
-  required double height,
-  required ShaftCalcChain calcChain,
-}) {
-  final shaftMsg = calcChain.shaftMsg;
-  return FlexNode(
-    grow: false,
-    builder: (width) {
-      return nodeBits.sizedBxFrom(
-        width: width,
-        height: height,
-        builder: (sizedBits) {
-          return switch (shaftMsg.type) {
-            MdiShaftMsg_Type$mainMenu(:final value) => mdiMainMenuShaftBx(
-                sizedBits: sizedBits,
-                value: value,
-              ),
-            MdiShaftMsg_Type$buildRunner(:final value) =>
-              mdiBuildRunnerMenuShaftBx(
-                sizedBits: sizedBits,
-                value: value,
-              ),
-            MdiShaftMsg_Type$config(:final value) => mdiConfigMenuShaftBx(
-                sizedBits: sizedBits,
-                value: value,
-              ),
-            MdiShaftMsg_Type$pfeConcreteField(:final value) =>
-              mdiPfeConcreteFieldShaftBx(
-                sizedBits: sizedBits,
-                value: value,
-              ),
-            _ => errorShaftBx(
-                sizedBits: sizedBits,
-                message: "no shaft: ${shaftMsg.whichType().name}",
-                stackTrace: StackTrace.current,
-              )
-          };
-        },
-      );
-    },
-  );
-}
-
 @freezedStruct
 class ShaftParts with _$ShaftParts {
   ShaftParts._();
@@ -74,15 +32,15 @@ class ShaftParts with _$ShaftParts {
 }
 
 typedef ShaftBuilder = ShaftParts Function(
-  SizedNodeBuilderBits headerBits,
-  SizedNodeBuilderBits contentBits,
+  SizedShaftBuilderBits headerBits,
+  SizedShaftBuilderBits contentBits,
 );
 
 Bx shaftBx({
-  required SizedNodeBuilderBits sizedBits,
+  required SizedShaftBuilderBits sizedBits,
   required ShaftBuilder builder,
 }) {
-  final SizedNodeBuilderBits(
+  final SizedShaftBuilderBits(
     :size,
     :width,
     :height,
@@ -132,7 +90,7 @@ class MenuItem with _$MenuItem {
   }) = _MenuItem;
 }
 
-extension ShaftSizedBitsX on SizedNodeBuilderBits {
+extension ShaftSizedBitsX on SizedShaftBuilderBits {
   Bx shaft(
     ShaftBuilder builder,
   ) {
@@ -174,19 +132,33 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
     );
   }
 
-  MenuItem opener({
-    required String label,
-    required ShaftOpener builder,
+  Bx menu({
+    required List<MenuItem> items,
   }) {
+    return menuBx(
+      sizedBits: this,
+      itemCount: items.length,
+      itemBuilder: (index, sizedBits) {
+        return menuItemBx(
+          menuItem: items[index],
+          sizedBits: sizedBits,
+        );
+      },
+    );
+  }
+
+  MenuItem opener(
+    ShaftOpener builder, {
+    String? label,
+  }) {
+    label ??= ShaftCalcChain(
+      appBits: appBits,
+      shaftMsg: MdiShaftMsg().also(builder)..freeze(),
+    ).calc.label;
+
     return MenuItem(
       label: label,
-      callback: (() {
-        configBits.state.rebuild((message) {
-          message.topShaft = MdiShaftMsg$.create(
-            parent: shaftMsg,
-          ).also(builder);
-        });
-      }),
+      callback: openerCallback(builder),
     );
   }
 
@@ -214,7 +186,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
     return fillLeft(
       left: (sizedBits) => sizedBits.headerText.centerLeft(label),
       right: centerHeight(
-        nodeBits.shortcut(callback),
+        shaftBits.shortcut(callback),
       ),
     );
   }
@@ -261,6 +233,7 @@ extension ShaftSizedBitsX on SizedNodeBuilderBits {
       size: size,
     );
   }
+
   Bx fillTop({
     required NodeBuilder top,
     required Bx bottom,

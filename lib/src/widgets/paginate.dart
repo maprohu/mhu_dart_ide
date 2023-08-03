@@ -42,18 +42,18 @@ typedef PaginatorBx = ({
 });
 
 Bx paginatorAlongYBx({
-  required SizedNodeBuilderBits sizedBits,
+  required SizedShaftBuilderBits sizedBits,
   required double itemHeight,
   required int itemCount,
   required int startAt,
-  required Bx Function(int index, SizedNodeBuilderBits sizedBits) itemBuilder,
+  required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
   required double dividerThickness,
 }) {
-  final SizedNodeBuilderBits(
+  final SizedShaftBuilderBits(
     :themeCalc,
   ) = sizedBits;
   Bx page({
-    required SizedNodeBuilderBits sizedBits,
+    required SizedShaftBuilderBits sizedBits,
     required int startAt,
     required int count,
     required bool stretch,

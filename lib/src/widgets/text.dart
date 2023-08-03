@@ -65,7 +65,7 @@ Widget mdiText({
 //   );
 // }
 
-extension TextSizedBuilderX on SizedNodeBuilderBits {
+extension TextSizedBuilderX on SizedShaftBuilderBits {
   Bx text(String text) {
     return leaf(
       Text(text),
@@ -124,7 +124,7 @@ class TextBuilderBits
   TextBuilderBits._();
 
   factory TextBuilderBits({
-    required SizedNodeBuilderBits sizedBits,
+    required SizedShaftBuilderBits sizedBits,
     required TextStyle textStyle,
   }) = _TextBuilderBits;
 
@@ -142,7 +142,7 @@ class TextBuilderBits
   }
 }
 
-extension TextSizedBitsX on SizedNodeBuilderBits {
+extension TextSizedBitsX on SizedShaftBuilderBits {
   TextBuilderBits withTextStyle(TextStyle textStyle) => TextBuilderBits(
         sizedBits: this,
         textStyle: textStyle,

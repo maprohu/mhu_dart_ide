@@ -6,21 +6,18 @@ import 'package:mhu_dart_ide/src/shaft.dart';
 import '../screen.dart';
 import '../widgets/boxed.dart';
 
-Bx mdiMainMenuShaftBx({
-  required SizedNodeBuilderBits sizedBits,
-  required MdiMainMenuMsg value,
-}) {
-}
+class MainMenuShaftCalc extends ShaftCalc {
+  MainMenuShaftCalc(super.shaftCalcChain)
+      : super(
+          staticLabel: "Main Menu",
+        );
 
-class MainMenuShaftCalc with ShaftCalc {
   @override
-  Bx bx(SizedNodeBuilderBits sizedBits) {
-    return sizedBits.menuShaft(
-      label: "Main Menu",
+  Bx content(SizedShaftBuilderBits sizedBits) {
+    return sizedBits.menu(
       items: [
         sizedBits.opener(
-          label: "config",
-          builder: (shaft) => shaft.ensureConfig(),
+          (shaft) => shaft.ensureConfig(),
         ),
         MenuItem(
           label: "theme",
@@ -44,5 +41,4 @@ class MainMenuShaftCalc with ShaftCalc {
       ],
     );
   }
-
 }

@@ -41,7 +41,7 @@ class MonoTextStyle with _$MonoTextStyle, HasSize, HasTextStyle {
 }
 
 Bx stringBx({
-  required SizedNodeBuilderBits sizedBits,
+  required SizedShaftBuilderBits sizedBits,
   required String string,
 }) {
   final style = sizedBits.themeCalc.stringTextStyle;

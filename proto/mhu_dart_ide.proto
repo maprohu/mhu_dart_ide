@@ -36,6 +36,7 @@ message MdiDividerThicknessThemeMsg {
 
 message MdiShaftMsg {
   MdiShaftMsg parent = 1;
+  int32 width = 9;
   oneof type {
     MdiMainMenuMsg main_menu = 2;
     MdiBuildRunnerMenuMsg build_runner = 3;

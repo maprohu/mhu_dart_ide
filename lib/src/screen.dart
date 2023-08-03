@@ -1,9 +1,13 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/flex.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/screen/default_shaft.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/paginate.dart';
 import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
@@ -56,7 +60,7 @@ Bx mdiBuildScreen({
 
   return opBuilder.build(() {
     final ThemeCalc(
-      shaftsDividerThickness: mainColumnsDividerThickness,
+      shaftsDividerThickness: shaftsVerticalDividerThickness,
     ) = appBits.themeCalc();
 
     final StateCalc(
@@ -65,94 +69,114 @@ Bx mdiBuildScreen({
 
     final minColumnWidth = state.minShaftWidthOpt ??
         (screenWidth -
-                ((_defaultColumnCount - 1) * mainColumnsDividerThickness)) /
+                ((_defaultColumnCount - 1) * shaftsVerticalDividerThickness)) /
             _defaultColumnCount;
 
-    final columnCount = itemFitCount(
+    final shaftFitCount = itemFitCount(
       available: screenWidth,
       itemSize: minColumnWidth,
-      dividerThickness: mainColumnsDividerThickness,
+      dividerThickness: shaftsVerticalDividerThickness,
     );
 
     final topShaftMsg = (state.topShaftOpt ?? _defaultMainMenuShaft);
 
-    final calcChain = ShaftCalcChain(
+    final topCalcChain = ShaftCalcChain(
       appBits: appBits,
       shaftMsg: topShaftMsg,
     );
 
-    final columnsAfter =
-        calcChain.childToParentIterable.take(columnCount).fold<ColumnsAfter?>(
-      null,
-      (after, calcChain) {
-        final shaftMsg = calcChain.shaftMsg;
-        final nodeBits = NodeBuilderBits(
-          appBits: appBits,
-          opBuilder: opBuilder,
-          after: after,
-          shaftMsg: shaftMsg,
-        );
-        return ColumnsAfter(
-          parent: after,
-          shaftMsg: shaftMsg,
-          flexNode: mdiShaftFlexNode(
-            nodeBits: nodeBits,
-            height: screenSize.height,
-            calcChain: calcChain,
-          ),
-        );
-      },
+    final doubleChain = ShaftDoubleChain(
+      parent: null,
+      shaftCalc: topCalcChain.calc,
     );
 
-    final columnWidgets = buildFlex(
-      availableSpace: screenWidth,
-      fixedSize: minColumnWidth,
-      items: columnsAfter.childToParentIterable
-          .map((e) => e.flexNode)
-          .toList()
-          .reversed
-          .toList(),
-      dividerThickness: mainColumnsDividerThickness,
-    ).toList();
+    final visibleShaftsWithWidths = doubleChain.iterableLeft
+        .map((s) {
+          final widthLeft = shaftFitCount - s.parentWidthToEnd;
+          return (
+            shaft: s,
+            width: min(widthLeft, s.shaftWidth),
+          );
+        })
+        .takeWhile(
+          (v) => v.width > 0,
+        )
+        .toList();
+
+    final actualShaftUnitCount =
+        visibleShaftsWithWidths.map((e) => e.width).sum;
+
+    final singleShaftWidth = (screenWidth -
+            ((actualShaftUnitCount - 1) * shaftsVerticalDividerThickness)) /
+        actualShaftUnitCount;
+
+    final visibleShafts = visibleShaftsWithWidths
+        .map((sw) {
+          final (:shaft, :width) = sw;
+          final shaftBits = ShaftBuilderBits(
+            appBits: appBits,
+            opBuilder: opBuilder,
+            doubleChain: shaft,
+          );
+
+          final sizedBits = SizedShaftBuilderBits(
+            shaftBits: shaftBits,
+            size: screenSize.withWidth(
+              width * singleShaftWidth +
+                  ((width - 1) * shaftsVerticalDividerThickness),
+            ),
+          );
+
+          return defaultShaftBx(
+            sizedBits: sizedBits,
+            shaftCalc: shaft.shaftCalc,
+          );
+        })
+        .toList()
+        .reversed
+        .separatedBy(
+          Bx.verticalDivider(
+            thickness: shaftsVerticalDividerThickness,
+            height: screenSize.height,
+          ),
+        );
 
     return Bx.row(
-      columns: columnWidgets.reversed
-          .separatedBy(
-            Bx.verticalDivider(
-              thickness: mainColumnsDividerThickness,
-              height: screenSize.height,
-            ),
-          )
-          .toList(),
+      columns: visibleShafts.toList(),
       size: screenSize,
     );
   });
 }
 
-typedef NodeBuilder = Bx Function(SizedNodeBuilderBits sizedBits);
+typedef NodeBuilder = Bx Function(SizedShaftBuilderBits sizedBits);
 
 @freezedStruct
-class NodeBuilderBits with _$NodeBuilderBits {
-  NodeBuilderBits._();
+class ShaftBuilderBits
+    with
+        _$ShaftBuilderBits,
+        HasShaftDoubleChain,
+        HasShaftCalc,
+        HasShaftCalcChain,
+        HasShaftMsg {
+  ShaftBuilderBits._();
 
-  factory NodeBuilderBits({
+  factory ShaftBuilderBits({
     required MdiAppBits appBits,
     required OpBuilder opBuilder,
-    required ColumnsAfter? after,
-    required MdiShaftMsg shaftMsg,
-  }) = _NodeBuilderBits;
+    required ShaftDoubleChain doubleChain,
+  }) = _ShaftBuilderBits;
 
   late final configBits = appBits.configBits;
 
   late final themeCalc = configBits.themeCalc();
   late final stateCalc = configBits.stateCalc();
 
-  SizedNodeBuilderBits sized(Size size) => SizedNodeBuilderBits(
-        nodeBits: this,
+  SizedShaftBuilderBits sized(Size size) => SizedShaftBuilderBits(
+        shaftBits: this,
         size: size,
       );
 
-  SizedNodeBuilderBits sizedFrom({
+  SizedShaftBuilderBits sizedFrom({
     required double width,
     required double height,
   }) =>
@@ -161,7 +185,7 @@ class NodeBuilderBits with _$NodeBuilderBits {
   Bx sizedBxFrom({
     required double width,
     required double height,
-    required Bx Function(SizedNodeBuilderBits sizedBits) builder,
+    required Bx Function(SizedShaftBuilderBits sizedBits) builder,
   }) =>
       sizedBx(
         size: Size(width, height),
@@ -170,55 +194,55 @@ class NodeBuilderBits with _$NodeBuilderBits {
 
   Bx sizedBx({
     required Size size,
-    required Bx Function(SizedNodeBuilderBits sizedBits) builder,
+    required Bx Function(SizedShaftBuilderBits sizedBits) builder,
   }) {
     return builder(sized(size));
   }
 }
 
-mixin HasColumnBuildBits {
-  NodeBuilderBits get nodeBits;
+mixin HasShaftBuilderBits {
+  ShaftBuilderBits get shaftBits;
 
-  late final appBits = nodeBits.appBits;
+  late final appBits = shaftBits.appBits;
 
-  late final opBuilder = nodeBits.opBuilder;
-  late final configBits = nodeBits.configBits;
-  late final themeCalc = nodeBits.themeCalc;
-  late final stateCalc = nodeBits.stateCalc;
+  late final opBuilder = shaftBits.opBuilder;
+  late final configBits = shaftBits.configBits;
+  late final themeCalc = shaftBits.themeCalc;
+  late final stateCalc = shaftBits.stateCalc;
 
-  late final shaftMsg = nodeBits.shaftMsg;
+  late final shaftMsg = shaftBits.shaftMsg;
 }
 
 @freezedStruct
-class SizedNodeBuilderBits
-    with _$SizedNodeBuilderBits, HasColumnBuildBits, HasSize {
-  SizedNodeBuilderBits._();
+class SizedShaftBuilderBits
+    with _$SizedShaftBuilderBits, HasShaftBuilderBits, HasSize, HasThemeCalc {
+  SizedShaftBuilderBits._();
 
-  factory SizedNodeBuilderBits({
-    required NodeBuilderBits nodeBits,
+  factory SizedShaftBuilderBits({
+    required ShaftBuilderBits shaftBits,
     required Size size,
-  }) = _SizedNodeBuilderBits;
+  }) = _SizedShaftBuilderBits;
 
-  SizedNodeBuilderBits withSize(Size size) => copyWith(size: size);
+  SizedShaftBuilderBits withSize(Size size) => copyWith(size: size);
 
-  SizedNodeBuilderBits withHeight(double height) => copyWith(
+  SizedShaftBuilderBits withHeight(double height) => copyWith(
         size: size.withHeight(height),
       );
 
-  SizedNodeBuilderBits withWidth(double width) => copyWith(
+  SizedShaftBuilderBits withWidth(double width) => copyWith(
         size: size.withWidth(width),
       );
 }
 
 mixin HasSizedBits {
-  SizedNodeBuilderBits get sizedBits;
+  SizedShaftBuilderBits get sizedBits;
 
   late final size = sizedBits.size;
 }
 
 typedef ShortcutCallback = VoidCallback;
 
-extension NodeBuildBitxX on NodeBuilderBits {
+extension NodeBuildBitxX on ShaftBuilderBits {
   Bx shortcut(VoidCallback callback) {
     final handle = opBuilder.register(callback);
 
@@ -242,7 +266,7 @@ extension NodeBuildBitxX on NodeBuilderBits {
   }
 }
 
-extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
+extension SizedNodeBuildBitsX on SizedShaftBuilderBits {
   Bx fillHeight(double height) => withHeight(height).fill();
 
   Bx fill() => leaf(null);
@@ -307,25 +331,52 @@ extension SizedNodeBuildBitsX on SizedNodeBuilderBits {
   }
 }
 
-extension _MdiShaftMsgX on MdiShaftMsg? {
-  Iterable<MdiShaftMsg> get columnsIterable sync* {
-    var c = this;
-    while (c != null) {
-      yield c;
-      c = c.parentOpt;
+class ShaftDoubleChain
+    with
+        HasShaftCalc,
+        HasShaftCalcChain,
+        HasShaftMsg,
+        HasParent<ShaftDoubleChain>,
+        HasNext<ShaftDoubleChain> {
+  @override
+  final ShaftDoubleChain? parent;
+
+  @override
+  final ShaftCalc shaftCalc;
+
+  @override
+  late final next = ShaftDoubleChain(
+    parent: this,
+    shaftCalc: shaftCalc.shaftCalcChain.parent!.calc,
+  );
+
+  bool get hasLeft => shaftCalc.shaftCalcChain.parent != null;
+
+  ShaftDoubleChain? get left => hasLeft ? next : null;
+
+  ShaftDoubleChain? get right => parent;
+
+  Iterable<ShaftDoubleChain> get iterableLeft sync* {
+    yield this;
+    final left = this.left;
+    if (left != null) {
+      // wonder if there is tail recursion optimization?
+      yield* left.iterableLeft;
     }
   }
+
+  late int parentWidthToEnd = parent?.widthToEnd ?? 0;
+
+  late int widthToEnd = parentWidthToEnd + shaftWidth;
+
+  ShaftDoubleChain({
+    this.parent,
+    required this.shaftCalc,
+  });
 }
 
-@freezedStruct
-class ColumnsAfter with _$ColumnsAfter implements HasParent<ColumnsAfter> {
-  final inherited = TypedCache();
+mixin HasShaftDoubleChain {
+  ShaftDoubleChain get doubleChain;
 
-  ColumnsAfter._();
-
-  factory ColumnsAfter({
-    required ColumnsAfter? parent,
-    required MdiShaftMsg shaftMsg,
-    required FlexNode<Bx> flexNode,
-  }) = _ColumnsAfter;
+  late final shaftCalc = doubleChain.shaftCalc;
 }

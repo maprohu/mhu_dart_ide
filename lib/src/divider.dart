@@ -52,7 +52,7 @@ Widget columnWithDividers({
   }
 }
 
-extension DividerSizedBits on SizedNodeBuilderBits {
+extension DividerSizedBits on SizedShaftBuilderBits {
   Bx horizontalDivider(double thickness) {
     return Bx.horizontalDivider(
       thickness: thickness,

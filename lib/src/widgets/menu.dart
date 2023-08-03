@@ -9,11 +9,11 @@ import '../theme.dart';
 import 'boxed.dart';
 
 Bx menuBx({
-  required SizedNodeBuilderBits sizedBits,
+  required SizedShaftBuilderBits sizedBits,
   required int itemCount,
-  required Bx Function(int index, SizedNodeBuilderBits sizedBits) itemBuilder,
+  required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
 }) {
-  final SizedNodeBuilderBits(
+  final SizedShaftBuilderBits(
     :themeCalc,
   ) = sizedBits;
 
@@ -34,7 +34,7 @@ Bx menuBx({
 
 Bx menuItemBx({
   required MenuItem menuItem,
-  required SizedNodeBuilderBits sizedBits,
+  required SizedShaftBuilderBits sizedBits,
 }) {
   final themeCalc = sizedBits.themeCalc;
 
@@ -48,7 +48,7 @@ Bx menuItemBx({
 
       return sizedBits.fillRight(
         left: sizedBits.centerHeight(
-          sizedBits.nodeBits.shortcut(callback),
+          sizedBits.shaftBits.shortcut(callback),
         ),
         right: (sizedBits) {
           return sizedBits.itemText.centerLeft(label);

@@ -120,3 +120,8 @@ class ThemeCalc {
 
   late final paginatorFooterPadding = const EdgeInsets.all(2);
 }
+
+
+mixin HasThemeCalc {
+  ThemeCalc get themeCalc;
+}

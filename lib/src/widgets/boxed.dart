@@ -263,7 +263,7 @@ class BxLargest with _$BxLargest {
   }) = _BxLargest;
 }
 
-extension BxSizedBuilderX on SizedNodeBuilderBits {
+extension BxSizedBuilderX on SizedShaftBuilderBits {
   Bx col(
     Iterable<Bx> Function(double width) builder,
   ) {

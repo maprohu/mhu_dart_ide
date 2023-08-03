@@ -6,7 +6,7 @@ import '../screen.dart';
 import '../widgets/boxed.dart';
 
 Bx mdiBuildRunnerMenuShaftBx({
-  required SizedNodeBuilderBits sizedBits,
+  required SizedShaftBuilderBits sizedBits,
   required MdiBuildRunnerMenuMsg value,
 }) {
   return sizedBits.menuShaft(

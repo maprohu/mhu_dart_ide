@@ -9,40 +9,62 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import 'package:protobuf/protobuf.dart';
 
 import '../../screen.dart';
+import '../../screen/calc.dart';
 import '../../widgets/boxed.dart';
 
-Bx mdiPfeConcreteFieldShaftBx({
-  required SizedNodeBuilderBits sizedBits,
-  required MdiPfeConcreteFieldShaftMsg value,
-}) {
-  final mfw = sizedBits.shaftMsg.parent.mfw(sizedBits.appBits);
-
-  final fieldKey = ConcreteFieldKey(
-    messageType: mfw.read().runtimeType,
-    tagNumber: value.tagNumber,
+class PfeConcreteFieldShaftCalc extends ShaftCalc {
+  PfeConcreteFieldShaftCalc(
+    super.shaftCalcChain,
   );
-  final calc = fieldKey.calc;
-  final access = calc.access;
 
-  final ShaftBuilder? shaftBuilder = switch (access) {
-    MapFieldAccess() => mdiPfeMapFieldShaftBuilder(
-        access: access,
-        mfw: mfw,
-      ),
-    _ => null,
-  };
+  late final messageShaftCalc = leftCalc as ProtoMsgShaftCalc;
 
-  if (shaftBuilder == null) {
-    return errorShaftBx(
-      sizedBits: sizedBits,
-      message: "no shaft: ${calc.access.runtimeType}",
-    );
+  late final shaftValue = shaftMsg.pfeConcreteField;
+
+  late final mfw = messageShaftCalc.mfw;
+
+  late final fieldKey = ConcreteFieldKey(
+    messageType: mfw.read().runtimeType,
+    tagNumber: shaftValue.tagNumber,
+  );
+
+  late final fieldCalc = fieldKey.calc;
+
+  late final access = fieldCalc.access;
+
+  @override
+  String get label => fieldCalc.protoName;
+
+  @override
+  Bx content(SizedShaftBuilderBits sizedBits) {
+    return sizedBits.fill();
   }
 
-  return sizedBits.shaft((headerBits, contentBits) {
-    return ShaftParts(
-      header: headerBits.headerText.centerLeft(calc.protoName),
-      content: contentBits.fill(),
-    );
-  });
+  late final _options = switch (access) {
+    MapFieldAccess() && final o => MapFieldOptions(this, o),
+    _ => _TodoOptions(this),
+  };
+
+  @override
+  List<MenuItem> options(ShaftBuilderBits nodeBits) => _options.options(nodeBits);
+
+}
+
+abstract class ConcreteFieldOptions {
+  final PfeConcreteFieldShaftCalc shaftCalc;
+
+  ConcreteFieldOptions(this.shaftCalc);
+
+  List<MenuItem> options(ShaftBuilderBits nodeBits);
+
+}
+
+class _TodoOptions extends ConcreteFieldOptions {
+  _TodoOptions(super.shaftCalc);
+
+  @override
+  List<MenuItem> options(ShaftBuilderBits nodeBits) {
+    return [];
+  }
+
 }
