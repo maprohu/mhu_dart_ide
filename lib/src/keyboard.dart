@@ -100,9 +100,6 @@ class ShortcutSet with HasNext<ShortcutSet> {
 
   int get count => shortcutList.length;
 
-  // TODO I could "merge" sorted lists instead of doing set operations
-  late final ISet<OpShortcut> shortcutSet = shortcutList.toISet();
-
   static IList<OpShortcut> nextList({
     required IList<ShortcutKey> keys,
     required IList<OpShortcut> list,

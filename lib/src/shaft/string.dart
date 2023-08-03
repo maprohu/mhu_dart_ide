@@ -1,10 +1,10 @@
-import 'package:mhu_dart_ide/src/shaft.dart';
-import 'package:mhu_dart_ide/src/string.dart';
-import 'package:mhu_dart_ide/src/widgets/text.dart';
+import 'package:mhu_dart_ide/src/builder/text.dart';
+import 'package:mhu_dart_ide/src/bx/shaft.dart';
+import 'package:mhu_dart_ide/src/bx/string.dart';
 
-import '../screen.dart';
+import '../builder/sized.dart';
 import '../screen/calc.dart';
-import '../widgets/boxed.dart';
+import '../bx/boxed.dart';
 
 Bx stringShaftBx({
   required SizedShaftBuilderBits sizedBits,

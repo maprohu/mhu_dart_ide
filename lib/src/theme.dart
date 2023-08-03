@@ -1,15 +1,11 @@
 import 'dart:math';
 
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/icons.dart';
-import 'package:mhu_dart_ide/src/op_shortucts.dart';
-import 'package:mhu_dart_ide/src/string.dart';
-import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
-import 'package:mhu_dart_ide/src/widgets/text.dart';
+import 'package:mhu_dart_ide/src/bx/string.dart';
+import 'package:mhu_dart_ide/src/bx/shortcut.dart';
+import 'package:mhu_dart_ide/src/bx/text.dart';
 
 final mdiDefaultTheme = MdiThemeMsg$.create(
   dividerThickness: MdiDividerThicknessThemeMsg$.create(
@@ -77,29 +73,14 @@ class ThemeCalc {
     themeCalc: this,
   ).size;
 
+  late final shaftHeaderTextHeight =
+      mdiTextSize("M", shaftHeaderTextStyle).height;
 
-  late final shortcutWithIconSize = Size(
-    max(shortcutIconSize.width, shortcutSize.width),
-    shortcutSize.height + shortcutIconSize.height + shortcutIconGap,
-  );
 
-  late final shaftHeaderContentHeight = shortcutWithIconBx(
-    themeCalc: this,
-    icon: MdiIcons.help,
-    shortcutData: ShortcutData(
-      shortcut: [
-        ShortcutKey.of(LogicalKeyboardKey.keyM),
-        ShortcutKey.of(LogicalKeyboardKey.keyM),
-      ].toIList(),
-      pressedCount: 1,
-    ),
-  ).height;
+  late final shaftHeaderContentHeight =
+      max(shaftHeaderTextHeight, shortcutSize.height);
 
   late final shaftHeaderPadding = const EdgeInsets.all(2);
-
-  late final shortcutIconDimension = 12.0;
-  late final shortcutIconSize = Size.square(shortcutIconDimension);
-  late final shortcutIconGap = 1.0;
 
   late final shaftHeaderOuterHeight =
       shaftHeaderContentHeight + shaftHeaderPadding.vertical;
@@ -120,7 +101,6 @@ class ThemeCalc {
 
   late final paginatorFooterPadding = const EdgeInsets.all(2);
 }
-
 
 mixin HasThemeCalc {
   ThemeCalc get themeCalc;

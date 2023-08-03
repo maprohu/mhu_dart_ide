@@ -3,6 +3,7 @@ import 'package:mhu_dart_ide/src/shaft/config.dart';
 import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
 import 'package:mhu_dart_ide/src/shaft/options.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 
 import '../screen/calc.dart';
 import 'error.dart';
@@ -16,6 +17,9 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
     MdiShaftMsg_Type$config() => ConfigShaftCalc(shaftCalcChain),
     MdiShaftMsg_Type$pfeConcreteField() => PfeConcreteFieldShaftCalc(shaftCalcChain),
     MdiShaftMsg_Type$options() => OptionsShaftCalc(shaftCalcChain),
+    MdiShaftMsg_Type$newMapItem() => NewMapItemShaftCalc(shaftCalcChain),
+    MdiShaftMsg_Type$entryKey() => EntryKeyShaftCalc(shaftCalcChain),
+    MdiShaftMsg_Type$entryValue() => EntryValueShaftCalc(shaftCalcChain),
     _ => NotImplementedShaftCalc(
         shaftCalcChain,
         message: "no shaft: ${shaftMsg.whichType().name}",

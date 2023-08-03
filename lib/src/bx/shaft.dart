@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/builder/text.dart';
+import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/options.dart';
-import 'package:mhu_dart_ide/src/screen/screen.dart';
-import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
-import 'package:mhu_dart_ide/src/shaft/config.dart';
-import 'package:mhu_dart_ide/src/shaft/error.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
-import 'package:mhu_dart_ide/src/widgets/menu.dart';
-import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
-import 'package:mhu_dart_ide/src/widgets/text.dart';
+import 'package:mhu_dart_ide/src/bx/text.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-import '../proto.dart';
-import 'flex.dart';
-import 'screen.dart';
-import 'shaft/main_menu.dart';
-import 'widgets/boxed.dart';
+import '../builder/sized.dart';
+import 'divider.dart';
+import 'menu.dart';
+import 'boxed.dart';
 
 part 'shaft.freezed.dart';
 
@@ -71,23 +65,13 @@ Bx shaftBx({
         child: parts.header,
         size: size.withHeight(shaftHeaderOuterHeight),
       ),
-      Bx.horizontalDivider(
+      horizontalDividerBx(
         thickness: shaftHeaderDividerThickness,
         width: width,
       ),
       parts.content,
     ],
   );
-}
-
-@freezedStruct
-class MenuItem with _$MenuItem {
-  MenuItem._();
-
-  factory MenuItem({
-    required String label,
-    required ShortcutCallback callback,
-  }) = _MenuItem;
 }
 
 extension ShaftSizedBitsX on SizedShaftBuilderBits {
@@ -132,53 +116,10 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
     );
   }
 
-  Bx menu({
-    required List<MenuItem> items,
-  }) {
-    return menuBx(
-      sizedBits: this,
-      itemCount: items.length,
-      itemBuilder: (index, sizedBits) {
-        return menuItemBx(
-          menuItem: items[index],
-          sizedBits: sizedBits,
-        );
-      },
-    );
-  }
-
-  MenuItem opener(
-    ShaftOpener builder, {
-    String? label,
-  }) {
-    label ??= ShaftCalcChain(
-      appBits: appBits,
-      shaftMsg: MdiShaftMsg().also(builder)..freeze(),
-    ).calc.label;
-
-    return MenuItem(
-      label: label,
-      callback: openerCallback(builder),
-    );
-  }
-
-  MenuItem openerFr({
+  Bx header({
     required String label,
-    required ShaftOpener builder,
+    VoidCallback? callback,
   }) {
-    return MenuItem(
-      label: label,
-      callback: (() {
-        configBits.state.rebuild((message) {
-          message.topShaft = MdiShaftMsg$.create(
-            parent: shaftMsg,
-          ).also(builder);
-        });
-      }),
-    );
-  }
-
-  Bx header({required String label, VoidCallback? callback}) {
     if (callback == null) {
       return headerText.centerLeft(label);
     }
@@ -190,62 +131,29 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
       ),
     );
   }
-
-  Bx fillLeft({
-    required NodeBuilder left,
-    required Bx right,
-  }) {
-    return Bx.row(
-      columns: [
-        left(
-          withWidth(width - right.width),
-        ),
-        right,
-      ],
-      size: size,
-    );
-  }
-
-  Bx fillRight({
-    required Bx left,
-    required NodeBuilder right,
-  }) {
-    return Bx.row(
-      columns: [
-        left,
-        right(
-          withWidth(width - left.width),
-        ),
-      ],
-      size: size,
-    );
-  }
-
-  Bx fillBottom({
-    required Bx top,
-    required NodeBuilder bottom,
-  }) {
-    return Bx.col(
-      rows: [
-        top,
-        bottom(withHeight(height - top.height)),
-      ],
-      size: size,
-    );
-  }
-
-  Bx fillTop({
-    required NodeBuilder top,
-    required Bx bottom,
-  }) {
-    return Bx.col(
-      rows: [
-        top(withHeight(height - bottom.height)),
-        bottom,
-      ],
-      size: size,
-    );
-  }
 }
 
-typedef ShaftOpener = void Function(MdiShaftMsg shaft);
+Bx defaultShaftBx({
+  required SizedShaftBuilderBits sizedBits,
+  required ShaftCalc shaftCalc,
+}) {
+  return shaftBx(
+    sizedBits: sizedBits,
+    builder: (headerBits, contentBits) {
+      final content = shaftCalc.content(contentBits);
+      return ShaftParts(
+        header: headerBits.fillLeft(
+          left: (sizedBits) => sizedBits.headerText.centerLeft(
+            shaftCalc.label,
+          ),
+          right: headerBits.centerHeight(
+            headerBits.shaftBits.shortcut(
+              headerBits.optionsOpenerCallback(),
+            ),
+          ),
+        ),
+        content: content,
+      );
+    },
+  );
+}

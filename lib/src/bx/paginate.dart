@@ -2,14 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/divider.dart';
-import 'package:mhu_dart_ide/src/icons.dart';
-import 'package:mhu_dart_ide/src/screen.dart';
-import 'package:mhu_dart_ide/src/shaft.dart';
-import 'package:mhu_dart_ide/src/widgets/shortcut.dart';
+import 'package:mhu_dart_ide/src/bx/divider.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-import '../theme.dart';
+import '../builder/sized.dart';
 import 'boxed.dart';
 
 int itemFitCount({
@@ -25,16 +21,6 @@ int itemFitCount({
   return 1 + (remaining ~/ (itemSize + dividerThickness));
 }
 
-Bx showPaginatorShortcutBx({
-  required ThemeCalc themeCalc,
-  required ShortcutData? shortcutData,
-}) {
-  return shortcutWithIconBx(
-    themeCalc: themeCalc,
-    icon: MdiIcons.pages,
-    shortcutData: shortcutData,
-  );
-}
 
 typedef PaginatorBx = ({
   Bx bx,
@@ -62,7 +48,7 @@ Bx paginatorAlongYBx({
 
     var itemBits = sizedBits.withHeight(itemHeight);
 
-    final divider = Bx.horizontalDivider(
+    final divider = horizontalDividerBx(
       thickness: dividerThickness,
       width: sizedBits.width,
     );

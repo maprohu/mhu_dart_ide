@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+
 message  MdiConfigMsg {
   int32 ids = 1;
   map<int32, MdiDartPackageMsg> dart_packages = 2;
@@ -38,21 +39,19 @@ message MdiShaftMsg {
   MdiShaftMsg parent = 1;
   int32 width = 9;
   oneof type {
-    MdiMainMenuMsg main_menu = 2;
-    MdiBuildRunnerMenuMsg build_runner = 3;
-    MdiConfigShaftMsg config = 4;
+    MdiEmptyMsg main_menu = 2;
+    MdiEmptyMsg build_runner = 3;
+    MdiEmptyMsg config = 4;
     MdiPfeConcreteFieldShaftMsg pfe_concrete_field = 6;
     MdiPfeOneofFieldShaftMsg pfe_oneof_field = 7;
-    MdiOptionsShaftMsg options = 8;
+    MdiEmptyMsg options = 8;
+    MdiMapAddShaftMsg new_map_item = 10;
+    MdiEmptyMsg entry_key = 11;
+    MdiEmptyMsg entry_value = 12;
   }
 }
 
-message  MdiMainMenuMsg {
-}
-message  MdiBuildRunnerMenuMsg {
-}
-message  MdiConfigShaftMsg {
-}
+message  MdiEmptyMsg {}
 
 message  MdiPfeConcreteFieldShaftMsg {
   int32 tag_number = 1;
@@ -62,5 +61,18 @@ message  MdiPfeOneofFieldShaftMsg {
   int32 oneof_index = 1;
 }
 
-message  MdiOptionsShaftMsg {
+message  MdiMapAddShaftMsg {
+  oneof entry_key {
+    string string_key = 1;
+    int32 int_key = 2;
+  }
+
+  oneof entry_value {
+    int32 int_value = 3;
+    string string_value = 4;
+    bool bool_value = 5;
+    bytes bytes_value = 6;
+  }
+
 }
+

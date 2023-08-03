@@ -1,18 +1,14 @@
-import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/shaft.dart';
-import 'package:mhu_dart_ide/src/shaft/error.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
-import 'package:mhu_dart_ide/src/widgets/text.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
-import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
-import 'package:protobuf/protobuf.dart';
 
-import '../../screen.dart';
+import '../../builder/shaft.dart';
+import '../../builder/sized.dart';
+import '../../bx/menu.dart';
 import '../../screen/calc.dart';
-import '../../widgets/boxed.dart';
+import '../../bx/boxed.dart';
 
-class PfeConcreteFieldShaftCalc extends ShaftCalc {
+class PfeConcreteFieldShaftCalc extends ShaftCalc with DelegateShaftCalcOptions {
   PfeConcreteFieldShaftCalc(
     super.shaftCalcChain,
   );
@@ -40,13 +36,11 @@ class PfeConcreteFieldShaftCalc extends ShaftCalc {
     return sizedBits.fill();
   }
 
-  late final _options = switch (access) {
-    MapFieldAccess() && final o => MapFieldOptions(this, o),
-    _ => _TodoOptions(this),
-  };
-
   @override
-  List<MenuItem> options(ShaftBuilderBits nodeBits) => _options.options(nodeBits);
+  late final optionsDelegate = switch (access) {
+    MapFieldAccess() && final o => MapFieldOptions(this, o).options,
+    _ => _TodoOptions(this).options,
+  };
 
 }
 
@@ -55,8 +49,7 @@ abstract class ConcreteFieldOptions {
 
   ConcreteFieldOptions(this.shaftCalc);
 
-  List<MenuItem> options(ShaftBuilderBits nodeBits);
-
+  List<MenuItem> options(ShaftBuilderBits shaftBits);
 }
 
 class _TodoOptions extends ConcreteFieldOptions {
@@ -66,5 +59,4 @@ class _TodoOptions extends ConcreteFieldOptions {
   List<MenuItem> options(ShaftBuilderBits nodeBits) {
     return [];
   }
-
 }

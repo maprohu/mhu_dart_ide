@@ -4,7 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/services.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/op_shortucts.dart';
+import 'package:mhu_dart_ide/src/keyboard.dart';
 
 typedef OpShortcut = IList<ShortcutKey>;
 typedef OpCallback = VoidCallback;
@@ -137,19 +137,6 @@ class OpBuilder {
       shortcut: () => reg.shortcut,
       watchState: () {
         return reg.pressed();
-        // final pressed = _pressed();
-        // if (pressed.isEmpty) {
-        //   return 0;
-        // }
-        // final pressedCount = pressed.length;
-        // final shortcut = reg.shortcut;
-        // if (shortcut.length < pressedCount) {
-        //   return null;
-        // }
-        // if (shortuctEq.equals(shortcut.take(pressedCount), pressed)) {
-        //   return pressedCount;
-        // }
-        // return null;
       },
     );
   }

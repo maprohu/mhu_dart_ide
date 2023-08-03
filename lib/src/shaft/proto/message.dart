@@ -1,9 +1,9 @@
-import 'package:mhu_dart_ide/src/shaft.dart';
+import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import 'package:recase/recase.dart';
-import '../../screen.dart';
-import '../../widgets/boxed.dart';
+import '../../builder/sized.dart';
+import '../../bx/boxed.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 
 class ProtoMsgShaftCalc extends ShaftCalc {

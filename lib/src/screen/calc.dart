@@ -1,12 +1,14 @@
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
-import 'package:mhu_dart_ide/src/screen.dart';
-import 'package:mhu_dart_ide/src/shaft.dart';
-import 'package:mhu_dart_ide/src/shaft/error.dart';
+import 'package:mhu_dart_ide/src/builder/shaft.dart';
+import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+import 'package:recase/recase.dart';
 
+import '../builder/sized.dart';
+import '../bx/menu.dart';
 import '../shaft/switch.dart';
-import '../widgets/boxed.dart';
+import '../bx/boxed.dart';
 
 class ShaftCalcChain with HasParent<ShaftCalcChain>, HasAppBits, HasShaftMsg {
   @override
@@ -47,7 +49,7 @@ abstract class ShaftCalc with HasShaftCalcChain, HasShaftMsg {
   final ShaftCalcChain shaftCalcChain;
   final String staticLabel;
 
-  List<MenuItem> options(ShaftBuilderBits nodeBits) => const [];
+  List<MenuItem> options(ShaftBuilderBits shaftBits) => const [];
 
   Bx content(SizedShaftBuilderBits sizedBits);
 
@@ -55,6 +57,11 @@ abstract class ShaftCalc with HasShaftCalcChain, HasShaftMsg {
     this.shaftCalcChain, {
     this.staticLabel = "<no label>",
   });
+
+  ShaftCalc.access(
+    this.shaftCalcChain, {
+    required ScalarFieldAccess<MdiShaftMsg, dynamic> access,
+  }) : staticLabel = access.name.titleCase;
 
   String get label => staticLabel;
 
@@ -65,4 +72,11 @@ mixin HasShaftCalc {
   ShaftCalc get shaftCalc;
 
   late final shaftCalcChain = shaftCalc.shaftCalcChain;
+}
+
+mixin DelegateShaftCalcOptions {
+  List<MenuItem> Function(ShaftBuilderBits shaftBits) get optionsDelegate;
+
+  List<MenuItem> options(ShaftBuilderBits shaftBits) =>
+      optionsDelegate(shaftBits);
 }

@@ -4,7 +4,7 @@ import 'package:isar/isar.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/isar.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
-import 'package:mhu_dart_ide/src/screen.dart';
+import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 
 import '../proto.dart';

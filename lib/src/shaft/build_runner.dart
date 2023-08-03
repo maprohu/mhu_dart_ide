@@ -1,13 +1,11 @@
-import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/shaft.dart';
+import 'package:mhu_dart_ide/src/bx/shaft.dart';
 
-import '../screen.dart';
-import '../widgets/boxed.dart';
+import '../builder/sized.dart';
+import '../bx/menu.dart';
+import '../bx/boxed.dart';
 
 Bx mdiBuildRunnerMenuShaftBx({
   required SizedShaftBuilderBits sizedBits,
-  required MdiBuildRunnerMenuMsg value,
 }) {
   return sizedBits.menuShaft(
     label: "Build Runner",
