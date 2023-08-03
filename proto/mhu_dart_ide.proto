@@ -76,3 +76,17 @@ message  MdiMapAddShaftMsg {
 
 }
 
+message  MdiMapEntryMsg {
+  oneof entry_key {
+    string string_key = 1;
+    int32 int_key = 2;
+  }
+
+  oneof entry_value {
+    int32 int_value = 3;
+    string string_value = 4;
+    bool bool_value = 5;
+    bytes bytes_value = 6;
+  }
+
+}

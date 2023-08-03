@@ -11,6 +11,9 @@ class OptionsShaftCalc extends ShaftCalc {
         );
 
   @override
+  bool get isSignificant => false;
+
+  @override
   Bx content(SizedShaftBuilderBits sizedBits) {
     return sizedBits.menu(
       items: [

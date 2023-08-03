@@ -36,11 +36,13 @@ class PfeConcreteFieldShaftCalc extends ShaftCalc with DelegateShaftCalcOptions 
     return sizedBits.fill();
   }
 
-  @override
-  late final optionsDelegate = switch (access) {
-    MapFieldAccess() && final o => MapFieldOptions(this, o).options,
-    _ => _TodoOptions(this).options,
+  late final fieldOptions = switch (access) {
+    MapFieldAccess() && final o => MapFieldOptions(this, o),
+    _ => _TodoOptions(this),
   };
+
+  @override
+  late final optionsDelegate = fieldOptions.options;
 
 }
 

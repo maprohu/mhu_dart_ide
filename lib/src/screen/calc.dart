@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
@@ -51,6 +52,8 @@ abstract class ShaftCalc with HasShaftCalcChain, HasShaftMsg {
 
   List<MenuItem> options(ShaftBuilderBits shaftBits) => const [];
 
+  bool get isSignificant => true;
+
   Bx content(SizedShaftBuilderBits sizedBits);
 
   ShaftCalc(
@@ -66,6 +69,10 @@ abstract class ShaftCalc with HasShaftCalcChain, HasShaftMsg {
   String get label => staticLabel;
 
   late final leftCalc = shaftCalcChain.parent?.calc;
+
+  late final leftSignificantCalc = shaftCalcChain.childToParentIterable
+      .map((e) => e.calc)
+      .firstWhereOrNull((e) => e.isSignificant);
 }
 
 mixin HasShaftCalc {
@@ -79,4 +86,10 @@ mixin DelegateShaftCalcOptions {
 
   List<MenuItem> options(ShaftBuilderBits shaftBits) =>
       optionsDelegate(shaftBits);
+}
+
+mixin ShaftCalcRightOf<T extends ShaftCalc> implements ShaftCalc {
+  late final typedLeftCalc = leftSignificantCalc as T;
+
+
 }

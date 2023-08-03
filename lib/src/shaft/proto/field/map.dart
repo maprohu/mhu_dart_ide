@@ -1,20 +1,19 @@
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/boxed.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/bx/shaft.dart';
-import 'package:mhu_dart_ide/src/generated/mhu_dart_ide.pb.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
+import 'package:mhu_dart_ide/src/screen/editing.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../../../proto.dart';
-import '../../../../proto.dart';
-import '../../../../proto.dart';
 import '../../../bx/menu.dart';
+import '../../../screen/options.dart';
 
 ShaftBuilder mdiPfeMapFieldShaftBuilder({
   required MapFieldAccess access,
@@ -35,21 +34,36 @@ ShaftBuilder mdiPfeMapFieldShaftBuilder({
   };
 }
 
-class MapFieldOptions extends ConcreteFieldOptions {
+class MapFieldOptions extends ConcreteFieldOptions with HasMapKeyVariant {
   final MapFieldAccess access;
 
   MapFieldOptions(super.shaftCalc, this.access);
 
   @override
-  List<MenuItem> options(ShaftBuilderBits shaftBits) {
+  Options options(ShaftBuilderBits shaftBits) {
     return [
       shaftBits.openerField(MdiShaftMsg$.newMapItem),
     ];
   }
+
+  @override
+  late final mapKeyVariant = switch (access.defaultMapKey) {
+    PbIntMapKey() => IntMapKeyVariant(this),
+    PbStringMapKey() => StringMapKeyVariant(this),
+  };
 }
 
-class NewMapItemShaftCalc extends ShaftCalc {
+mixin HasMapKeyVariant {
+  MapKeyVariant get mapKeyVariant;
+}
+
+class NewMapItemShaftCalc extends ShaftCalc
+    with
+        ShaftCalcRightOf<PfeConcreteFieldShaftCalc>,
+        HasEditingValueOf<MapEntry> {
   NewMapItemShaftCalc(super.shaftCalcChain);
+
+  late final mapFieldOptions = typedLeftCalc.fieldOptions as MapFieldOptions;
 
   @override
   Bx content(SizedShaftBuilderBits sizedBits) {
@@ -62,6 +76,8 @@ class NewMapItemShaftCalc extends ShaftCalc {
       ),
     ]);
   }
+
+  late final editingValue = fr();
 }
 
 class EntryKeyShaftCalc extends ShaftCalc {
@@ -72,6 +88,9 @@ class EntryKeyShaftCalc extends ShaftCalc {
   Bx content(SizedShaftBuilderBits sizedBits) {
     return sizedBits.fill();
   }
+
+  @override
+  List<MenuItem> options(ShaftBuilderBits shaftBits) {}
 }
 
 class EntryValueShaftCalc extends ShaftCalc {
@@ -82,5 +101,35 @@ class EntryValueShaftCalc extends ShaftCalc {
   Bx content(SizedShaftBuilderBits sizedBits) {
     return sizedBits.fill();
   }
+}
 
+abstract class MapKeyVariant {
+  final MapFieldOptions mapFieldOptions;
+
+  MapKeyVariant(this.mapFieldOptions);
+
+  Options options(ShaftBuilderBits shaftBits);
+}
+
+class IntMapKeyVariant extends MapKeyVariant {
+  IntMapKeyVariant(super.mapFieldOptions);
+
+  @override
+  Options options(ShaftBuilderBits shaftBits) {
+    return [
+      MenuItem(
+        label: "Paste From Clipboard",
+        callback: () {},
+      ),
+    ];
+  }
+}
+
+class StringMapKeyVariant extends MapKeyVariant {
+  StringMapKeyVariant(super.mapFieldOptions);
+
+  @override
+  Options options(ShaftBuilderBits shaftBits) {
+    return [];
+  }
 }
