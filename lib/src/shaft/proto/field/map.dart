@@ -60,7 +60,7 @@ mixin HasMapKeyVariant {
 class NewMapItemShaftCalc extends ShaftCalc
     with
         ShaftCalcRightOf<PfeConcreteFieldShaftCalc>,
-        HasEditingValueOf<MapEntry> {
+        HasEditingValueOf<MdiMapEntryMsg> {
   NewMapItemShaftCalc(super.shaftCalcChain);
 
   late final mapFieldOptions = typedLeftCalc.fieldOptions as MapFieldOptions;
