@@ -49,3 +49,4 @@ generated/
 lib/proto/
 *.freezed.dart
 *.g.dart
+*.g.*.dart

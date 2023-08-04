@@ -58,9 +58,8 @@ mixin HasMapKeyVariant {
 }
 
 class NewMapItemShaftCalc extends ShaftCalc
-    with
-        ShaftCalcRightOf<PfeConcreteFieldShaftCalc>,
-        HasEditingValueOf<MdiMapEntryMsg> {
+    with ShaftCalcRightOf<PfeConcreteFieldShaftCalc>
+    implements HasEditingValue<MdiMapEntryMsg> {
   NewMapItemShaftCalc(super.shaftCalcChain);
 
   late final mapFieldOptions = typedLeftCalc.fieldOptions as MapFieldOptions;
@@ -77,7 +76,11 @@ class NewMapItemShaftCalc extends ShaftCalc
     ]);
   }
 
-  late final editingValue = fr();
+  @override
+  late final editingValue = ComposedEditingValue(
+    readValue: readValue,
+    writeValue: writeValue,
+  );
 }
 
 class EntryKeyShaftCalc extends ShaftCalc {
