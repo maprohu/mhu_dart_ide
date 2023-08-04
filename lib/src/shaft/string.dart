@@ -1,3 +1,4 @@
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/shaft.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
@@ -22,20 +23,9 @@ Bx stringShaftBx({
   });
 }
 
-class StringShaftCalc extends ShaftCalc {
-  final String string;
-
-  StringShaftCalc(
-    super.shaftCalcChain, {
-    required super.staticLabel,
-    required this.string,
-  });
-
-  @override
-  Bx content(SizedShaftBuilderBits sizedBits) {
-    return stringBx(
-      sizedBits: sizedBits,
-      string: string,
-    );
-  }
-}
+BuildShaftContent stringBuildShaftContent(String string) => (sizedBits) {
+      return stringBx(
+        sizedBits: sizedBits,
+        string: string,
+      );
+    };

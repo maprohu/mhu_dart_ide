@@ -6,6 +6,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
@@ -24,18 +25,18 @@ void main() async {
 
       final isar = await mdiCreateIsar();
 
-      final configBits = await MdiConfigBits.create(
+      final configBits = await ConfigBits.create(
         isar: isar,
         disposers: disposers,
       );
 
-      final screenSize =
+      final screenSizeFr =
           await ScreenSizeObserver.stream(disposers).fr(disposers);
 
-      final appBits = MdiAppBits(
-        isar: isar,
+      final appBits = ComposedAppBits.configBits(
         configBits: configBits,
-        screenSize: screenSize,
+        screenSizeFr: screenSizeFr,
+        opBuilder: OpBuilder(),
       );
 
       final listenable = mdiScreenListenable(
@@ -54,7 +55,7 @@ void main() async {
 }
 
 class MdiApp extends StatelessWidget {
-  final MdiAppBits appBits;
+  final AppBits appBits;
 
   final ValueListenable<Bx> listenable;
 

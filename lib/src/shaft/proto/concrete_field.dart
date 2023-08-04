@@ -1,3 +1,5 @@
+import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/screen/editing.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
@@ -8,7 +10,11 @@ import '../../bx/menu.dart';
 import '../../screen/calc.dart';
 import '../../bx/boxed.dart';
 
-class PfeConcreteFieldShaftCalc extends ShaftCalc with DelegateShaftCalcOptions {
+part 'concrete_field.g.has.dart';
+// part 'concrete_field.g.compose.dart';
+
+
+class PfeConcreteFieldShaftCalc extends ShaftCalc with DelegateShaftCalcOptions implements HasEditingValueVariant {
   PfeConcreteFieldShaftCalc(
     super.shaftCalcChain,
   );
@@ -32,9 +38,9 @@ class PfeConcreteFieldShaftCalc extends ShaftCalc with DelegateShaftCalcOptions 
   String get label => fieldCalc.protoName;
 
   @override
-  Bx content(SizedShaftBuilderBits sizedBits) {
+  late final buildShaftContent = (sizedBits) {
     return sizedBits.fill();
-  }
+  };
 
   late final fieldOptions = switch (access) {
     MapFieldAccess() && final o => MapFieldOptions(this, o),
@@ -62,3 +68,6 @@ class _TodoOptions extends ConcreteFieldOptions {
     return [];
   }
 }
+
+@Has()
+abstract class ConcreteFieldVariant {}

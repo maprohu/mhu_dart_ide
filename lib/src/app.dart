@@ -5,23 +5,21 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 
-part 'app.freezed.dart';
+part 'app.g.has.dart';
 
-@freezed
-class MdiAppBits with _$MdiAppBits, HasConfigBits {
-  MdiAppBits._();
+part 'app.g.compose.dart';
 
-  factory MdiAppBits({
-    required Isar isar,
-    required MdiConfigBits configBits,
-    required Fr<Size> screenSize,
-  }) = _MdiAppBits;
+@Has()
+typedef IsarDatabase = Isar;
 
-  final OpBuilder opBuilder = OpBuilder();
-}
+@Has()
+typedef ScreenSizeFr = Fr<Size>;
 
-mixin HasAppBits {
-  MdiAppBits get appBits;
+@Compose()
+abstract class AppBits implements ConfigBits, HasScreenSizeFr, HasOpBuilder {}
 
-  late final configBits = appBits.configBits;
-}
+// mixin HasAppBits {
+//   MdiAppBits get appBits;
+//
+//   late final configBits = appBits.configBits;
+// }

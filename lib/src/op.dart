@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/keyboard.dart';
 
+part 'op.g.has.dart';
+// part 'op.g.compose.dart';
+
 typedef OpShortcut = IList<ShortcutKey>;
 typedef OpCallback = VoidCallback;
 
@@ -92,6 +95,7 @@ class _OpNode {
   }
 }
 
+@Has()
 class OpBuilder {
   late _OpBuild _opBuild;
   late _OpNode _node;

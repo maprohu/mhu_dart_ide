@@ -1,4 +1,6 @@
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
+import 'package:mhu_dart_ide/src/shaft/switch.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import 'package:recase/recase.dart';
@@ -6,45 +8,43 @@ import '../../builder/sized.dart';
 import '../../bx/boxed.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 
-class ProtoMsgShaftCalc extends ShaftCalc {
-  final Mfw mfw;
+// part 'message.g.has.dart';
+part 'message.g.compose.dart';
 
-  ProtoMsgShaftCalc(
-    super.shaftCalcChain, {
-    required this.mfw,
-  });
+@Compose()
+abstract class MfwShaftCalc implements ShaftCalcBits, ShaftCalc, HasMfw {}
 
+ShaftCalc buildMfwShaftCalc(ShaftCalcChain shaftCalcChain, Mfw mfw) {
   late final pbi = mfw.read().pbi;
 
   late final messageCalc = pbi.calc;
 
-  @override
-  String get label => messageCalc.messageName.titleCase;
-
-  @override
-  Bx content(SizedShaftBuilderBits sizedBits) {
-    final calc = mfw.read().pbi.calc;
-    return sizedBits.menu(
-      items: calc.topFieldKeys.map((fieldKey) {
-        switch (fieldKey) {
-          case ConcreteFieldKey():
-            return sizedBits.opener(
-              (shaft) {
-                shaft.ensurePfeConcreteField().tagNumber = fieldKey.tagNumber;
-              },
-              label: fieldKey.calc.protoName,
-            );
-          case OneofFieldKey():
-            return sizedBits.opener(
-              (shaft) {
-                shaft.ensurePfeOneofField().oneofIndex = fieldKey.oneofIndex;
-              },
-              label: fieldKey.calc.name,
-            );
-        }
-      }).toList(),
-    );
-  }
+  return ComposedMfwShaftCalc.shaftCalcBits(
+    shaftCalcBits: shaftCalcChain,
+    shaftCalcChain: shaftCalcChain,
+    shaftHeaderLabel: messageCalc.messageName.titleCase,
+    buildShaftContent: (SizedShaftBuilderBits sizedBits) {
+      return sizedBits.menu(
+        items: messageCalc.topFieldKeys.map((fieldKey) {
+          switch (fieldKey) {
+            case ConcreteFieldKey():
+              return sizedBits.opener(
+                (shaft) {
+                  shaft.ensurePfeConcreteField().tagNumber = fieldKey.tagNumber;
+                },
+                label: fieldKey.calc.protoName,
+              );
+            case OneofFieldKey():
+              return sizedBits.opener(
+                (shaft) {
+                  shaft.ensurePfeOneofField().oneofIndex = fieldKey.oneofIndex;
+                },
+                label: fieldKey.calc.name,
+              );
+          }
+        }).toList(),
+      );
+    },
+    mfw: mfw,
+  );
 }
-
-

@@ -65,7 +65,7 @@ class NewMapItemShaftCalc extends ShaftCalc
   late final mapFieldOptions = typedLeftCalc.fieldOptions as MapFieldOptions;
 
   @override
-  Bx content(SizedShaftBuilderBits sizedBits) {
+  late final buildShaftContent = (SizedShaftBuilderBits sizedBits) {
     return sizedBits.menu(items: [
       sizedBits.openerField(MdiShaftMsg$.entryKey),
       sizedBits.openerField(MdiShaftMsg$.entryValue),
@@ -74,7 +74,7 @@ class NewMapItemShaftCalc extends ShaftCalc
         callback: () {},
       ),
     ]);
-  }
+  };
 
   @override
   late final editingValue = ComposedEditingValue(
@@ -88,12 +88,10 @@ class EntryKeyShaftCalc extends ShaftCalc {
       : super.access(access: MdiShaftMsg$.entryKey);
 
   @override
-  Bx content(SizedShaftBuilderBits sizedBits) {
+  late final buildShaftContent = (SizedShaftBuilderBits sizedBits) {
     return sizedBits.fill();
-  }
+  };
 
-  @override
-  List<MenuItem> options(ShaftBuilderBits shaftBits) {}
 }
 
 class EntryValueShaftCalc extends ShaftCalc {
@@ -101,9 +99,9 @@ class EntryValueShaftCalc extends ShaftCalc {
       : super.access(access: MdiShaftMsg$.entryValue);
 
   @override
-  Bx content(SizedShaftBuilderBits sizedBits) {
+  late final buildShaftContent = (SizedShaftBuilderBits sizedBits) {
     return sizedBits.fill();
-  }
+  };
 }
 
 abstract class MapKeyVariant {

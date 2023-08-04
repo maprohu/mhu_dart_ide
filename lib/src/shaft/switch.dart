@@ -8,13 +8,16 @@ import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 import '../screen/calc.dart';
 import 'error.dart';
 
+
+typedef ShaftCalcBuilder = ShaftCalc Function(ShaftCalcChain shaftCalcChain);
+
 ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
   final ShaftCalcChain(:shaftMsg) = shaftCalcChain;
   final type = shaftMsg.type;
 
   return switch (type) {
-    MdiShaftMsg_Type$mainMenu() => MainMenuShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$config() => ConfigShaftCalc(shaftCalcChain),
+    MdiShaftMsg_Type$mainMenu() => mainMenuShaftCalc(shaftCalcChain),
+    MdiShaftMsg_Type$config() => configShaftCalc(shaftCalcChain),
     MdiShaftMsg_Type$pfeConcreteField() => PfeConcreteFieldShaftCalc(shaftCalcChain),
     MdiShaftMsg_Type$options() => OptionsShaftCalc(shaftCalcChain),
     MdiShaftMsg_Type$newMapItem() => NewMapItemShaftCalc(shaftCalcChain),

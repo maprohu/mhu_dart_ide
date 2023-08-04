@@ -21,15 +21,15 @@ class ShaftBuilderBits
   ShaftBuilderBits._();
 
   factory ShaftBuilderBits({
-    required MdiAppBits appBits,
+    required AppBits appBits,
     required OpBuilder opBuilder,
     required ShaftDoubleChain doubleChain,
   }) = _ShaftBuilderBits;
 
   late final configBits = appBits.configBits;
 
-  late final themeCalc = configBits.themeCalc();
-  late final stateCalc = configBits.stateCalc();
+  late final themeCalc = configBits.themeCalcFr();
+  late final stateCalc = configBits.stateCalcFr();
 
   SizedShaftBuilderBits sized(Size size) => SizedShaftBuilderBits(
         shaftBits: this,

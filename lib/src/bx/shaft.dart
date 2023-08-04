@@ -140,7 +140,7 @@ Bx defaultShaftBx({
   return shaftBx(
     sizedBits: sizedBits,
     builder: (headerBits, contentBits) {
-      final content = shaftCalc.content(contentBits);
+      final content = shaftCalc.buildShaftContent(contentBits);
       return ShaftParts(
         header: headerBits.fillLeft(
           left: (sizedBits) => sizedBits.headerText.centerLeft(

@@ -8,88 +8,126 @@ import 'package:recase/recase.dart';
 
 import '../builder/sized.dart';
 import '../bx/menu.dart';
+import '../config.dart';
+import '../op.dart';
 import '../shaft/switch.dart';
 import '../bx/boxed.dart';
 
-class ShaftCalcChain with HasParent<ShaftCalcChain>, HasAppBits, HasShaftMsg {
-  @override
-  final MdiAppBits appBits;
-  @override
-  final MdiShaftMsg shaftMsg;
+part 'calc.g.has.dart';
 
-  @override
-  late final ShaftCalcChain? parent = shaftMsg.parentOpt?.let((parent) {
-    return ShaftCalcChain(
-      appBits: appBits,
-      shaftMsg: parent,
-    );
-  });
+part 'calc.g.compose.dart';
 
-  late final ShaftCalc calc = calculateShaft(this);
+@Has()
+typedef BuildShaftContent = Bx Function(SizedShaftBuilderBits sizedBits);
+@Has()
+typedef BuildShaftOptions = List<MenuItem> Function(
+    ShaftBuilderBits shaftBits)?;
 
-  ShaftCalcChain({
-    required this.appBits,
-    required this.shaftMsg,
-  });
+@Has()
+typedef ShaftMsg = MdiShaftMsg;
+
+@Has()
+typedef ShaftCalcLeft = ShaftCalcChain?;
+
+@Has()
+typedef ShaftHeaderLabel = String;
+
+@Has()
+typedef ShaftSignificant = bool?;
+
+extension HasShaftSignificanceX on HasShaftSignificant {
+  bool get effectiveShaftSignificant => shaftSignificant ?? false;
 }
 
-mixin HasShaftMsg {
-  MdiShaftMsg get shaftMsg;
+abstract class ShaftCalcBits implements HasShaftMsg, AppBits {}
 
-  late final shaftWidth = shaftMsg.widthOpt ?? 1;
+@Has()
+@Compose()
+abstract class ShaftCalcChain implements ShaftCalcBits, HasShaftCalcLeft {
+  // @override
+  // final MdiAppBits appBits;
+  // @override
+  // final MdiShaftMsg shaftMsg;
+  //
+  // @override
+  // late final ShaftCalcChain? parent = shaftMsg.parentOpt?.let((parent) {
+  //   return ShaftCalcChain(
+  //     appBits: appBits,
+  //     shaftMsg: parent,
+  //   );
+  // });
+  //
+  // late final ShaftCalc calc = calculateShaft(this);
+  //
+  // ShaftCalcChain({
+  //   required this.appBits,
+  //   required this.shaftMsg,
+  // });
 }
 
-mixin HasShaftCalcChain {
-  ShaftCalcChain get shaftCalcChain;
+// mixin HasShaftMsg {
+//   MdiShaftMsg get shaftMsg;
+//
+//   late final shaftWidth = shaftMsg.widthOpt ?? 1;
+// }
 
-  late final shaftMsg = shaftCalcChain.shaftMsg;
+// mixin HasShaftCalcChain {
+//   ShaftCalcChain get shaftCalcChain;
+//
+//   late final shaftMsg = shaftCalcChain.shaftMsg;
+// }
+
+@Has()
+@Compose()
+abstract class ShaftCalc
+    implements
+        ShaftCalcBits,
+        HasShaftCalcChain,
+        HasShaftHeaderLabel,
+        HasBuildShaftContent,
+        HasBuildShaftOptions,
+        HasShaftSignificant {
+  // @override
+  // final ShaftCalcChain shaftCalcChain;
+  // final String staticLabel;
+  //
+  // @override
+  // BuildShaftOptions get buildShaftOptions => (shaftBits) => const [];
+  //
+  // bool get isSignificant => true;
+  //
+  // ShaftCalc(
+  //   this.shaftCalcChain, {
+  //   this.staticLabel = "<no label>",
+  // });
+  //
+  // ShaftCalc.access(
+  //   this.shaftCalcChain, {
+  //   required ScalarFieldAccess<MdiShaftMsg, dynamic> access,
+  // }) : staticLabel = access.name.titleCase;
+  //
+  // String get label => staticLabel;
+  //
+  // late final leftCalc = shaftCalcChain.parent?.calc;
+  //
+  // late final leftSignificantCalc = shaftCalcChain.childToParentIterable
+  //     .map((e) => e.calc)
+  //     .firstWhereOrNull((e) => e.isSignificant);
 }
 
-abstract class ShaftCalc with HasShaftCalcChain, HasShaftMsg {
-  @override
-  final ShaftCalcChain shaftCalcChain;
-  final String staticLabel;
+// mixin HasShaftCalc {
+//   ShaftCalc get shaftCalc;
+//
+//   late final shaftCalcChain = shaftCalc.shaftCalcChain;
+// }
 
-  List<MenuItem> options(ShaftBuilderBits shaftBits) => const [];
+// mixin DelegateShaftCalcOptions {
+//   List<MenuItem> Function(ShaftBuilderBits shaftBits) get optionsDelegate;
+//
+//   List<MenuItem> options(ShaftBuilderBits shaftBits) =>
+//       optionsDelegate(shaftBits);
+// }
 
-  bool get isSignificant => true;
-
-  Bx content(SizedShaftBuilderBits sizedBits);
-
-  ShaftCalc(
-    this.shaftCalcChain, {
-    this.staticLabel = "<no label>",
-  });
-
-  ShaftCalc.access(
-    this.shaftCalcChain, {
-    required ScalarFieldAccess<MdiShaftMsg, dynamic> access,
-  }) : staticLabel = access.name.titleCase;
-
-  String get label => staticLabel;
-
-  late final leftCalc = shaftCalcChain.parent?.calc;
-
-  late final leftSignificantCalc = shaftCalcChain.childToParentIterable
-      .map((e) => e.calc)
-      .firstWhereOrNull((e) => e.isSignificant);
-}
-
-mixin HasShaftCalc {
-  ShaftCalc get shaftCalc;
-
-  late final shaftCalcChain = shaftCalc.shaftCalcChain;
-}
-
-mixin DelegateShaftCalcOptions {
-  List<MenuItem> Function(ShaftBuilderBits shaftBits) get optionsDelegate;
-
-  List<MenuItem> options(ShaftBuilderBits shaftBits) =>
-      optionsDelegate(shaftBits);
-}
-
-mixin ShaftCalcRightOf<T extends ShaftCalc> implements ShaftCalc {
-  late final typedLeftCalc = leftSignificantCalc as T;
-
-
-}
+// mixin ShaftCalcRightOf<T extends ShaftCalc> implements ShaftCalc {
+//   late final typedLeftCalc = leftSignificantCalc as T;
+// }

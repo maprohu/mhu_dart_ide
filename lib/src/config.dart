@@ -3,6 +3,7 @@
 import 'package:isar/isar.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/isar.dart';
+import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
@@ -10,19 +11,35 @@ import 'package:mhu_dart_ide/src/theme.dart';
 import '../proto.dart';
 import 'state.dart';
 
-part 'config.freezed.dart';
+part 'config.g.has.dart';
 
-@freezedStruct
-class MdiConfigBits with _$MdiConfigBits {
-  MdiConfigBits._();
-  factory MdiConfigBits({
-    required MdiConfigMsg$Fw config,
-    required MdiStateMsg$Fw state,
-    required MdiThemeMsg$Fw theme,
-    required DspReg disposers,
-  }) = _MdiConfigBits;
+part 'config.g.compose.dart';
 
-  static Future<MdiConfigBits> create({
+@Has()
+typedef ConfigFw = MdiConfigMsg$Fw;
+@Has()
+typedef StateFw = MdiStateMsg$Fw;
+@Has()
+typedef ThemeFw = MdiThemeMsg$Fw;
+
+@Has()
+typedef StateCalcFr = Fr<StateCalc>;
+@Has()
+typedef ThemeCalcFr = Fr<ThemeCalc>;
+@Has()
+typedef ConfigCalcFr = Fr<ConfigCalc>;
+
+@Compose()
+abstract class ConfigBits
+    implements
+        HasConfigFw,
+        HasStateFw,
+        HasThemeFw,
+        HasStateCalcFr,
+        HasThemeCalcFr,
+        HasConfigCalcFr,
+        HasIsarDatabase {
+  static Future<ConfigBits> create({
     required Isar isar,
     required DspReg disposers,
   }) async {
@@ -44,39 +61,39 @@ class MdiConfigBits with _$MdiConfigBits {
       defaultValue: mdiDefaultTheme,
     );
 
-    return MdiConfigBits(
-      theme: MdiThemeMsg$Fw(
+    return ComposedConfigBits(
+      themeFw: MdiThemeMsg$Fw(
         themeFw,
         disposers: disposers,
       ),
-      state: MdiStateMsg$Fw(
+      stateFw: MdiStateMsg$Fw(
         stateFw,
         disposers: disposers,
       ),
-      config: MdiConfigMsg$Fw(
+      configFw: MdiConfigMsg$Fw(
         configFw,
         disposers: disposers,
       ),
-      disposers: disposers,
+      themeCalcFr: disposers.fr(() => ThemeCalc(themeFw())),
+      stateCalcFr: disposers.fr(() => StateCalc(stateFw())),
+      configCalcFr: disposers.fr(() => ConfigCalc(configFw())),
+      isarDatabase: isar,
     );
   }
-
-  late final stateCalc = disposers.fr(() => StateCalc(state()));
-  late final themeCalc = disposers.fr(() => ThemeCalc(theme()));
-  late final configCalc = disposers.fr(() => ConfigCalc(config()));
 }
 
-mixin HasConfigBits {
-  MdiConfigBits get configBits;
+// mixin HasConfigBits {
+//   MdiConfigBits get configBits;
+//
+//   late final config = configBits.config;
+//   late final state = configBits.state;
+//   late final theme = configBits.theme;
+//
+//   late final stateCalc = configBits.stateCalc;
+//   late final themeCalc = configBits.themeCalc;
+//
+// }
 
-  late final config = configBits.config;
-  late final state = configBits.state;
-  late final theme = configBits.theme;
-
-  late final stateCalc = configBits.stateCalc;
-  late final themeCalc = configBits.themeCalc;
-
-}
 class ConfigCalc {
   final MdiConfigMsg config;
 

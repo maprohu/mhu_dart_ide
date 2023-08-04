@@ -27,7 +27,7 @@ final _defaultMainMenuShaft = MdiShaftMsg()
 const _defaultMinShaftWidth = 200.0;
 
 Bx mdiBuildScreen({
-  required MdiAppBits appBits,
+  required AppBits appBits,
 }) {
   final screenSize = appBits.screenSize();
   final screenWidth = screenSize.width;
@@ -37,11 +37,11 @@ Bx mdiBuildScreen({
   return opBuilder.build(() {
     final ThemeCalc(
       shaftsDividerThickness: shaftsVerticalDividerThickness,
-    ) = appBits.themeCalc();
+    ) = appBits.themeCalcFr();
 
     final StateCalc(
       :state,
-    ) = appBits.stateCalc();
+    ) = appBits.stateCalcFr();
 
     final minShaftWidth = state.minShaftWidthOpt ?? _defaultMinShaftWidth;
 
@@ -122,7 +122,7 @@ Bx mdiBuildScreen({
 }
 
 ValueListenable<Bx> mdiScreenListenable({
-  required MdiAppBits appBits,
+  required AppBits appBits,
   required DspReg disposers,
 }) {
   final notifier = ValueNotifier<Bx>(
