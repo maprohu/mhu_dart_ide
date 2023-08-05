@@ -1,73 +1,99 @@
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/screen/editing.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+import 'package:protobuf/protobuf.dart';
 
-import '../../builder/shaft.dart';
-import '../../builder/sized.dart';
-import '../../bx/menu.dart';
+import '../../app.dart';
+import '../../config.dart';
+import '../../op.dart';
 import '../../screen/calc.dart';
-import '../../bx/boxed.dart';
 
 part 'concrete_field.g.has.dart';
-// part 'concrete_field.g.compose.dart';
 
+part 'concrete_field.g.compose.dart';
 
-class PfeConcreteFieldShaftCalc extends ShaftCalc with DelegateShaftCalcOptions implements HasEditingValueVariant {
-  PfeConcreteFieldShaftCalc(
-    super.shaftCalcChain,
-  );
+@Compose()
+abstract class PfeShaftConcreteFieldBits
+    implements ShaftCalcBuildBits, HasConcreteFieldKey, HasShaftHeaderLabel {}
 
-  late final messageShaftCalc = leftCalc as ProtoMsgShaftCalc;
+@Compose()
+@Has()
+abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
+  static PfeShaftConcreteField of(
+    ShaftCalcChain shaftCalcChain,
+  ) {
+    late final messageShaftCalc =
+        shaftCalcChain.leftCalc as PfeMessageShaftCalc;
 
-  late final shaftValue = shaftMsg.pfeConcreteField;
+    final mfw = messageShaftCalc.mfw;
+    final shaftValue = shaftCalcChain.shaftMsg.pfeConcreteField;
+    final concreteFieldKey = ConcreteFieldKey(
+      messageType: mfw.read().runtimeType,
+      tagNumber: shaftValue.tagNumber,
+    );
 
-  late final mfw = messageShaftCalc.mfw;
+    final pfeShaftConcreteFieldBits =
+        ComposedPfeShaftConcreteFieldBits.shaftCalcBuildBits(
+      shaftCalcBuildBits: shaftCalcChain.toBuildBits,
+      concreteFieldKey: concreteFieldKey,
+      shaftHeaderLabel: concreteFieldKey.protoName,
+    );
 
-  late final fieldKey = ConcreteFieldKey(
-    messageType: mfw.read().runtimeType,
-    tagNumber: shaftValue.tagNumber,
-  );
+    final access = concreteFieldKey.calc.access;
 
-  late final fieldCalc = fieldKey.calc;
-
-  late final access = fieldCalc.access;
-
-  @override
-  String get label => fieldCalc.protoName;
-
-  @override
-  late final buildShaftContent = (sizedBits) {
-    return sizedBits.fill();
-  };
-
-  late final fieldOptions = switch (access) {
-    MapFieldAccess() && final o => MapFieldOptions(this, o),
-    _ => _TodoOptions(this),
-  };
-
-  @override
-  late final optionsDelegate = fieldOptions.options;
-
-}
-
-abstract class ConcreteFieldOptions {
-  final PfeConcreteFieldShaftCalc shaftCalc;
-
-  ConcreteFieldOptions(this.shaftCalc);
-
-  List<MenuItem> options(ShaftBuilderBits shaftBits);
-}
-
-class _TodoOptions extends ConcreteFieldOptions {
-  _TodoOptions(super.shaftCalc);
-
-  @override
-  List<MenuItem> options(ShaftBuilderBits nodeBits) {
-    return [];
+    return switch (access) {
+      MapFieldAccess() => PfeShaftMapField.of(
+          pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
+          mapFieldAccess: access,
+          mfw: mfw,
+        ),
+      _ => throw access,
+    };
   }
 }
 
 @Has()
-abstract class ConcreteFieldVariant {}
+typedef ConcreteFieldFr<T> = Fr<T>;
+@Has()
+typedef ScalarFieldFw<T> = Fw<T>;
+@Has()
+typedef CollectionFieldFu<T> = Fu<T>;
+
+@Compose()
+abstract class PfeShaftConcreteFieldVariant<T>
+    implements
+        ShaftCalcBits,
+        HasBuildShaftContent,
+        HasBuildShaftOptions,
+        HasPfeFieldValue<T> {}
+
+@Has()
+sealed class PfeFieldValue<T> implements HasConcreteFieldFr<T> {}
+
+@Compose()
+abstract class PfeMapFieldValue<M extends GeneratedMessage, K, V>
+    implements
+        PfeFieldValue<Map<K, V>>,
+        HasCollectionFieldFu<Map<K, V>>,
+        HasMapFieldAccess<M, K, V> {}
+
+// abstract class ConcreteFieldOptions {
+//   final PfeConcreteFieldShaftCalc shaftCalc;
+//
+//   ConcreteFieldOptions(this.shaftCalc);
+//
+//   List<MenuItem> options(ShaftBuilderBits shaftBits);
+// }
+//
+// class _TodoOptions extends ConcreteFieldOptions {
+//   _TodoOptions(super.shaftCalc);
+//
+//   @override
+//   List<MenuItem> options(ShaftBuilderBits nodeBits) {
+//     return [];
+//   }
+// }
+//
+// @Has()
+// abstract class ConcreteFieldVariant {}

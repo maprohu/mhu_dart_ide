@@ -518,14 +518,14 @@ packages:
       path: "../mhu_dart_builder"
       relative: true
     source: path
-    version: "1.0.3"
+    version: "1.0.5"
   mhu_dart_commons:
     dependency: "direct main"
     description:
       path: "../mhu_dart_commons"
       relative: true
     source: path
-    version: "1.0.8"
+    version: "1.0.9"
   mhu_dart_model:
     dependency: "direct main"
     description:
@@ -539,7 +539,7 @@ packages:
       path: "../mhu_dart_proto"
       relative: true
     source: path
-    version: "1.0.2"
+    version: "1.0.3"
   mhu_flutter_commons:
     dependency: "direct main"
     description:

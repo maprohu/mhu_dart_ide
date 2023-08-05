@@ -1,29 +1,20 @@
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/bx/boxed.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../builder/sized.dart';
 
-part 'string.freezed.dart';
+part 'string.g.compose.dart';
 
-
-
-@freezedStruct
-class MonoTextStyle with _$MonoTextStyle, HasSize, HasTextStyle {
-  MonoTextStyle._();
-
-  factory MonoTextStyle({
-    required Size size,
-    required TextStyle textStyle,
-  }) = _MonoTextStyle;
-
+@Compose()
+abstract class MonoTextStyle implements HasSize, HasTextStyle {
   static const _calcCount = 10000;
 
-  static MonoTextStyle from(TextStyle textStyle) => MonoTextStyle(
+  static MonoTextStyle from(TextStyle textStyle) => ComposedMonoTextStyle(
         size: mdiTextSize(
           Iterable.generate(
             _calcCount,
@@ -34,10 +25,10 @@ class MonoTextStyle with _$MonoTextStyle, HasSize, HasTextStyle {
           return Size(s.width / _calcCount, s.height);
         }),
         textStyle: textStyle.apply(
-          // fontFeatures: [
-          //   FontFeature.tabularFigures(),
-          // ],
-        ),
+            // fontFeatures: [
+            //   FontFeature.tabularFigures(),
+            // ],
+            ),
       );
 }
 
@@ -88,7 +79,7 @@ Bx stringBx({
   return sizedBits.topLeft(linesCol);
 }
 
-mixin HasTextStyle {
+abstract class HasTextStyle {
   TextStyle get textStyle;
 }
 

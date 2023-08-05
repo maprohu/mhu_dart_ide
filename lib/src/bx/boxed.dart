@@ -14,7 +14,7 @@ extension _Assert on Iterable<double> {
 }
 
 @freezedStruct
-sealed class Bx with _$Bx, HasSize {
+sealed class Bx with _$Bx implements HasSize {
   Bx._();
 
   @Assert("Bx.calculateRowSize(columns).assertEqual(size)")

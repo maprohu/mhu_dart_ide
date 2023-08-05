@@ -66,7 +66,7 @@ Bx menuItemBx({
 
       return sizedBits.fillRight(
         left: sizedBits.centerHeight(
-          sizedBits.shaftBits.shortcut(callback),
+          sizedBits.shortcut(callback),
         ),
         right: (sizedBits) {
           return sizedBits.itemText.centerLeft(label);
@@ -93,19 +93,19 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
   }
 }
 
-extension MenuHasShaftBitsX on HasShaftBuilderBits {
-  MenuItem openerField(ScalarFieldAccess<MdiShaftMsg, dynamic> access) =>
-      shaftBits.openerField(access);
-
-  MenuItem opener(
-    ShaftOpener builder, {
-    String? label,
-  }) =>
-      shaftBits.opener(
-        builder,
-        label: label,
-      );
-}
+// extension MenuHasShaftBitsX on HasShaftBuilderBits {
+//   MenuItem openerField(ScalarFieldAccess<MdiShaftMsg, dynamic> access) =>
+//       shaftBits.openerField(access);
+//
+//   MenuItem opener(
+//     ShaftOpener builder, {
+//     String? label,
+//   }) =>
+//       shaftBits.opener(
+//         builder,
+//         label: label,
+//       );
+// }
 
 extension MenuShaftBitsX on ShaftBuilderBits {
   MenuItem openerField(ScalarFieldAccess<MdiShaftMsg, dynamic> access) {
@@ -121,10 +121,10 @@ extension MenuShaftBitsX on ShaftBuilderBits {
     ShaftOpener builder, {
     String? label,
   }) {
-    label ??= ShaftCalcChain(
-      appBits: appBits,
+    label ??= ComposedShaftCalcChain.appBits(
+      appBits: this,
       shaftMsg: MdiShaftMsg().also(builder)..freeze(),
-    ).calc.label;
+    ).calc.shaftHeaderLabel;
 
     return MenuItem(
       label: label,

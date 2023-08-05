@@ -6,14 +6,14 @@ import '../builder/shaft.dart';
 
 typedef ShaftOpener = void Function(MdiShaftMsg shaft);
 
-extension ScreenHasShaftBuilderBitsX on HasShaftBuilderBits {
-  VoidCallback openerCallback(ShaftOpener builder) =>
-      shaftBits.openerCallback(builder);
-}
+// extension ScreenHasShaftBuilderBitsX on HasShaftBuilderBits {
+//   VoidCallback openerCallback(ShaftOpener builder) =>
+//       shaftBits.openerCallback(builder);
+// }
 
 extension ScreenShaftBuilderBitsX on ShaftBuilderBits {
   VoidCallback openerCallback(ShaftOpener builder) => () {
-        configBits.state.rebuild((message) {
+        stateFw.rebuild((message) {
           message.topShaft = MdiShaftMsg$.create(
             parent: shaftMsg,
           ).also(builder);

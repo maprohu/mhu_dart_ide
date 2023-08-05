@@ -28,7 +28,7 @@ final ShaftCalcBuilder mainMenuShaftCalc = (shaftCalcChain) => ComposedShaftCalc
         MenuItem(
           label: "build_runner",
           callback: (() {
-            sizedBits.configBits.state.rebuild((message) {
+            sizedBits.stateFw.rebuild((message) {
               message.topShaft = MdiShaftMsg$.create(
                 parent: sizedBits.shaftMsg,
               )..ensureBuildRunner();

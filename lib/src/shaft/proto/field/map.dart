@@ -1,136 +1,128 @@
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
-import 'package:mhu_dart_ide/src/builder/text.dart';
-import 'package:mhu_dart_ide/src/bx/boxed.dart';
-import 'package:mhu_dart_ide/src/bx/shortcut.dart';
-import 'package:mhu_dart_ide/src/bx/shaft.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/screen/editing.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
-import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../../../proto.dart';
+import '../../../app.dart';
 import '../../../bx/menu.dart';
-import '../../../screen/options.dart';
+import '../../../config.dart';
+import '../../../op.dart';
 
-ShaftBuilder mdiPfeMapFieldShaftBuilder({
-  required MapFieldAccess access,
-  required Mfw mfw,
-}) {
-  final ffu = access.fu(mfw);
+part 'map.g.has.dart';
 
-  return (headerBits, contentBits) {
-    return ShaftParts(
-      header: headerBits.fillLeft(
-        left: (sizedBits) => sizedBits.headerText.centerLeft(
-          access.fieldKey.calc.protoName,
-        ),
-        right: headerBits.shaftBits.shortcut(() {}),
-      ),
-      content: contentBits.fill(),
+part 'map.g.compose.dart';
+
+
+abstract class MapFieldBits implements HasMapFieldAccess {}
+
+@Compose()
+abstract class PfeShaftMapField
+    implements
+        ShaftCalc,
+        PfeShaftConcreteFieldBits,
+        PfeShaftConcreteField,
+        MapFieldBits,
+        HasPfeShaftMapFieldKey,
+        HasPfeShaftMapFieldValue {
+  static PfeShaftMapField of({
+    required PfeShaftConcreteFieldBits pfeShaftConcreteFieldBits,
+    required MapFieldAccess mapFieldAccess,
+    required Mfw mfw,
+  }) {
+    final ffu = mapFieldAccess.fu(mfw);
+
+    return ComposedPfeShaftMapField.pfeShaftConcreteFieldBits(
+      pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
+      mapFieldAccess: mapFieldAccess,
+      pfeShaftMapFieldKey: ComposedPfeShaftMapFieldKey(),
+      pfeShaftMapFieldValue: ComposedPfeShaftMapFieldValue(),
+      buildShaftContent: (sizedBits) => sizedBits.fill(),
+      buildShaftOptions: (shaftBits) {
+        return [
+          shaftBits.openerField(MdiShaftMsg$.newMapItem),
+        ];
+      },
     );
-  };
-}
-
-class MapFieldOptions extends ConcreteFieldOptions with HasMapKeyVariant {
-  final MapFieldAccess access;
-
-  MapFieldOptions(super.shaftCalc, this.access);
-
-  @override
-  Options options(ShaftBuilderBits shaftBits) {
-    return [
-      shaftBits.openerField(MdiShaftMsg$.newMapItem),
-    ];
-  }
-
-  @override
-  late final mapKeyVariant = switch (access.defaultMapKey) {
-    PbIntMapKey() => IntMapKeyVariant(this),
-    PbStringMapKey() => StringMapKeyVariant(this),
-  };
-}
-
-mixin HasMapKeyVariant {
-  MapKeyVariant get mapKeyVariant;
-}
-
-class NewMapItemShaftCalc extends ShaftCalc
-    with ShaftCalcRightOf<PfeConcreteFieldShaftCalc>
-    implements HasEditingValue<MdiMapEntryMsg> {
-  NewMapItemShaftCalc(super.shaftCalcChain);
-
-  late final mapFieldOptions = typedLeftCalc.fieldOptions as MapFieldOptions;
-
-  @override
-  late final buildShaftContent = (SizedShaftBuilderBits sizedBits) {
-    return sizedBits.menu(items: [
-      sizedBits.openerField(MdiShaftMsg$.entryKey),
-      sizedBits.openerField(MdiShaftMsg$.entryValue),
-      MenuItem(
-        label: "Save Entry",
-        callback: () {},
-      ),
-    ]);
-  };
-
-  @override
-  late final editingValue = ComposedEditingValue(
-    readValue: readValue,
-    writeValue: writeValue,
-  );
-}
-
-class EntryKeyShaftCalc extends ShaftCalc {
-  EntryKeyShaftCalc(super.shaftCalcChain)
-      : super.access(access: MdiShaftMsg$.entryKey);
-
-  @override
-  late final buildShaftContent = (SizedShaftBuilderBits sizedBits) {
-    return sizedBits.fill();
-  };
-
-}
-
-class EntryValueShaftCalc extends ShaftCalc {
-  EntryValueShaftCalc(super.shaftCalcChain)
-      : super.access(access: MdiShaftMsg$.entryValue);
-
-  @override
-  late final buildShaftContent = (SizedShaftBuilderBits sizedBits) {
-    return sizedBits.fill();
-  };
-}
-
-abstract class MapKeyVariant {
-  final MapFieldOptions mapFieldOptions;
-
-  MapKeyVariant(this.mapFieldOptions);
-
-  Options options(ShaftBuilderBits shaftBits);
-}
-
-class IntMapKeyVariant extends MapKeyVariant {
-  IntMapKeyVariant(super.mapFieldOptions);
-
-  @override
-  Options options(ShaftBuilderBits shaftBits) {
-    return [
-      MenuItem(
-        label: "Paste From Clipboard",
-        callback: () {},
-      ),
-    ];
   }
 }
 
-class StringMapKeyVariant extends MapKeyVariant {
-  StringMapKeyVariant(super.mapFieldOptions);
+@Has()
+@Compose()
+abstract class PfeShaftMapFieldKey {
+  static PfeShaftMapFieldKey of({
+    required MapFieldAccess mapFieldAccess,
+  }) {
+    return switch (mapFieldAccess.defaultMapKey) {
+      PbIntMapKey() => ComposedPfeShaftMapFieldKey(),
+      PbStringMapKey() => ComposedPfeShaftMapFieldKey(),
+    };
+  }
+}
 
-  @override
-  Options options(ShaftBuilderBits shaftBits) {
-    return [];
+@Has()
+@Compose()
+abstract class PfeShaftMapFieldValue {}
+
+abstract class PfeMapKeyBits implements HasDefaultPbMapKey {
+  static PfeMapKeyBits of({
+    required ShaftCalcChain shaftCalcChain,
+  }) {
+    final mapFieldKeyShaft = shaftCalcChain.leftCalc as PfeShaftMapFieldKey;
+  }
+}
+
+abstract class PfeMapEntryBits implements PfeMapKeyBits, ShaftCalcBits {}
+
+abstract class NewMapEntryBits implements MapFieldBits {}
+@Compose()
+abstract class PfeShaftNewMapEntry
+    implements ShaftCalc, ShaftCalcBits, PfeMapEntryBits {
+  static PfeShaftNewMapEntry of(ShaftCalcChain shaftCalcChain) {
+    final mapFieldShaft =
+        shaftCalcChain.leftSignificantCalc as HasMapFieldAccess;
+
+    return ComposedPfeShaftNewMapEntry.shaftCalcBits(
+      shaftCalcBits: shaftCalcChain,
+      shaftCalcChain: shaftCalcChain,
+      shaftHeaderLabel: "New Map Entry",
+      buildShaftContent: (sizedBits) {
+        return sizedBits.menu(items: [
+          sizedBits.openerField(MdiShaftMsg$.entryKey),
+          sizedBits.openerField(MdiShaftMsg$.entryValue),
+          MenuItem(
+            label: "Save Entry",
+            callback: () {},
+          ),
+        ]);
+      },
+    );
+  }
+}
+
+@Compose()
+abstract class PfeShaftMapEntryKey
+    implements ShaftCalc, ShaftCalcBits, ShaftContentBits {
+  static PfeShaftMapEntryKey of(ShaftCalcChain shaftCalcChain) {
+    final mapEntryCalc = shaftCalcChain.leftCalc as PfeShaftNewMapEntry;
+
+    return ComposedPfeShaftMapEntryKey.shaftContentBits(
+      shaftCalcBits: shaftCalcChain,
+      shaftCalcChain: shaftCalcChain,
+      shaftHeaderLabel: "Map Entry Key",
+      buildShaftContent: (sizedBits) => sizedBits.fill(),
+    );
+  }
+}
+
+@Compose()
+abstract class PfeShaftMapEntryValue implements ShaftCalc, ShaftCalcBuildBits {
+  static PfeShaftMapEntryValue of(ShaftCalcChain shaftCalcChain) {
+    return ComposedPfeShaftMapEntryValue.shaftCalcBuildBits(
+      shaftCalcBuildBits: shaftCalcChain.toBuildBits,
+      shaftHeaderLabel: "Map Entry Value",
+      buildShaftContent: (sizedBits) => sizedBits.fill(),
+    );
   }
 }

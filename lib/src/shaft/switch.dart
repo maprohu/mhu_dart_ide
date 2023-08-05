@@ -18,39 +18,15 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
   return switch (type) {
     MdiShaftMsg_Type$mainMenu() => mainMenuShaftCalc(shaftCalcChain),
     MdiShaftMsg_Type$config() => configShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$pfeConcreteField() => PfeConcreteFieldShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$options() => OptionsShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$newMapItem() => NewMapItemShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$entryKey() => EntryKeyShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$entryValue() => EntryValueShaftCalc(shaftCalcChain),
-    _ => NotImplementedShaftCalc(
-        shaftCalcChain,
+    MdiShaftMsg_Type$pfeConcreteField() => PfeShaftConcreteField.of(shaftCalcChain),
+    MdiShaftMsg_Type$options() => optionsShaftCalc(shaftCalcChain),
+    MdiShaftMsg_Type$newMapItem() => PfeShaftNewMapEntry.of(shaftCalcChain),
+    MdiShaftMsg_Type$entryKey() => PfeShaftMapEntryKey.of(shaftCalcChain),
+    MdiShaftMsg_Type$entryValue() => PfeShaftMapEntryValue.of(shaftCalcChain),
+    _ => notImplementedShaftCalc(
+        shaftCalcChain: shaftCalcChain,
         message: "no shaft: ${shaftMsg.whichType().name}",
         stackTrace: StackTrace.current,
       ),
   };
-
-  /*
-  return switch (shaftMsg.type) {
-    MdiShaftMsg_Type$buildRunner(:final value) => mdiBuildRunnerMenuShaftBx(
-        sizedBits: sizedBits,
-        value: value,
-      ),
-    MdiShaftMsg_Type$config(:final value) => mdiConfigMenuShaftBx(
-        sizedBits: sizedBits,
-        value: value,
-      ),
-    MdiShaftMsg_Type$pfeConcreteField(:final value) =>
-      mdiPfeConcreteFieldShaftBx(
-        sizedBits: sizedBits,
-        value: value,
-      ),
-    _ => errorShaftBx(
-        sizedBits: sizedBits,
-        message: "no shaft: ${shaftMsg.whichType().name}",
-        stackTrace: StackTrace.current,
-      )
-  };
-
-   */
 }

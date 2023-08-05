@@ -19,7 +19,6 @@ import 'paginate.dart';
 import '../screen/calc.dart';
 import 'divider.dart';
 
-
 final _defaultMainMenuShaft = MdiShaftMsg()
   ..ensureMainMenu()
   ..freeze();
@@ -29,7 +28,7 @@ const _defaultMinShaftWidth = 200.0;
 Bx mdiBuildScreen({
   required AppBits appBits,
 }) {
-  final screenSize = appBits.screenSize();
+  final screenSize = appBits.screenSizeFr();
   final screenWidth = screenSize.width;
 
   final opBuilder = appBits.opBuilder;
@@ -53,22 +52,21 @@ Bx mdiBuildScreen({
 
     final topShaftMsg = (state.topShaftOpt ?? _defaultMainMenuShaft);
 
-    final topCalcChain = ShaftCalcChain(
+    final topCalcChain = ComposedShaftCalcChain.appBits(
       appBits: appBits,
       shaftMsg: topShaftMsg,
     );
 
-    final doubleChain = ShaftDoubleChain(
-      parent: null,
-      shaftCalc: topCalcChain.calc,
+    final doubleChain = ComposedShaftDoubleChain(
+      shaftCalcChain: topCalcChain,
     );
 
     final visibleShaftsWithWidths = doubleChain.iterableLeft
         .map((s) {
-          final widthLeft = shaftFitCount - s.parentWidthToEnd;
+          final widthLeft = shaftFitCount - s.widthOnRight;
           return (
             shaft: s,
-            width: min(widthLeft, s.shaftWidth),
+            width: min(widthLeft, s.shaftCalcChain.shaftWidth),
           );
         })
         .takeWhile(
@@ -86,15 +84,13 @@ Bx mdiBuildScreen({
     final visibleShafts = visibleShaftsWithWidths
         .map((sw) {
           final (:shaft, :width) = sw;
-          final shaftBits = ShaftBuilderBits(
-            appBits: appBits,
-            opBuilder: opBuilder,
-            doubleChain: shaft,
+          final shaftBits = ComposedShaftBuilderBits.shaftCalc(
+            shaftCalc: shaft.shaftCalcChain.calc,
+            shaftDoubleChain: shaft,
           );
 
-          final sizedBits = SizedShaftBuilderBits(
-            shaftBits: shaftBits,
-            size: screenSize.withWidth(
+          final sizedBits = shaftBits.sized(
+            screenSize.withWidth(
               width * singleShaftWidth +
                   ((width - 1) * shaftsVerticalDividerThickness),
             ),
@@ -102,7 +98,6 @@ Bx mdiBuildScreen({
 
           return defaultShaftBx(
             sizedBits: sizedBits,
-            shaftCalc: shaft.shaftCalc,
           );
         })
         .toList()
@@ -134,12 +129,12 @@ ValueListenable<Bx> mdiScreenListenable({
 
   disposers
       .fr(() {
-    return mdiBuildScreen(appBits: appBits);
-  })
+        return mdiBuildScreen(appBits: appBits);
+      })
       .changes()
       .forEach((widget) {
-    notifier.value = widget;
-  });
+        notifier.value = widget;
+      });
 
   return notifier;
 }

@@ -6,6 +6,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
+import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 final mdiDefaultTheme = MdiThemeMsg$.create(
   dividerThickness: MdiDividerThicknessThemeMsg$.create(

@@ -1,38 +1,28 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/state.dart';
+import 'package:mhu_dart_ide/src/theme.dart';
 
 import '../app.dart';
+import '../config.dart';
 import '../op.dart';
 import 'double.dart';
 import 'sized.dart';
 
-part 'shaft.freezed.dart';
+part 'shaft.g.compose.dart';
 
-@freezedStruct
-class ShaftBuilderBits
-    with
-        _$ShaftBuilderBits,
-        HasShaftDoubleChain,
-        HasShaftCalc,
-        HasShaftCalcChain,
-        HasShaftMsg {
-  ShaftBuilderBits._();
+@Compose()
+abstract class ShaftBuilderBits implements HasShaftDoubleChain, ShaftCalc {}
 
-  factory ShaftBuilderBits({
-    required AppBits appBits,
-    required OpBuilder opBuilder,
-    required ShaftDoubleChain doubleChain,
-  }) = _ShaftBuilderBits;
+extension ShaftBuilderBitsX on ShaftBuilderBits {
+  ThemeCalc get themeCalc => themeCalcFr();
 
-  late final configBits = appBits.configBits;
+  StateCalc get stateCalc => stateCalcFr();
 
-  late final themeCalc = configBits.themeCalcFr();
-  late final stateCalc = configBits.stateCalcFr();
-
-  SizedShaftBuilderBits sized(Size size) => SizedShaftBuilderBits(
-        shaftBits: this,
+  SizedShaftBuilderBits sized(Size size) =>
+      ComposedSizedShaftBuilderBits.shaftBuilderBits(
+        shaftBuilderBits: this,
         size: size,
       );
 
@@ -44,18 +34,3 @@ class ShaftBuilderBits
         Size(width, height),
       );
 }
-
-mixin HasShaftBuilderBits {
-  ShaftBuilderBits get shaftBits;
-
-  late final appBits = shaftBits.appBits;
-
-  late final opBuilder = shaftBits.opBuilder;
-  late final configBits = shaftBits.configBits;
-  late final themeCalc = shaftBits.themeCalc;
-  late final stateCalc = shaftBits.stateCalc;
-
-  late final shaftMsg = shaftBits.shaftMsg;
-}
-
-

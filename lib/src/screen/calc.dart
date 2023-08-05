@@ -3,8 +3,6 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
-import 'package:mhu_dart_proto/mhu_dart_proto.dart';
-import 'package:recase/recase.dart';
 
 import '../builder/sized.dart';
 import '../bx/menu.dart';
@@ -19,63 +17,48 @@ part 'calc.g.compose.dart';
 
 @Has()
 typedef BuildShaftContent = Bx Function(SizedShaftBuilderBits sizedBits);
+
+List<MenuItem> emptyShaftOptions(ShaftBuilderBits shaftBuilderBits) => const [];
+
 @Has()
-typedef BuildShaftOptions = List<MenuItem> Function(
-    ShaftBuilderBits shaftBits)?;
+@HasDefault(emptyShaftOptions)
+typedef BuildShaftOptions = List<MenuItem> Function(ShaftBuilderBits shaftBits);
 
 @Has()
 typedef ShaftMsg = MdiShaftMsg;
 
 @Has()
-typedef ShaftCalcLeft = ShaftCalcChain?;
+typedef ShaftCalcChainLeft = ShaftCalcChain?;
 
 @Has()
 typedef ShaftHeaderLabel = String;
 
 @Has()
-typedef ShaftSignificant = bool?;
-
-extension HasShaftSignificanceX on HasShaftSignificant {
-  bool get effectiveShaftSignificant => shaftSignificant ?? false;
-}
+@HasDefault(true)
+typedef ShaftSignificant = bool;
 
 abstract class ShaftCalcBits implements HasShaftMsg, AppBits {}
 
+@Compose()
+abstract class ShaftCalcBuildBits implements ShaftCalcBits, HasShaftCalcChain {}
+
 @Has()
 @Compose()
-abstract class ShaftCalcChain implements ShaftCalcBits, HasShaftCalcLeft {
-  // @override
-  // final MdiAppBits appBits;
-  // @override
-  // final MdiShaftMsg shaftMsg;
-  //
-  // @override
-  // late final ShaftCalcChain? parent = shaftMsg.parentOpt?.let((parent) {
-  //   return ShaftCalcChain(
-  //     appBits: appBits,
-  //     shaftMsg: parent,
-  //   );
-  // });
-  //
-  // late final ShaftCalc calc = calculateShaft(this);
-  //
-  // ShaftCalcChain({
-  //   required this.appBits,
-  //   required this.shaftMsg,
-  // });
+abstract base class ShaftCalcChain implements AppBits, ShaftCalcBits {
+  late final ShaftCalc calc = calculateShaft(this);
+
+  late final ShaftCalcChain? shaftCalcChainLeft =
+      shaftMsg.parentOpt?.let((parent) {
+    return ComposedShaftCalcChain.appBits(
+      appBits: this,
+      shaftMsg: parent,
+    );
+  });
 }
 
-// mixin HasShaftMsg {
-//   MdiShaftMsg get shaftMsg;
-//
-//   late final shaftWidth = shaftMsg.widthOpt ?? 1;
-// }
-
-// mixin HasShaftCalcChain {
-//   ShaftCalcChain get shaftCalcChain;
-//
-//   late final shaftMsg = shaftCalcChain.shaftMsg;
-// }
+extension HasShaftMsgX on HasShaftMsg {
+  int get shaftWidth => shaftMsg.widthOpt ?? 1;
+}
 
 @Has()
 @Compose()
@@ -86,48 +69,26 @@ abstract class ShaftCalc
         HasShaftHeaderLabel,
         HasBuildShaftContent,
         HasBuildShaftOptions,
-        HasShaftSignificant {
-  // @override
-  // final ShaftCalcChain shaftCalcChain;
-  // final String staticLabel;
-  //
-  // @override
-  // BuildShaftOptions get buildShaftOptions => (shaftBits) => const [];
-  //
-  // bool get isSignificant => true;
-  //
-  // ShaftCalc(
-  //   this.shaftCalcChain, {
-  //   this.staticLabel = "<no label>",
-  // });
-  //
-  // ShaftCalc.access(
-  //   this.shaftCalcChain, {
-  //   required ScalarFieldAccess<MdiShaftMsg, dynamic> access,
-  // }) : staticLabel = access.name.titleCase;
-  //
-  // String get label => staticLabel;
-  //
-  // late final leftCalc = shaftCalcChain.parent?.calc;
-  //
-  // late final leftSignificantCalc = shaftCalcChain.childToParentIterable
-  //     .map((e) => e.calc)
-  //     .firstWhereOrNull((e) => e.isSignificant);
+        HasShaftSignificant {}
+
+extension ShaftCalcChainX on ShaftCalcChain {
+  ShaftCalcBuildBits get toBuildBits =>
+      ComposedShaftCalcBuildBits.shaftCalcBits(
+        shaftCalcBits: this,
+        shaftCalcChain: this,
+      );
+
+  ShaftCalc? get leftCalc => shaftCalcChainLeft?.calc;
+
+  Iterable<ShaftCalc> get leftCalcs => leftCalc.finiteIterable((item) => item.leftCalc);
+
+  ShaftCalc? get leftSignificantCalc => leftCalcs.firstWhereOrNull((e) => e.shaftSignificant);
 }
 
-// mixin HasShaftCalc {
-//   ShaftCalc get shaftCalc;
-//
-//   late final shaftCalcChain = shaftCalc.shaftCalcChain;
-// }
+extension ShaftCalcX on ShaftCalc {
+  ShaftCalc? get leftCalc => shaftCalcChain.leftCalc;
+}
 
-// mixin DelegateShaftCalcOptions {
-//   List<MenuItem> Function(ShaftBuilderBits shaftBits) get optionsDelegate;
-//
-//   List<MenuItem> options(ShaftBuilderBits shaftBits) =>
-//       optionsDelegate(shaftBits);
-// }
-
-// mixin ShaftCalcRightOf<T extends ShaftCalc> implements ShaftCalc {
-//   late final typedLeftCalc = leftSignificantCalc as T;
-// }
+@Compose()
+abstract class ShaftContentBits
+    implements ShaftCalcBits, HasBuildShaftContent, HasBuildShaftOptions {}

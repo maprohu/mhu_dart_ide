@@ -1,42 +1,38 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
+import '../app.dart';
 import '../bx/padding.dart';
 import '../bx/boxed.dart';
+import '../config.dart';
+import '../op.dart';
+import '../screen/calc.dart';
+import 'double.dart';
 import 'shaft.dart';
 
-part 'sized.freezed.dart';
+
+part 'sized.g.compose.dart';
 
 typedef SizedBuilder = Bx Function(SizedShaftBuilderBits sizedBits);
 
-@freezedStruct
-class SizedShaftBuilderBits
-    with _$SizedShaftBuilderBits, HasShaftBuilderBits, HasSize, HasThemeCalc {
-  SizedShaftBuilderBits._();
+@Compose()
+abstract class SizedShaftBuilderBits implements ShaftBuilderBits, HasSize {}
 
-  factory SizedShaftBuilderBits({
-    required ShaftBuilderBits shaftBits,
-    required Size size,
-  }) = _SizedShaftBuilderBits;
-
-  SizedShaftBuilderBits withSize(Size size) => copyWith(size: size);
-
-  SizedShaftBuilderBits withHeight(double height) => copyWith(
-        size: size.withHeight(height),
+extension SizedShaftBuilderBitsX on SizedShaftBuilderBits {
+  SizedShaftBuilderBits withSize(Size size) =>
+      ComposedSizedShaftBuilderBits.shaftBuilderBits(
+        shaftBuilderBits: this,
+        size: size,
       );
 
-  SizedShaftBuilderBits withWidth(double width) => copyWith(
-        size: size.withWidth(width),
+  SizedShaftBuilderBits withHeight(double height) => withSize(
+        size.withHeight(height),
       );
-}
 
-mixin HasSizedBits {
-  SizedShaftBuilderBits get sizedBits;
-
-  late final size = sizedBits.size;
+  SizedShaftBuilderBits withWidth(double width) => withSize(
+        size.withWidth(width),
+      );
 }
 
 extension SizedNodeBuildBitsX on SizedShaftBuilderBits {

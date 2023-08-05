@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/options.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
@@ -127,7 +127,7 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
     return fillLeft(
       left: (sizedBits) => sizedBits.headerText.centerLeft(label),
       right: centerHeight(
-        shaftBits.shortcut(callback),
+        shortcut(callback),
       ),
     );
   }
@@ -135,19 +135,18 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
 
 Bx defaultShaftBx({
   required SizedShaftBuilderBits sizedBits,
-  required ShaftCalc shaftCalc,
 }) {
   return shaftBx(
     sizedBits: sizedBits,
     builder: (headerBits, contentBits) {
-      final content = shaftCalc.buildShaftContent(contentBits);
+      final content = sizedBits.buildShaftContent(contentBits);
       return ShaftParts(
         header: headerBits.fillLeft(
           left: (sizedBits) => sizedBits.headerText.centerLeft(
-            shaftCalc.label,
+            sizedBits.shaftHeaderLabel,
           ),
           right: headerBits.centerHeight(
-            headerBits.shaftBits.shortcut(
+            headerBits.shortcut(
               headerBits.optionsOpenerCallback(),
             ),
           ),

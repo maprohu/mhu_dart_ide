@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/bx/divider.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
@@ -35,9 +36,7 @@ Bx paginatorAlongYBx({
   required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
   required double dividerThickness,
 }) {
-  final SizedShaftBuilderBits(
-    :themeCalc,
-  ) = sizedBits;
+  final themeCalc = sizedBits.themeCalc;
   Bx page({
     required SizedShaftBuilderBits sizedBits,
     required int startAt,

@@ -1,53 +1,37 @@
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/proto.dart';
 
 import '../screen/calc.dart';
 
-class ShaftDoubleChain
-    with
-        HasShaftCalc,
-        HasShaftCalcChain,
-        HasShaftMsg,
-        HasParent<ShaftDoubleChain>,
-        HasNext<ShaftDoubleChain> {
-  @override
-  final ShaftDoubleChain? parent;
+part 'double.g.has.dart';
 
-  @override
-  final ShaftCalc shaftCalc;
+part 'double.g.compose.dart';
 
-  @override
-  late final next = ShaftDoubleChain(
-    parent: this,
-    shaftCalc: shaftCalc.shaftCalcChain.parent!.calc,
+@Has()
+typedef ShaftDoubleChainRight = ShaftDoubleChain?;
+
+@Compose()
+@Has()
+abstract base class ShaftDoubleChain
+    implements HasShaftCalcChain, HasShaftDoubleChainRight {
+  late final shaftDoubleChainLeft = shaftCalcChain.shaftCalcChainLeft?.let(
+    (shaftCalcChainLeft) => ComposedShaftDoubleChain(
+      shaftDoubleChainRight: this,
+      shaftCalcChain: shaftCalcChainLeft,
+    ),
   );
 
-  bool get hasLeft => shaftCalc.shaftCalcChain.parent != null;
+  Iterable<ShaftDoubleChain> get iterableRight =>
+      finiteIterable((item) => shaftDoubleChainRight);
 
-  ShaftDoubleChain? get left => hasLeft ? next : null;
+  Iterable<ShaftDoubleChain> get iterableLeft =>
+      finiteIterable((item) {
+        return item.shaftDoubleChainLeft;
+      });
 
-  ShaftDoubleChain? get right => parent;
+  late int widthOnRight = shaftDoubleChainRight?.widthTillRightEnd ?? 0;
 
-  Iterable<ShaftDoubleChain> get iterableLeft sync* {
-    yield this;
-    final left = this.left;
-    if (left != null) {
-      // wonder if there is tail recursion optimization?
-      yield* left.iterableLeft;
-    }
-  }
-
-  late int parentWidthToEnd = parent?.widthToEnd ?? 0;
-
-  late int widthToEnd = parentWidthToEnd + shaftWidth;
-
-  ShaftDoubleChain({
-    this.parent,
-    required this.shaftCalc,
-  });
+  late int widthTillRightEnd =
+      widthOnRight + shaftCalcChain.shaftWidth;
 }
 
-mixin HasShaftDoubleChain {
-  ShaftDoubleChain get doubleChain;
-
-  late final shaftCalc = doubleChain.shaftCalc;
-}
