@@ -116,7 +116,7 @@ Map<int, double> distributeSharedSpace({
   };
 }
 
-Iterable<Bx> sharedLayout({
+Bx sharedLayoutBx({
   required Size size,
   required Axis axis,
   required Iterable<SharingBx> items,
@@ -146,6 +146,14 @@ Iterable<Bx> sharedLayout({
   final intrinsicDimensionTotal =
       items.sumByDouble((item) => item.intrinsicDimension);
 
+  Bx linear(Iterable<Bx> items) {
+    return Bx.linear(
+      axis: axis,
+      items: items.toList(),
+      size: size,
+    );
+  }
+
   if (intrinsicDimensionTotal <= availableSpace) {
     final fill = availableSpace - intrinsicDimensionTotal;
 
@@ -162,7 +170,7 @@ Iterable<Bx> sharedLayout({
             dimension: fill,
           ),
         ),
-    ];
+    ].let(linear);
   } else {
     final sharedSizes = distributeSharedSpace(
       space: availableSpace,
@@ -180,6 +188,6 @@ Iterable<Bx> sharedLayout({
       (index, element) => element.dimensionBxBuilder(
         sharedSizes[index]!,
       ),
-    );
+    ).let(linear);
   }
 }

@@ -27,10 +27,11 @@ class MenuItem with _$MenuItem {
   }) = _MenuItem;
 }
 
-SharingBx menuBx({
+SharingBx menuSharingBx({
   required SizedShaftBuilderBits sizedBits,
   required int itemCount,
   required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
+  SharingBx? emptyBx,
 }) {
   final SizedShaftBuilderBits(
     :themeCalc,
@@ -41,13 +42,14 @@ SharingBx menuBx({
     :menuItemsDividerThickness,
   ) = themeCalc;
 
-  return paginatorAlongYBx(
+  return paginatorAlongYSharingBx(
     sizedBits: sizedBits,
     itemHeight: menuItemHeight,
     itemCount: itemCount,
     itemBuilder: itemBuilder,
     dividerThickness: menuItemsDividerThickness,
     startAt: 0,
+    emptyBx: emptyBx,
   );
 }
 
@@ -81,7 +83,7 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
   SharingBx menu({
     required List<MenuItem> items,
   }) {
-    return menuBx(
+    return menuSharingBx(
       sizedBits: this,
       itemCount: items.length,
       itemBuilder: (index, sizedBits) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../app.dart';
@@ -36,6 +37,11 @@ extension SizedShaftBuilderBitsX on SizedShaftBuilderBits {
 
 extension SizedNodeBuildBitsX on SizedShaftBuilderBits {
   Bx fillHeight(double height) => withHeight(height).fill();
+
+  SharingBx fillVerticalSharing() => SharingBx.empty(
+        layoutAxis: Axis.vertical,
+        crossAxisDimension: width,
+      );
 
   Bx fill() => leaf(null);
 

@@ -41,6 +41,8 @@ class ThemeCalc {
       theme.dividerThicknessOpt?.menuItems ?? 1;
   late final paginatorFooterDividerThickness =
       theme.dividerThicknessOpt?.paginatorFooterOpt ?? 2;
+  late final shaftSharingDividerThickness =
+      theme.dividerThicknessOpt?.shaftSharingOpt ?? 2;
 
   static final robotoMonoTextStyle = _fontAssets.robotoMono.copyWith(
     fontSize: 14,
@@ -76,7 +78,6 @@ class ThemeCalc {
 
   late final shaftHeaderTextHeight =
       mdiTextSize("M", shaftHeaderTextStyle).height;
-
 
   late final shaftHeaderContentHeight =
       max(shaftHeaderTextHeight, shortcutSize.height);

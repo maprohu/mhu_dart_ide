@@ -122,4 +122,21 @@ sealed class Bx with _$Bx implements HasSize {
             children: rows.map((e) => e.layout()).toList(),
           ),
       };
+
+  static Bx linear({
+    required Axis axis,
+    required List<Bx> items,
+    required Size size,
+  }) {
+    return switch (axis) {
+      Axis.vertical => Bx.col(
+          rows: items,
+          size: size,
+        ),
+      Axis.horizontal => Bx.row(
+          columns: items,
+          size: size,
+        ),
+    };
+  }
 }

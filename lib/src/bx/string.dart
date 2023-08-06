@@ -7,6 +7,7 @@ import 'package:mhu_dart_ide/src/bx/text.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../builder/sized.dart';
+import 'share.dart';
 
 part 'string.g.compose.dart';
 
@@ -30,6 +31,21 @@ abstract class MonoTextStyle implements HasSize, HasTextStyle {
             // ],
             ),
       );
+}
+
+SharingBx stringVerticalSharingBx({
+  required SizedShaftBuilderBits sizedBits,
+  required String string,
+}) {
+  return ComposedSharingBx(
+    intrinsicDimension: sizedBits.themeCalc.stringTextStyle.height,
+    dimensionBxBuilder: (dimension) {
+      return stringBx(
+        sizedBits: sizedBits.withHeight(dimension),
+        string: string,
+      );
+    },
+  );
 }
 
 Bx stringBx({

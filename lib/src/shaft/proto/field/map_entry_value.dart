@@ -6,7 +6,7 @@ abstract class PfeShaftMapEntryValue implements ShaftCalc, ShaftCalcBuildBits {
     return ComposedPfeShaftMapEntryValue.shaftCalcBuildBits(
       shaftCalcBuildBits: shaftCalcBuildBits,
       shaftHeaderLabel: "Map Entry Value",
-      buildShaftContent: (sizedBits) => sizedBits.fill(),
+      buildShaftContent: (sizedBits) => sizedBits.fillVerticalSharing(),
     );
   }
 }

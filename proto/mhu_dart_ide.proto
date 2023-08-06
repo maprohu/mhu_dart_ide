@@ -30,6 +30,7 @@ message MdiDividerThicknessThemeMsg {
   double shaft_header = 2;
   double menu_items = 3;
   double paginator_footer = 4;
+  double shaft_sharing = 5;
 }
 
 // shafts
@@ -48,6 +49,7 @@ message MdiShaftMsg {
     MdiEmptyMsg entry_key = 11;
     MdiEmptyMsg entry_value = 12;
     MdiEmptyMsg error = 13;
+    MdiEmptyMsg edit_int = 14;
   }
 }
 
@@ -77,4 +79,15 @@ message  MdiMapEntryMsg {
     bool bool_value = 5;
     bytes bytes_value = 6;
   }
+}
+// inner state
+
+message  MdiInnerStateMsg {
+  oneof type {
+    MdiInnerEditIntMsg edit_int = 1;
+  }
+}
+
+message  MdiInnerEditIntMsg {
+  string text = 1;
 }

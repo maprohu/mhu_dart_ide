@@ -1,5 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
+import 'package:mhu_dart_ide/src/builder/text.dart';
+import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
@@ -18,8 +21,11 @@ part 'map.g.has.dart';
 part 'map.g.compose.dart';
 
 part 'map_entry.dart';
+
 part 'map_entry_new.dart';
+
 part 'map_entry_key.dart';
+
 part 'map_entry_value.dart';
 
 @Has()
@@ -33,7 +39,6 @@ abstract class PfeMapFieldBits<M extends GeneratedMessage, K, V>
         HasMapFieldAccess<M, K, V>,
         HasPfeMapFieldFu<K, V> {}
 
-
 @Compose()
 abstract class PfeMapKeyBits implements HasDefaultPbMapKey {}
 
@@ -46,8 +51,7 @@ abstract class PfeShaftMapField
         PfeShaftConcreteFieldBits,
         PfeMapFieldBits,
         ShaftCalc,
-        PfeShaftConcreteField
-{
+        PfeShaftConcreteField {
   static PfeShaftMapField of({
     required PfeShaftConcreteFieldBits pfeShaftConcreteFieldBits,
     required MapFieldAccess mapFieldAccess,
@@ -62,10 +66,32 @@ abstract class PfeShaftMapField
       pfeMapFieldFu: mapFieldAccess.fuCold(mfw),
     );
 
+    final BuildShaftContent content = (sizedBits) {
+      final value = mapFieldBits.pfeMapFieldFu();
+
+      if (value.isEmpty) {
+        return sizedBits.itemText.left("<empty map>").shaftContentSharing;
+      }
+
+      final sorted = value.entries.sortedByCompare(
+          (e) => e.key, mapFieldBits.defaultPbMapKey.comparator);
+
+      return sizedBits.menu(
+        items: sorted
+            .map(
+              (e) => MenuItem(
+                label: e.key.toString(),
+                callback: () {},
+              ),
+            )
+            .toList(),
+      );
+    };
+
     return ComposedPfeShaftMapField.merge$(
       pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
       pfeMapFieldBits: mapFieldBits,
-      buildShaftContent: (sizedBits) => sizedBits.fill(),
+      buildShaftContent: content,
       buildShaftOptions: (shaftBits) {
         return [
           shaftBits.openerField(MdiShaftMsg$.newMapItem),
@@ -74,7 +100,3 @@ abstract class PfeShaftMapField
     );
   }
 }
-
-
-
-

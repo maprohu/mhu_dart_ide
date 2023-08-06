@@ -32,6 +32,21 @@ extension TextBuilderBitsX on TextBuilderBits {
       size: size,
     );
   }
+  Bx left(String text) {
+    final span = this.span(text);
+    final textSize = span.size;
+    return Bx.padOrFill(
+      padding: Paddings.left(
+        outer: width,
+        inner: textSize.width,
+      ),
+      child: span.leaf(textSize),
+      size: size.withHeight(
+        textSize.height,
+      ),
+    );
+  }
+
 }
 
 extension TextSizedBitsX on SizedShaftBuilderBits {

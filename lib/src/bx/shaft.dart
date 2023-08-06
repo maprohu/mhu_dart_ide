@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
+import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/screen/options.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
@@ -90,7 +91,7 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
   }) {
     return shaft(
       (headerBits, contentBits) {
-        final pageBx = menuBx(
+        final pageBx = menuSharingBx(
           sizedBits: contentBits,
           itemCount: items.length,
           itemBuilder: (index, sizedBits) {
@@ -110,7 +111,7 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
               ),
             ),
           ),
-          content: pageBx,
+          content: pageBx.dimensionBxBuilder(contentBits.height),
         );
       },
     );
@@ -139,8 +140,18 @@ Bx defaultShaftBx({
   return shaftBx(
     sizedBits: sizedBits,
     builder: (headerBits, contentBits) {
-      final options = sizedBits.buildShaftOptions(contentBits);
-      final content = sizedBits.buildShaftContent(contentBits);
+      final content = contentBits.buildShaftContent(contentBits);
+      final options = contentBits.buildShaftOptions(contentBits);
+
+      final contentSharing = options.isEmpty
+          ? content.dimensionBxBuilder(contentBits.height)
+          : sharedLayoutBx(
+              size: contentBits.size,
+              axis: Axis.vertical,
+              items: [content, contentBits.menu(items: options)],
+              dividerThickness:
+                  contentBits.themeCalc.shaftSharingDividerThickness,
+            );
       return ShaftParts(
         header: headerBits.fillLeft(
           left: (sizedBits) => sizedBits.headerText.centerLeft(
@@ -152,7 +163,7 @@ Bx defaultShaftBx({
             ),
           ),
         ),
-        content: content,
+        content: contentSharing,
       );
     },
   );

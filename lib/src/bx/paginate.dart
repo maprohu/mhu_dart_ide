@@ -28,7 +28,7 @@ typedef PaginatorBx = ({
   bool showPaginator,
 });
 
-Bx paginatorAlongYBx({
+SharingBx paginatorAlongYSharingBx({
   required SizedShaftBuilderBits sizedBits,
   required double itemHeight,
   required int itemCount,
@@ -37,8 +37,31 @@ Bx paginatorAlongYBx({
   required double dividerThickness,
   SharingBx? emptyBx,
 }) {
-  
+  if (itemCount == 0) {
+    return emptyBx ??
+        ComposedSharingBx(
+          intrinsicDimension: 0,
+          dimensionBxBuilder: (dimension) =>
+              sizedBits.withHeight(dimension).fill(),
+        );
+  }
+  final intrinsicHeight =
+      itemCount * itemHeight + (itemCount - 1) * dividerThickness;
+  return ComposedSharingBx(
+    intrinsicDimension: intrinsicHeight,
+    dimensionBxBuilder: (dimension) {
+      return paginatorAlongYBx(
+        sizedBits: sizedBits.withHeight(dimension),
+        itemHeight: itemHeight,
+        itemCount: itemCount,
+        startAt: startAt,
+        itemBuilder: itemBuilder,
+        dividerThickness: dividerThickness,
+      );
+    },
+  );
 }
+
 Bx paginatorAlongYBx({
   required SizedShaftBuilderBits sizedBits,
   required double itemHeight,

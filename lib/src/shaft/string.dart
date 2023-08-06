@@ -2,6 +2,7 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/bx/shaft.dart';
+import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 
 import '../app.dart';
@@ -28,7 +29,7 @@ Bx stringShaftBx({
 }
 
 BuildShaftContent stringBuildShaftContent(String string) => (sizedBits) {
-      return stringBx(
+      return stringVerticalSharingBx(
         sizedBits: sizedBits,
         string: string,
       );
