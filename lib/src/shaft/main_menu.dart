@@ -7,9 +7,8 @@ import '../builder/sized.dart';
 import '../bx/menu.dart';
 import '../bx/boxed.dart';
 
-final ShaftCalcBuilder mainMenuShaftCalc = (shaftCalcChain) => ComposedShaftCalc.shaftCalcBits(
-  shaftCalcBits: shaftCalcChain,
-  shaftCalcChain: shaftCalcChain,
+final ShaftCalcBuilder mainMenuShaftCalc = (shaftCalcBuildBits) => ComposedShaftCalc.shaftCalcBuildBits(
+  shaftCalcBuildBits: shaftCalcBuildBits,
   shaftHeaderLabel: "Main Menu",
   buildShaftContent: (SizedShaftBuilderBits sizedBits) {
     return sizedBits.menu(

@@ -21,13 +21,13 @@ abstract class PfeShaftConcreteFieldBits
 @Has()
 abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
   static PfeShaftConcreteField of(
-    ShaftCalcChain shaftCalcChain,
+    ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
     late final messageShaftCalc =
-        shaftCalcChain.leftCalc as PfeMessageShaftCalc;
+        shaftCalcBuildBits.leftCalc as PfeMessageShaftCalc;
 
     final mfw = messageShaftCalc.mfw;
-    final shaftValue = shaftCalcChain.shaftMsg.pfeConcreteField;
+    final shaftValue = shaftCalcBuildBits.shaftMsg.pfeConcreteField;
     final concreteFieldKey = ConcreteFieldKey(
       messageType: mfw.read().runtimeType,
       tagNumber: shaftValue.tagNumber,
@@ -35,7 +35,7 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
 
     final pfeShaftConcreteFieldBits =
         ComposedPfeShaftConcreteFieldBits.shaftCalcBuildBits(
-      shaftCalcBuildBits: shaftCalcChain.toBuildBits,
+      shaftCalcBuildBits: shaftCalcBuildBits,
       concreteFieldKey: concreteFieldKey,
       shaftHeaderLabel: concreteFieldKey.protoName,
     );

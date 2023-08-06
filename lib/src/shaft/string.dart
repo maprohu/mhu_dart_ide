@@ -35,11 +35,9 @@ BuildShaftContent stringBuildShaftContent(String string) => (sizedBits) {
     };
 
 ShaftContentBits stringEditorShaftContentBits({
-  required ShaftCalcBits shaftCalcBits,
   required String stringValue,
 }) {
-  return ComposedShaftContentBits.shaftCalcBits(
-    shaftCalcBits: shaftCalcBits,
+  return ComposedShaftContentBits(
     buildShaftContent: stringBuildShaftContent(stringValue),
     buildShaftOptions: (shaftBits) => [
       MenuItem(

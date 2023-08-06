@@ -50,11 +50,10 @@ Bx mdiBuildScreen({
       dividerThickness: shaftsVerticalDividerThickness,
     );
 
-    final topShaftMsg = (state.topShaftOpt ?? _defaultMainMenuShaft);
-
     final topCalcChain = ComposedShaftCalcChain.appBits(
       appBits: appBits,
-      shaftMsg: topShaftMsg,
+      shaftMsg: state.effectiveTopShaft,
+      shaftIndexFromRight: 0,
     );
 
     final doubleChain = ComposedShaftDoubleChain(
@@ -137,4 +136,14 @@ ValueListenable<Bx> mdiScreenListenable({
       });
 
   return notifier;
+}
+
+extension ScreenMdiStateMsgX on MdiStateMsg {
+  MdiShaftMsg get effectiveTopShaft => topShaftOpt ?? _defaultMainMenuShaft;
+}
+
+extension ScreenMdiShaftMsgX on MdiShaftMsg {
+  MdiShaftMsg getShaftByIndex(int index) {
+    return infiniteIterable((item) => item.parent).skip(index).first;
+  }
 }

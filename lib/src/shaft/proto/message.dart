@@ -14,18 +14,17 @@ import '../../op.dart';
 part 'message.g.compose.dart';
 
 @Compose()
-abstract class PfeMessageShaftCalc implements ShaftCalcBits, ShaftCalc, HasMfw {
+abstract class PfeMessageShaftCalc implements ShaftCalcBuildBits, ShaftCalc, HasMfw {
   static PfeMessageShaftCalc of({
-    required ShaftCalcChain shaftCalcChain,
+    required ShaftCalcBuildBits shaftCalcBuildBits,
     required Mfw mfw,
   }) {
     late final pbi = mfw.read().pbi;
 
     late final messageCalc = pbi.calc;
 
-    return ComposedPfeMessageShaftCalc.shaftCalcBits(
-      shaftCalcBits: shaftCalcChain,
-      shaftCalcChain: shaftCalcChain,
+    return ComposedPfeMessageShaftCalc.shaftCalcBuildBits(
+      shaftCalcBuildBits: shaftCalcBuildBits,
       shaftHeaderLabel: messageCalc.messageName.titleCase,
       buildShaftContent: (SizedShaftBuilderBits sizedBits) {
         return sizedBits.menu(

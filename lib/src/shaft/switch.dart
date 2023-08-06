@@ -4,27 +4,39 @@ import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
 import 'package:mhu_dart_ide/src/shaft/options.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
+import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
+import '../../proto.dart';
 import '../screen/calc.dart';
 import 'error.dart';
 
+typedef ShaftCalcBuilder = ShaftCalc Function(ShaftCalcBuildBits buildBits);
 
-typedef ShaftCalcBuilder = ShaftCalc Function(ShaftCalcChain shaftCalcChain);
+final _shaftPbi = lookupPbiMessage(MdiShaftMsg);
 
 ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
   final ShaftCalcChain(:shaftMsg) = shaftCalcChain;
   final type = shaftMsg.type;
 
+  final access = type.tagNumber$ == 0
+      ? MdiShaftMsg$.error
+      : _shaftPbi.calc.concreteFieldKeysByTagNumber[type.tagNumber$]!.calc
+          .access as ScalarFieldAccess<MdiShaftMsg, dynamic>;
+
+  final buildBits = shaftCalcChain.toBuildBits(
+    shaftStateField: access,
+  );
+
   return switch (type) {
-    MdiShaftMsg_Type$mainMenu() => mainMenuShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$config() => configShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$pfeConcreteField() => PfeShaftConcreteField.of(shaftCalcChain),
-    MdiShaftMsg_Type$options() => optionsShaftCalc(shaftCalcChain),
-    MdiShaftMsg_Type$newMapItem() => PfeShaftNewMapEntry.of(shaftCalcChain),
-    MdiShaftMsg_Type$entryKey() => PfeShaftMapEntryKey.of(shaftCalcChain),
-    MdiShaftMsg_Type$entryValue() => PfeShaftMapEntryValue.of(shaftCalcChain),
+    MdiShaftMsg_Type$mainMenu() => mainMenuShaftCalc(buildBits),
+    MdiShaftMsg_Type$config() => configShaftCalc(buildBits),
+    MdiShaftMsg_Type$pfeConcreteField() => PfeShaftConcreteField.of(buildBits),
+    MdiShaftMsg_Type$options() => optionsShaftCalc(buildBits),
+    MdiShaftMsg_Type$newMapItem() => PfeShaftMapFieldNewEntry.of(buildBits),
+    MdiShaftMsg_Type$entryKey() => PfeShaftMapEntryKey.of(buildBits),
+    MdiShaftMsg_Type$entryValue() => PfeShaftMapEntryValue.of(buildBits),
     _ => notImplementedShaftCalc(
-        shaftCalcChain: shaftCalcChain,
+        shaftCalcBuildBits: buildBits,
         message: "no shaft: ${shaftMsg.whichType().name}",
         stackTrace: StackTrace.current,
       ),

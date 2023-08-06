@@ -3,6 +3,9 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
+import 'package:mhu_dart_ide/src/bx/screen.dart';
+import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+import 'package:protobuf/protobuf.dart';
 
 import '../builder/sized.dart';
 import '../bx/menu.dart';
@@ -39,12 +42,20 @@ typedef ShaftSignificant = bool;
 
 abstract class ShaftCalcBits implements HasShaftMsg, AppBits {}
 
+@Has()
+typedef ShaftStateField<T> = ScalarFieldAccess<MdiShaftMsg, T>;
+
 @Compose()
-abstract class ShaftCalcBuildBits implements ShaftCalcBits, HasShaftCalcChain {}
+abstract class ShaftCalcBuildBits<T>
+    implements ShaftCalcBits, HasShaftCalcChain, HasShaftStateField<T> {}
+
+@Has()
+typedef ShaftIndexFromRight = int;
 
 @Has()
 @Compose()
-abstract base class ShaftCalcChain implements AppBits, ShaftCalcBits {
+abstract base class ShaftCalcChain
+    implements AppBits, ShaftCalcBits, HasShaftIndexFromRight {
   late final ShaftCalc calc = calculateShaft(this);
 
   late final ShaftCalcChain? shaftCalcChainLeft =
@@ -52,6 +63,7 @@ abstract base class ShaftCalcChain implements AppBits, ShaftCalcBits {
     return ComposedShaftCalcChain.appBits(
       appBits: this,
       shaftMsg: parent,
+      shaftIndexFromRight: shaftIndexFromRight + 1,
     );
   });
 }
@@ -62,33 +74,60 @@ extension HasShaftMsgX on HasShaftMsg {
 
 @Has()
 @Compose()
-abstract class ShaftCalc
+abstract class ShaftCalc<T>
     implements
+        ShaftCalcBuildBits<T>,
         ShaftCalcBits,
         HasShaftCalcChain,
         HasShaftHeaderLabel,
         HasBuildShaftContent,
         HasBuildShaftOptions,
-        HasShaftSignificant {}
+        HasShaftSignificant,
+        HasShaftStateField<T> {}
 
 extension ShaftCalcChainX on ShaftCalcChain {
-  ShaftCalcBuildBits get toBuildBits =>
+  ShaftCalcBuildBits toBuildBits({
+    required ShaftStateField shaftStateField,
+  }) =>
       ComposedShaftCalcBuildBits.shaftCalcBits(
         shaftCalcBits: this,
         shaftCalcChain: this,
+        shaftStateField: shaftStateField,
       );
 
   ShaftCalc? get leftCalc => shaftCalcChainLeft?.calc;
 
-  Iterable<ShaftCalc> get leftCalcs => leftCalc.finiteIterable((item) => item.leftCalc);
+  Iterable<ShaftCalc> get leftCalcs =>
+      leftCalc.finiteIterable((item) => item.leftCalc);
 
-  ShaftCalc? get leftSignificantCalc => leftCalcs.firstWhereOrNull((e) => e.shaftSignificant);
+  ShaftCalc? get leftSignificantCalc =>
+      leftCalcs.firstWhereOrNull((e) => e.shaftSignificant);
+
+  Fu<MdiShaftMsg> get shaftMsgFu {
+    return Fu.fromFr(
+      fr: stateFw.map((state) {
+        return state.effectiveTopShaft.getShaftByIndex(shaftIndexFromRight);
+      }),
+      update: (updates) {
+        stateFw.deepRebuild((state) {
+          state.effectiveTopShaft
+              .getShaftByIndex(shaftIndexFromRight)
+              .let(updates);
+        });
+      },
+    );
+  }
 }
 
 extension ShaftCalcX on ShaftCalc {
+  // ShaftCalc? get leftCalc => shaftCalcChain.leftCalc;
+}
+
+extension HasShaftCalcChainX on HasShaftCalcChain {
+
   ShaftCalc? get leftCalc => shaftCalcChain.leftCalc;
 }
 
 @Compose()
 abstract class ShaftContentBits
-    implements ShaftCalcBits, HasBuildShaftContent, HasBuildShaftOptions {}
+    implements HasBuildShaftContent, HasBuildShaftOptions {}

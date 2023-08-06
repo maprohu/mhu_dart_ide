@@ -124,6 +124,7 @@ extension MenuShaftBitsX on ShaftBuilderBits {
     label ??= ComposedShaftCalcChain.appBits(
       appBits: this,
       shaftMsg: MdiShaftMsg().also(builder)..freeze(),
+      shaftIndexFromRight: 0,
     ).calc.shaftHeaderLabel;
 
     return MenuItem(
