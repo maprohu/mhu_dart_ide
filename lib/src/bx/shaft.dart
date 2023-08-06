@@ -139,6 +139,7 @@ Bx defaultShaftBx({
   return shaftBx(
     sizedBits: sizedBits,
     builder: (headerBits, contentBits) {
+      final options = sizedBits.buildShaftOptions(contentBits);
       final content = sizedBits.buildShaftContent(contentBits);
       return ShaftParts(
         header: headerBits.fillLeft(

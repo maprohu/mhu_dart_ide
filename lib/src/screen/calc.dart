@@ -9,6 +9,7 @@ import 'package:protobuf/protobuf.dart';
 
 import '../builder/sized.dart';
 import '../bx/menu.dart';
+import '../bx/share.dart';
 import '../config.dart';
 import '../op.dart';
 import '../shaft/switch.dart';
@@ -19,7 +20,7 @@ part 'calc.g.has.dart';
 part 'calc.g.compose.dart';
 
 @Has()
-typedef BuildShaftContent = Bx Function(SizedShaftBuilderBits sizedBits);
+typedef BuildShaftContent = SharingBx Function(SizedShaftBuilderBits sizedBits);
 
 List<MenuItem> emptyShaftOptions(ShaftBuilderBits shaftBuilderBits) => const [];
 
@@ -124,10 +125,13 @@ extension ShaftCalcX on ShaftCalc {
 }
 
 extension HasShaftCalcChainX on HasShaftCalcChain {
-
   ShaftCalc? get leftCalc => shaftCalcChain.leftCalc;
 }
 
 @Compose()
 abstract class ShaftContentBits
     implements HasBuildShaftContent, HasBuildShaftOptions {}
+
+extension ShaftCalcBxX on Bx {
+  SharingBx get shaftContentSharing => SharingBx.fixedVertical(this);
+}

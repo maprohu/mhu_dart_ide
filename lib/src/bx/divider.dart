@@ -5,7 +5,6 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import '../builder/sized.dart';
 import 'boxed.dart';
 
-
 extension DividerSizedBits on SizedShaftBuilderBits {
   Bx horizontalDivider(double thickness) {
     return horizontalDividerBx(
@@ -80,4 +79,21 @@ Bx horizontalDividerBx({
       endIndent: 0,
     ),
   );
+}
+
+Bx dividerByLayoutAxis({
+  required Axis axis,
+  required double thickness,
+  required double crossAxisSize,
+}) {
+  return switch (axis) {
+    Axis.horizontal => verticalDividerBx(
+        thickness: thickness,
+        height: crossAxisSize,
+      ),
+    Axis.vertical => horizontalDividerBx(
+        thickness: thickness,
+        width: crossAxisSize,
+      ),
+  };
 }

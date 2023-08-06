@@ -32,6 +32,15 @@ class Paddings {
     );
   }
 
+  static EdgeInsets left({
+    required double outer,
+    required double inner,
+  }) {
+    return EdgeInsets.only(
+      right: outer - inner,
+    );
+  }
+
   static EdgeInsets centerY({
     required double outer,
     required double inner,
@@ -49,4 +58,25 @@ class Paddings {
       horizontal: (outer - inner) / 2,
     );
   }
+
+  static EdgeInsets start({
+    required Axis axis,
+    required double outer,
+    required double inner,
+  }) {
+    return switch (axis) {
+      Axis.horizontal => left(
+          outer: outer,
+          inner: inner,
+        ),
+      Axis.vertical => top(
+          outer: outer,
+          inner: inner,
+        ),
+    };
+  }
+}
+
+extension PaddingsEdgeInsetsX on EdgeInsets {
+  bool get isZero => left == 0 && right == 0 && top == 0 && bottom == 0;
 }

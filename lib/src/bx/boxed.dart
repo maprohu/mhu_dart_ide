@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/bx/padding.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
-
 
 part 'boxed.freezed.dart';
 
@@ -47,11 +47,16 @@ sealed class Bx with _$Bx implements HasSize {
   static Bx padOrFill({
     required EdgeInsets padding,
     required Bx child,
-    required Size size,
-  }) =>
-      padding.isNonNegative
-          ? Bx.pad(padding: padding, child: child, size: size)
-          : Bx.leaf(size: size, widget: overflow);
+    Size? size,
+  }) {
+    if (padding.isZero) {
+      return child;
+    }
+    size ??= padding.inflateSize(child.size);
+    return padding.isNonNegative
+        ? Bx.pad(padding: padding, child: child, size: size)
+        : Bx.leaf(size: size, widget: overflow);
+  }
 
   static Bx fill(Size size) => Bx.leaf(
         size: size,
@@ -117,10 +122,4 @@ sealed class Bx with _$Bx implements HasSize {
             children: rows.map((e) => e.layout()).toList(),
           ),
       };
-
-
 }
-
-
-
-

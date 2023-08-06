@@ -11,7 +11,6 @@ import '../screen/calc.dart';
 import 'double.dart';
 import 'shaft.dart';
 
-
 part 'sized.g.compose.dart';
 
 typedef SizedBuilder = Bx Function(SizedShaftBuilderBits sizedBits);
@@ -61,7 +60,10 @@ extension SizedNodeBuildBitsX on SizedShaftBuilderBits {
   }
 
   Bx centerHeight(Bx child) => Bx.padOrFill(
-        padding: Paddings.centerY(outer: height, inner: child.height),
+        padding: Paddings.centerY(
+          outer: height,
+          inner: child.height,
+        ),
         child: child,
         size: Size(
           child.width,

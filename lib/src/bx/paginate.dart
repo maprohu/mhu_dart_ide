@@ -8,6 +8,7 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../builder/sized.dart';
 import 'boxed.dart';
+import 'share.dart';
 
 int itemFitCount({
   required double available,
@@ -22,7 +23,6 @@ int itemFitCount({
   return 1 + (remaining ~/ (itemSize + dividerThickness));
 }
 
-
 typedef PaginatorBx = ({
   Bx bx,
   bool showPaginator,
@@ -35,6 +35,18 @@ Bx paginatorAlongYBx({
   required int startAt,
   required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
   required double dividerThickness,
+  SharingBx? emptyBx,
+}) {
+  
+}
+Bx paginatorAlongYBx({
+  required SizedShaftBuilderBits sizedBits,
+  required double itemHeight,
+  required int itemCount,
+  required int startAt,
+  required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
+  required double dividerThickness,
+  SharingBx? emptyBx,
 }) {
   final themeCalc = sizedBits.themeCalc;
   Bx page({

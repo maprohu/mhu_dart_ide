@@ -13,6 +13,7 @@ import '../bx/shortcut.dart';
 import '../screen/calc.dart';
 import '../theme.dart';
 import 'boxed.dart';
+import 'share.dart';
 
 part 'menu.freezed.dart';
 
@@ -26,7 +27,7 @@ class MenuItem with _$MenuItem {
   }) = _MenuItem;
 }
 
-Bx menuBx({
+SharingBx menuBx({
   required SizedShaftBuilderBits sizedBits,
   required int itemCount,
   required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
@@ -77,7 +78,7 @@ Bx menuItemBx({
 }
 
 extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
-  Bx menu({
+  SharingBx menu({
     required List<MenuItem> items,
   }) {
     return menuBx(
