@@ -7,6 +7,7 @@ import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/async.dart';
@@ -71,8 +72,13 @@ ShaftCalc editIntShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
 
           final gridPixelSize =
               gridSize.sizeFrom(cellSize: stringTextStyle.size);
+
+          ShortcutKeyListener keyListener = (key) {
+
+          };
+
           sizedBits.opBuilder.addKeyListener((key) {
-            print(key);
+            keyListener(key);
           });
 
           final gridSizeWithCursorMargin = gridPixelSize
@@ -80,7 +86,17 @@ ShaftCalc editIntShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
           final widget = futureBuilderNull(
             future: sizedBits.accessInnerState(
               sizedBits.shaftCalcChain.shaftIndexFromLeft,
-              (fv) async => fv,
+              (fv) async {
+                keyListener = (key) {
+                  fv.update((innerState) {
+
+                  });
+
+
+                };
+
+                return fv;
+              },
             ),
             builder: (context, innerStateFw) {
               return flcFrr(() {
@@ -98,15 +114,35 @@ ShaftCalc editIntShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
 
                 final lines = textAfterClipping.slices(gridSize.columnCount);
 
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: textCursorThickness / 2,
-                  ),
-                  child: stringLinesWidget(
-                    lines: lines,
-                    isClipped: isClipped,
-                    themeCalc: sizedBits.themeCalc,
-                  ),
+                final cursorLineIndex = lines.length - 1;
+                final cursorColumnIndex = lines.last.length;
+
+                return Stack(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: textCursorThickness / 2,
+                      ),
+                      child: stringLinesWidget(
+                        lines: lines,
+                        isClipped: isClipped,
+                        themeCalc: sizedBits.themeCalc,
+                      ),
+                    ),
+                    Positioned(
+                      left: cursorColumnIndex * stringTextStyle.width,
+                      top: cursorLineIndex * stringTextStyle.height,
+                      child: SizedBox(
+                        width: textCursorThickness,
+                        height: stringTextStyle.height,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: sizedBits.themeCalc.textCursorColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               });
             },

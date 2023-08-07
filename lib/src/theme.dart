@@ -103,7 +103,7 @@ class ThemeCalc {
 
   late final paginatorFooterPadding = const EdgeInsets.all(2);
 
-  late final textCursorThickness = 2;
+  late final textCursorThickness = 2.0;
   late final textCursorColor = Colors.red;
   late final textClipMarkerColor = Colors.red;
 }
