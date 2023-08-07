@@ -12,11 +12,21 @@ typedef ShaftOpener = void Function(MdiShaftMsg shaft);
 // }
 
 extension ScreenShaftBuilderBitsX on ShaftBuilderBits {
-  VoidCallback openerCallback(ShaftOpener builder) => () {
-        stateFw.rebuild((message) {
-          message.topShaft = MdiShaftMsg$.create(
-            parent: shaftMsg,
-          ).also(builder);
-        });
-      };
+  VoidCallback openerCallback(
+    ShaftOpener builder, {
+    void Function(MdiShaftMsg shaftMsg) before = ignore1,
+  }) {
+    return () {
+      final newShaft = MdiShaftMsg$.create(
+        parent: shaftMsg,
+      ).also(builder)
+        ..freeze();
+
+      before(newShaft);
+
+      stateFw.rebuild((message) {
+        message.topShaft = newShaft;
+      });
+    };
+  }
 }

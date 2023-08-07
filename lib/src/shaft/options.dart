@@ -1,5 +1,4 @@
 import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/generated/mhu_dart_ide.pbfield.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 
 

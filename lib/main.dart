@@ -7,6 +7,7 @@ import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/op.dart';
+import 'package:mhu_dart_ide/src/screen/inner_state.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
@@ -37,6 +38,10 @@ void main() async {
         configBits: configBits,
         screenSizeFr: screenSizeFr,
         opBuilder: OpBuilder(),
+        accessInnerState: createAccessInnerState(
+          isarDatabase: isar,
+          disposers: disposers,
+        ),
       );
 
       final listenable = mdiScreenListenable(

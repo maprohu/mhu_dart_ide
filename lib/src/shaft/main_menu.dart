@@ -5,7 +5,6 @@ import 'package:mhu_dart_ide/src/shaft/switch.dart';
 
 import '../builder/sized.dart';
 import '../bx/menu.dart';
-import '../bx/boxed.dart';
 
 final ShaftCalcBuilder mainMenuShaftCalc = (shaftCalcBuildBits) => ComposedShaftCalc.shaftCalcBuildBits(
   shaftCalcBuildBits: shaftCalcBuildBits,

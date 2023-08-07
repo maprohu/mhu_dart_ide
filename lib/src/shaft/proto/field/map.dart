@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
-import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
@@ -13,6 +13,7 @@ import '../../../app.dart';
 import '../../../bx/menu.dart';
 import '../../../config.dart';
 import '../../../op.dart';
+import '../../../screen/inner_state.dart';
 import '../scalar/int.dart';
 import '../scalar/string.dart';
 

@@ -1,3 +1,4 @@
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
@@ -8,6 +9,7 @@ import '../../app.dart';
 import '../../config.dart';
 import '../../op.dart';
 import '../../screen/calc.dart';
+import '../../screen/inner_state.dart';
 
 part 'concrete_field.g.has.dart';
 

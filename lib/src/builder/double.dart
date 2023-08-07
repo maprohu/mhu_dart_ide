@@ -1,5 +1,5 @@
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
 
 import '../screen/calc.dart';
 

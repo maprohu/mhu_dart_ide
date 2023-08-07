@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import
 
 import 'package:isar/isar.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/isar.dart';
 import 'package:mhu_dart_ide/src/app.dart';

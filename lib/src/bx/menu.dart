@@ -111,17 +111,22 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
 // }
 
 extension MenuShaftBitsX on ShaftBuilderBits {
-  MenuItem openerField(ScalarFieldAccess<MdiShaftMsg, dynamic> access) {
+  MenuItem openerField(
+    ScalarFieldAccess<MdiShaftMsg, dynamic> access, {
+    void Function(MdiShaftMsg shaftMsg) before = ignore1,
+  }) {
     return opener(
       (shaft) {
         access.set(shaft, access.defaultSingleValue);
       },
+      before: before,
       label: access.name.titleCase,
     );
   }
 
   MenuItem opener(
     ShaftOpener builder, {
+    void Function(MdiShaftMsg shaftMsg) before = ignore1,
     String? label,
   }) {
     label ??= ComposedShaftCalcChain.appBits(
@@ -132,7 +137,10 @@ extension MenuShaftBitsX on ShaftBuilderBits {
 
     return MenuItem(
       label: label,
-      callback: openerCallback(builder),
+      callback: openerCallback(
+        builder,
+        before: before,
+      ),
     );
   }
 }

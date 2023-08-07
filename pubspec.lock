@@ -512,6 +512,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  mhu_dart_annotation:
+    dependency: "direct main"
+    description:
+      name: mhu_dart_annotation
+      sha256: "45e9c5a1fb2360154067c36f24174bdad7a54bd9e13994bfd47ddb8b1a8b74cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   mhu_dart_builder:
     dependency: "direct dev"
     description:
@@ -533,6 +541,13 @@ packages:
       relative: true
     source: path
     version: "1.0.2"
+  mhu_dart_pbgen:
+    dependency: "direct dev"
+    description:
+      path: "../mhu_dart_pbgen"
+      relative: true
+    source: path
+    version: "1.0.1"
   mhu_dart_proto:
     dependency: "direct main"
     description:
@@ -540,6 +555,13 @@ packages:
       relative: true
     source: path
     version: "1.0.3"
+  mhu_dart_sourcegen:
+    dependency: "direct overridden"
+    description:
+      path: "../mhu_dart_sourcegen"
+      relative: true
+    source: path
+    version: "1.0.1"
   mhu_flutter_commons:
     dependency: "direct main"
     description:
@@ -675,14 +697,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  protoc_plugin:
-    dependency: transitive
-    description:
-      name: protoc_plugin
-      sha256: "41f06692f6d46018a6547f088d5598282f6d00cf6c33c535647c075b9ee62dd7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "21.0.2"
   pub_semver:
     dependency: transitive
     description:

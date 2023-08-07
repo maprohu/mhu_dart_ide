@@ -10,7 +10,6 @@ import '../../proto.dart';
 import '../app.dart';
 import '../builder/double.dart';
 import '../builder/shaft.dart';
-import '../builder/sized.dart';
 import 'shaft.dart';
 import '../state.dart';
 import '../theme.dart';

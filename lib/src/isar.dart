@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:isar/isar.dart';
 import 'package:logger/logger.dart';
-import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/isar.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,32 +22,18 @@ Future<Isar> mdiCreateIsar() async {
   _logger.w("isar dir: $dir");
 
   return await Isar.open(
-    [SingletonRecordSchema],
+    [
+      SingletonRecordSchema,
+      MdiInnerStateRecordSchema,
+    ],
     directory: dir.path,
   );
 }
 
 @collection
-class MdiInnerStateRecord {
-  late final Id id;
-
-  late final List<byte> shaftMsgBytes;
-
-  // ignore: invalid_annotation_target
-  @ignore
-  set shaftMsg(MdiShaftMsg shaftMsg) {
-    shaftMsgBytes = shaftMsg.writeToBuffer();
-    id = fastBytesHash(shaftMsgBytes);
-  }
-
-  late final List<byte> innerStateBytes;
-
-  set innerState(MdiInnerStateMsg innerState) {
-    innerStateBytes = innerState.writeToBuffer();
-  }
-
-  @ignore
-  late final innerState = MdiInnerStateMsg()
-    ..mergeFromBuffer(innerStateBytes)
-    ..freeze();
+class MdiInnerStateRecord
+    with BlobRecord, IsarIdRecord, ProtoRecord<MdiInnerStateMsg> {
+  @override
+  MdiInnerStateMsg createProto$() => MdiInnerStateMsg();
 }
+

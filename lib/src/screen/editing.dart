@@ -1,3 +1,4 @@
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 
 part 'editing.g.has.dart';

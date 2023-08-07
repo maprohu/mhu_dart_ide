@@ -1,4 +1,3 @@
-import 'package:mhu_dart_ide/src/generated/mhu_dart_ide.pbfield.dart';
 import 'package:mhu_dart_ide/src/shaft/config.dart';
 import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
 import 'package:mhu_dart_ide/src/shaft/options.dart';
@@ -8,6 +7,7 @@ import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
 import '../../proto.dart';
 import '../screen/calc.dart';
+import 'editing/int.dart';
 import 'error.dart';
 
 typedef ShaftCalcBuilder = ShaftCalc Function(ShaftCalcBuildBits buildBits);
@@ -35,6 +35,7 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
     MdiShaftMsg_Type$newMapItem() => PfeShaftMapFieldNewEntry.of(buildBits),
     MdiShaftMsg_Type$entryKey() => PfeShaftMapEntryKey.of(buildBits),
     MdiShaftMsg_Type$entryValue() => PfeShaftMapEntryValue.of(buildBits),
+    MdiShaftMsg_Type$editInt() => editIntShaftCalc(buildBits),
     _ => notImplementedShaftCalc(
         shaftCalcBuildBits: buildBits,
         message: "no shaft: ${shaftMsg.whichType().name}",

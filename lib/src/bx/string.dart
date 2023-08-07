@@ -1,15 +1,27 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/bx/boxed.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
+import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../builder/sized.dart';
 import 'share.dart';
 
+part 'string.g.has.dart';
+
 part 'string.g.compose.dart';
+
+@Has()
+typedef ColumnCount = int;
+@Has()
+typedef RowCount = int;
+
+@Compose()
+abstract class GridSize implements HasColumnCount, HasRowCount {}
 
 @Compose()
 abstract class MonoTextStyle implements HasSize, HasTextStyle {
@@ -25,11 +37,7 @@ abstract class MonoTextStyle implements HasSize, HasTextStyle {
         ).let((s) {
           return Size(s.width / _calcCount, s.height);
         }),
-        textStyle: textStyle.apply(
-            // fontFeatures: [
-            //   FontFeature.tabularFigures(),
-            // ],
-            ),
+        textStyle: textStyle,
       );
 }
 
@@ -54,10 +62,10 @@ Bx stringBx({
 }) {
   final style = sizedBits.themeCalc.stringTextStyle;
 
-  final styleWidth = style.width;
-
-  final fitWidth = sizedBits.width ~/ styleWidth;
-  final fitHeight = sizedBits.height ~/ style.height;
+  final GridSize(
+    columnCount: fitWidth,
+    rowCount: fitHeight,
+  ) = style.maxGridSize(sizedBits.size);
 
   final lines = string.characters
       .slices(fitWidth)
@@ -108,4 +116,54 @@ extension StringTextStyleX on TextStyle {
         text: text,
         style: this,
       );
+}
+
+extension MonoTextStyleX on MonoTextStyle {
+  GridSize maxGridSize(Size size) {
+    return ComposedGridSize(
+      columnCount: size.width ~/ width,
+      rowCount: size.height ~/ height,
+    );
+  }
+}
+
+extension GridSizeX on GridSize {
+  int get cellCount => columnCount * rowCount;
+
+  Size sizeFrom({
+    required Size cellSize,
+  }) =>
+      Size(
+        cellSize.width * columnCount,
+        cellSize.height * rowCount,
+      );
+}
+
+Widget stringLinesWidget({
+  required Iterable<String> lines,
+  required ThemeCalc themeCalc,
+  required bool isClipped,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: lines.mapIndexed(
+      (index, line) {
+        final textSpan = isClipped && index == 0
+            ? TextSpan(
+                children: [
+                  themeCalc.stringTextStyle.textStyle
+                      .apply(color: themeCalc.textClipMarkerColor)
+                      .span("<"),
+                  themeCalc.stringTextStyle.span(line.substring(1)),
+                ],
+              )
+            : themeCalc.stringTextStyle.span(line);
+
+        return RichText(
+          text: textSpan,
+          softWrap: false,
+        );
+      },
+    ).toList(),
+  );
 }

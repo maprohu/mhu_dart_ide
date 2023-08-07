@@ -47,7 +47,7 @@ abstract class PfeShaftMapFieldNewEntry
       shaftCalcBuildBits: shaftCalcBuildBits,
       pfeMapFieldBits: mapFieldShaft,
       pfeMapEntryBits: entryBits,
-      shaftHeaderLabel: "New Map Entry",
+      shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
       buildShaftContent: (sizedBits) {
         return sizedBits.menu(items: [
           sizedBits.openerField(MdiShaftMsg$.entryKey),

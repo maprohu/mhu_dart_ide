@@ -3,6 +3,7 @@
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/services.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/keyboard.dart';
 
@@ -33,6 +34,7 @@ class _BuildReg {
 class _OpBuild {
   final OpBuilder builder;
   final ops = <_BuildReg>[];
+  final keyListeners = <ShortcutKeyListener>[];
 
   _OpBuild(this.builder);
 
@@ -41,6 +43,12 @@ class _OpBuild {
     level: 0,
     build: this,
   );
+
+  void invokeKeyListeners(ShortcutKey key) {
+    for (final listener in keyListeners) {
+      listener(key);
+    }
+  }
 }
 
 class _OpNode {
@@ -69,7 +77,17 @@ class _OpNode {
       );
 
   void keyPressed(ShortcutKey key) {
-    map[key]?.click(this, key);
+    if (level != 0 && key == ShortcutKey.escape) {
+      build.builder._clearPressed();
+      return;
+    }
+    final node = map[key];
+
+    if (node == null) {
+      build.invokeKeyListeners(key);
+    } else {
+      node.click(this, key);
+    }
   }
 
   late final isLeaf = regs.length == 1;
@@ -95,6 +113,8 @@ class _OpNode {
   }
 }
 
+typedef ShortcutKeyListener = void Function(ShortcutKey key);
+
 @Has()
 class OpBuilder {
   late _OpBuild _opBuild;
@@ -117,6 +137,12 @@ class OpBuilder {
     for (final reg in _opBuild.ops) {
       reg.pressed.value = 0;
     }
+  }
+
+
+  void addKeyListener(ShortcutKeyListener listener) {
+    assert(!_built);
+    _opBuild.keyListeners.add(listener);
   }
 
 

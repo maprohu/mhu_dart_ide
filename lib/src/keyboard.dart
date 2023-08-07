@@ -7,6 +7,19 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 
 class OpShortcuts {
+  static const digitKeys = [
+    LogicalKeyboardKey.digit0,
+    LogicalKeyboardKey.digit1,
+    LogicalKeyboardKey.digit2,
+    LogicalKeyboardKey.digit3,
+    LogicalKeyboardKey.digit4,
+    LogicalKeyboardKey.digit5,
+    LogicalKeyboardKey.digit6,
+    LogicalKeyboardKey.digit7,
+    LogicalKeyboardKey.digit8,
+    LogicalKeyboardKey.digit9,
+  ];
+
   // unused
   // used qwertyuiop
   // used asdfghjkl;
@@ -33,10 +46,13 @@ class OpShortcuts {
   static final IList<OpShortcut> singleShortcutKeyOrder =
       shortcutKeyOrder.map((sk) => IList<ShortcutKey>([sk])).toIList();
 
-  static final allShortcutKeys = IList([
-    ...shortcutKeyOrder,
-    ShortcutKey.of(LogicalKeyboardKey.escape),
+  static final allShortcutLogicalKeys = IList([
+    ...logicalKeyOrder,
+    LogicalKeyboardKey.escape,
+    ...digitKeys,
   ]);
+  static final allShortcutKeys =
+      allShortcutLogicalKeys.map(ShortcutKey.of).toIList();
 
   static Iterable<OpShortcut> generateShortcuts(int count) {
     final singleKeyOpShortcuts = singleShortcutKeyOrder;
