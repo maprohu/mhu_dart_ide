@@ -14,6 +14,7 @@ import '../../../bx/menu.dart';
 import '../../../config.dart';
 import '../../../op.dart';
 import '../../../screen/inner_state.dart';
+import '../../editing/editing.dart';
 import '../scalar/int.dart';
 import '../scalar/string.dart';
 

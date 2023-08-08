@@ -62,6 +62,7 @@ abstract class ConfigBits
       defaultValue: mdiDefaultTheme,
     );
 
+
     return ComposedConfigBits(
       themeFw: MdiThemeMsg$Fw(
         themeFw,

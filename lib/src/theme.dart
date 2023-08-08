@@ -106,6 +106,8 @@ class ThemeCalc {
   late final textCursorThickness = 2.0;
   late final textCursorColor = Colors.red;
   late final textClipMarkerColor = Colors.red;
+
+  late final notificationTextStyle = robotoSlabTextStyle;
 }
 
 mixin HasThemeCalc {

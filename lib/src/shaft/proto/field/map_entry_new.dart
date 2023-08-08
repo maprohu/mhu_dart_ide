@@ -17,18 +17,18 @@ abstract class PfeShaftMapFieldNewEntry
     final shaftMsgFu = shaftCalcBuildBits.shaftCalcChain.shaftMsgFu;
 
     late final stringKeyFw = Fw.fromFr(
-      fr: shaftMsgFu.map((t) => t.newMapItem.mapEntry.stringKey),
+      fr: shaftMsgFu.map((t) => t.newMapItem.mapEntry.stringKeyOpt),
       set: (value) {
         shaftMsgFu.update((shaft) {
-          shaft.newMapItem.ensureMapEntry().stringKey = value;
+          shaft.newMapItem.ensureMapEntry().stringKeyOpt = value;
         });
       },
     );
     late final intKeyFw = Fw.fromFr(
-      fr: shaftMsgFu.map((t) => t.newMapItem.mapEntry.intKey),
+      fr: shaftMsgFu.map((t) => t.newMapItem.mapEntry.intKeyOpt),
       set: (value) {
         shaftMsgFu.update((shaft) {
-          shaft.newMapItem.ensureMapEntry().intKey = value;
+          shaft.newMapItem.ensureMapEntry().intKeyOpt = value;
         });
       },
     );

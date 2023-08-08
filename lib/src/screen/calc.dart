@@ -5,6 +5,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/bx/screen.dart';
+import 'package:mhu_dart_ide/src/model.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:recase/recase.dart';
 
@@ -118,6 +119,7 @@ extension ShaftCalcChainX on ShaftCalcChain {
       }),
       update: (updates) {
         stateFw.deepRebuild((state) {
+          state.topShaftOpt?.clearNotificationsDeepMutate();
           state.effectiveTopShaft
               .getShaftByIndex(shaftIndexFromRight)
               .let(updates);

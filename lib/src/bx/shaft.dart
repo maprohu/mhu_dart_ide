@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
+import 'package:mhu_dart_ide/src/bx/notification.dart';
 import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/screen/options.dart';
@@ -143,15 +144,20 @@ Bx defaultShaftBx({
       final content = contentBits.buildShaftContent(contentBits);
       final options = contentBits.buildShaftOptions(contentBits);
 
-      final contentSharing = options.isEmpty
-          ? content.dimensionBxBuilder(contentBits.height)
-          : sharedLayoutBx(
-              size: contentBits.size,
-              axis: Axis.vertical,
-              items: [content, contentBits.menu(items: options)],
-              dividerThickness:
-                  contentBits.themeCalc.shaftSharingDividerThickness,
-            );
+      final contentSharing = sharedLayoutBx(
+        size: contentBits.size,
+        axis: Axis.vertical,
+        items: [
+          content,
+          for (final notification in contentBits.shaftMsg.notifications)
+            notificationSharingBx(
+              sizedShaftBuilderBits: contentBits,
+              notificationMsg: notification,
+            ),
+          if (options.isNotEmpty) contentBits.menu(items: options),
+        ],
+        dividerThickness: contentBits.themeCalc.shaftSharingDividerThickness,
+      );
       return ShaftParts(
         header: headerBits.fillLeft(
           left: (sizedBits) => sizedBits.headerText.centerLeft(

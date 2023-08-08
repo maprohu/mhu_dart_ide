@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -114,27 +115,30 @@ Bx mdiBuildScreen({
   });
 }
 
-ValueListenable<Bx> mdiScreenListenable({
+void mdiStartScreenStream({
   required AppBits appBits,
   required DspReg disposers,
+  required StreamConsumer<Bx> screenStream
 }) {
-  final notifier = ValueNotifier<Bx>(
-    Bx.leaf(
-      size: Size.zero,
-      widget: null,
-    ),
-  );
+  // final streamController = StreamController<Bx>();
+  // streamController.add(
+  //   Bx.leaf(
+  //     size: Size.zero,
+  //     widget: null,
+  //   ),
+  // );
 
   disposers
       .fr(() {
         return mdiBuildScreen(appBits: appBits);
       })
       .changes()
-      .forEach((widget) {
-        notifier.value = widget;
-      });
+      .let(screenStream.addStream);
+  // .forEach((widget) {
+  //   notifier.value = widget;
+  // });
 
-  return notifier;
+  // return streamController.stream;
 }
 
 extension ScreenMdiStateMsgX on MdiStateMsg {

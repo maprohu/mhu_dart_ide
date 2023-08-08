@@ -10,8 +10,18 @@ extension SizedTextSpanX on TextSpan {
       maxLines: 1,
       textDirection: TextDirection.ltr,
     )..layout(
+      minWidth: 0,
+      maxWidth: double.infinity,
+    );
+    return textPainter.size;
+  }
+  Size wrapSize(double width) {
+    final TextPainter textPainter = TextPainter(
+      text: this,
+      textDirection: TextDirection.ltr,
+    )..layout(
         minWidth: 0,
-        maxWidth: double.infinity,
+        maxWidth: width,
       );
     return textPainter.size;
   }

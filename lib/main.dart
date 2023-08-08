@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,6 +11,7 @@ import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/inner_state.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
+import 'package:mhu_dart_ide/src/widgets/busy.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import 'src/bx/screen.dart';
@@ -44,15 +47,20 @@ void main() async {
         ),
       );
 
-      final listenable = mdiScreenListenable(
+      final screenStreamController = StreamController<Bx>();
+
+      final app = MdiApp(
         appBits: appBits,
-        disposers: disposers,
+        listenable: screenStreamController.stream,
       );
 
-      return MdiApp(
+      mdiStartScreenStream(
         appBits: appBits,
-        listenable: listenable,
+        disposers: disposers,
+        screenStream: screenStreamController,
       );
+
+      return app;
     },
   );
 
@@ -62,7 +70,7 @@ void main() async {
 class MdiApp extends StatelessWidget {
   final AppBits appBits;
 
-  final ValueListenable<Bx> listenable;
+  final Stream<Bx> listenable;
 
   MdiApp({
     super.key,
@@ -88,11 +96,11 @@ class MdiApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData.dark(),
       home: Scaffold(
-        body: ValueListenableBuilder(
-          valueListenable: listenable,
-          builder: (context, value, child) {
-            final widget = value.layout();
-            return widget.withKey(widget);
+        body: streamBuilder(
+          stream: listenable,
+          busy: (context) => mdiBusyWidget,
+          builder: (context, value) {
+            return value.layout();
           },
         ),
       ),

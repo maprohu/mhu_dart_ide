@@ -49,6 +49,8 @@ class OpShortcuts {
   static final allShortcutLogicalKeys = IList([
     ...logicalKeyOrder,
     LogicalKeyboardKey.escape,
+    LogicalKeyboardKey.backspace,
+    LogicalKeyboardKey.enter,
     ...digitKeys,
   ]);
   static final allShortcutKeys =
@@ -99,6 +101,8 @@ class ShortcutKey {
   }
 
   static final escape = of(LogicalKeyboardKey.escape);
+  static final backspace = of(LogicalKeyboardKey.backspace);
+  static final enter = of(LogicalKeyboardKey.enter);
 }
 
 class ShortcutSet with HasNext<ShortcutSet> {
