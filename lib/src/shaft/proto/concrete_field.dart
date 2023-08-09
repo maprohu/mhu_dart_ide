@@ -35,22 +35,27 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
       tagNumber: shaftValue.tagNumber,
     );
 
+    final concreteFieldCalc = concreteFieldKey.concreteFieldCalc;
+
     final pfeShaftConcreteFieldBits =
         ComposedPfeShaftConcreteFieldBits.shaftCalcBuildBits(
       shaftCalcBuildBits: shaftCalcBuildBits,
       concreteFieldKey: concreteFieldKey,
-      shaftHeaderLabel: concreteFieldKey.protoName,
+      shaftHeaderLabel: concreteFieldCalc.protoName,
     );
 
-    final access = concreteFieldKey.calc.access;
+    // final access = concreteFieldKey.calc.access;
 
-    return switch (access) {
-      MapFieldAccess() => PfeShaftMapField.of(
+    final dataType = concreteFieldCalc.dataType;
+
+    return switch (dataType) {
+      MapDataType() => PfeShaftMapField.of(
           pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
-          mapFieldAccess: access,
+          concreteFieldCalc: concreteFieldCalc,
+          mapDataType: dataType,
           mfw: mfw,
         ),
-      _ => throw access,
+      _ => throw dataType,
     };
   }
 }

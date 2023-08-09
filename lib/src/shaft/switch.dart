@@ -32,9 +32,9 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
     MdiShaftMsg_Type$config() => configShaftCalc(buildBits),
     MdiShaftMsg_Type$pfeConcreteField() => PfeShaftConcreteField.of(buildBits),
     MdiShaftMsg_Type$options() => optionsShaftCalc(buildBits),
-    MdiShaftMsg_Type$newMapItem() => PfeShaftMapFieldNewEntry.of(buildBits),
-    MdiShaftMsg_Type$entryKey() => PfeShaftMapEntryKey.of(buildBits),
-    MdiShaftMsg_Type$entryValue() => PfeShaftMapEntryValue.of(buildBits),
+    MdiShaftMsg_Type$newMapEntry() => PfeShaftMapFieldNewEntry.of(buildBits),
+    MdiShaftMsg_Type$mapEntryKey() => PfeShaftMapEntryKey.of(buildBits),
+    MdiShaftMsg_Type$mapEntryValue() => PfeShaftMapEntryValue.of(buildBits),
     MdiShaftMsg_Type$editInt() => editIntShaftCalc(buildBits),
     _ => notImplementedShaftCalc(
         shaftCalcBuildBits: buildBits,

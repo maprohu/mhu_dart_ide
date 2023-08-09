@@ -37,7 +37,7 @@ abstract class PfeMessageShaftCalc implements ShaftCalcBuildBits, ShaftCalc, Has
                     shaft.ensurePfeConcreteField().tagNumber =
                         fieldKey.tagNumber;
                   },
-                  label: fieldKey.calc.protoName,
+                  label: fieldKey.concreteFieldCalc.protoName,
                 );
               case OneofFieldKey():
                 return sizedBits.opener(

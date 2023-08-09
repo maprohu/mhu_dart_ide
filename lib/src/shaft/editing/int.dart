@@ -109,11 +109,19 @@ ShaftCalc editIntShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
                 keyListener = (key) {
                   if (key == ShortcutKey.enter) {
                     try {
-                      fv.read()?.editInt.text.let(int.parse).let(editingFw.set);
-                      sizedBits.closeShaft();
+                      sizedBits.fwUpdateGroup.run(() {
+                        fv
+                            .read()
+                            ?.editInt
+                            .text
+                            .let(int.parse)
+                            .let(editingFw.set);
+                        sizedBits.closeShaft();
+                      });
                     } catch (e) {
                       sizedBits.showNotification(e.toString());
                     }
+                    return;
                   }
                   fv.update((innerState) {
                     innerState ??= MdiInnerStateMsg.getDefault();

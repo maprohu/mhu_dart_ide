@@ -39,29 +39,29 @@ abstract class ConfigBits
         HasStateCalcFr,
         HasThemeCalcFr,
         HasConfigCalcFr,
-        HasIsarDatabase {
+        HasIsarDatabase,
+        HasFwUpdateGroup {
   static Future<ConfigBits> create({
     required Isar isar,
     required DspReg disposers,
   }) async {
-    final configFw = await isar.singletonFwProto(
+    final configFw = await isar.singletonFwProtoWriteOnly(
       id: MdiSingleton.config.index,
       create: MdiConfigMsg.create,
       disposers: disposers,
     );
-    final stateFw = await isar.singletonFwProto(
+    final stateFw = await isar.singletonFwProtoWriteOnly(
       id: MdiSingleton.state.index,
       create: MdiStateMsg.create,
       disposers: disposers,
       defaultValue: mdiDefaultState,
     );
-    final themeFw = await isar.singletonFwProto(
+    final themeFw = await isar.singletonFwProtoWriteOnly(
       id: MdiSingleton.theme.index,
       create: MdiThemeMsg.create,
       disposers: disposers,
       defaultValue: mdiDefaultTheme,
     );
-
 
     return ComposedConfigBits(
       themeFw: MdiThemeMsg$Fw(
@@ -80,6 +80,7 @@ abstract class ConfigBits
       stateCalcFr: disposers.fr(() => StateCalc(stateFw())),
       configCalcFr: disposers.fr(() => ConfigCalc(configFw())),
       isarDatabase: isar,
+      fwUpdateGroup: FwUpdateGroup.global,
     );
   }
 }

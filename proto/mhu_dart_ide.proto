@@ -46,9 +46,10 @@ message MdiShaftMsg {
     MdiPfeConcreteFieldShaftMsg pfe_concrete_field = 6;
     MdiPfeOneofFieldShaftMsg pfe_oneof_field = 7;
     MdiEmptyMsg options = 8;
-    MdiMapAddShaftMsg new_map_item = 10;
-    MdiEmptyMsg entry_key = 11;
-    MdiEmptyMsg entry_value = 12;
+    MdiMapAddShaftMsg new_map_entry = 10;
+    MdiMapEntryShaftMsg map_entry = 16;
+    MdiEmptyMsg map_entry_key = 11;
+    MdiEmptyMsg map_entry_value = 12;
     MdiEmptyMsg error = 13;
     MdiEmptyMsg edit_int = 14;
   }
@@ -72,17 +73,25 @@ message  MdiMapAddShaftMsg {
   MdiMapEntryMsg map_entry = 1;
 }
 
+message  MdiMapEntryShaftMsg {
+  MdiMapEntryKeyMsg map_entry_key = 1;
+}
+
 message  MdiMapEntryMsg {
-  oneof entry_key {
-    string string_key = 1;
-    int32 int_key = 2;
-  }
+  MdiMapEntryKeyMsg map_entry_key = 1;
 
   oneof entry_value {
     int32 int_value = 3;
     string string_value = 4;
     bool bool_value = 5;
     bytes bytes_value = 6;
+  }
+}
+
+message  MdiMapEntryKeyMsg {
+  oneof type {
+    string string_key = 1;
+    int32 int_key = 2;
   }
 }
 // inner state

@@ -20,7 +20,7 @@ Cache<InnerStateKey, Future<InnerStateFw>> innerStateFwCache({
   return Cache(
     (key) => isarDatabase.mdiInnerStateRecords
         .withCreateRecord(MdiInnerStateRecord.new)
-        .protoRecordFwNullable(
+        .protoRecordFwNullableWriteOnly(
           id: key,
           disposers: disposers,
         ),

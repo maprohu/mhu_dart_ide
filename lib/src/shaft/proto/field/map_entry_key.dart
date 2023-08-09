@@ -6,18 +6,19 @@ abstract class PfeShaftMapEntryKey
   static PfeShaftMapEntryKey of(ShaftCalcBuildBits shaftCalcBuildBits) {
     final mapEntry = shaftCalcBuildBits.leftCalc as PfeMapEntryShaft;
 
-    final contentBits = switch (mapEntry.defaultPbMapKey) {
-      PbStringMapKey() => PfeShaftString.of(
+    final contentBits = switch (mapEntry.mapDataType.mapKeyDataType) {
+      StringDataType() => PfeShaftString.of(
           fv: mapEntry.pfeMapKeyFw as Fw<String?>,
         ),
-      PbIntMapKey() => PfeShaftInt.of(
+      CoreIntDataType() => PfeShaftInt.of(
           fv: mapEntry.pfeMapKeyFw as Fw<int?>,
         ),
+      final other => throw other,
     };
 
     return ComposedPfeShaftMapEntryKey.merge$(
       shaftCalcBuildBits: shaftCalcBuildBits,
-      shaftHeaderLabel: "Map Entry Key",
+      shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
       editingShaftContentBits: contentBits,
     );
   }

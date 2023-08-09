@@ -17,30 +17,40 @@ abstract class PfeShaftMapFieldNewEntry
     final shaftMsgFu = shaftCalcBuildBits.shaftCalcChain.shaftMsgFu;
 
     late final stringKeyFw = Fw.fromFr(
-      fr: shaftMsgFu.map((t) => t.newMapItem.mapEntry.stringKeyOpt),
+      fr: shaftMsgFu
+          .map((t) => t.newMapEntry.mapEntry.mapEntryKey.stringKeyOpt),
       set: (value) {
         shaftMsgFu.update((shaft) {
-          shaft.newMapItem.ensureMapEntry().stringKeyOpt = value;
+          shaft.newMapEntry.ensureMapEntry().ensureMapEntryKey().stringKeyOpt =
+              value;
         });
       },
     );
     late final intKeyFw = Fw.fromFr(
-      fr: shaftMsgFu.map((t) => t.newMapItem.mapEntry.intKeyOpt),
+      fr: shaftMsgFu.map((t) => t.newMapEntry.mapEntry.mapEntryKey.intKeyOpt),
       set: (value) {
         shaftMsgFu.update((shaft) {
-          shaft.newMapItem.ensureMapEntry().intKeyOpt = value;
+          shaft.newMapEntry.ensureMapEntry().ensureMapEntryKey().intKeyOpt =
+              value;
         });
       },
     );
 
-    final keyFw = switch (mapFieldShaft.defaultPbMapKey) {
-      PbStringMapKey() => stringKeyFw,
-      PbIntMapKey() => intKeyFw,
+    final keyFw = switch (mapFieldShaft.mapDataType.mapKeyDataType) {
+      StringDataType() => stringKeyFw,
+      CoreIntDataType() => intKeyFw,
+      final other => throw other,
     };
+
+    final mapValueDataType = mapFieldShaft.mapDataType.mapValueDataType;
+
+    final valueFw = mapValueDataType.dataTypeGeneric<Fw>(
+      <V>() => fw<V>(mapValueDataType.defaultValue),
+    );
 
     final entryBits = ComposedPfeMapFieldEntryNewBits(
       pfeMapKeyFw: keyFw,
-      pfeMapValueFw: fw(0), // TODO
+      pfeMapValueFw: valueFw,
     );
 
     return ComposedPfeShaftMapFieldNewEntry.merge$(
@@ -50,11 +60,29 @@ abstract class PfeShaftMapFieldNewEntry
       shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
       buildShaftContent: (sizedBits) {
         return sizedBits.menu(items: [
-          sizedBits.openerField(MdiShaftMsg$.entryKey),
-          sizedBits.openerField(MdiShaftMsg$.entryValue),
+          sizedBits.openerField(MdiShaftMsg$.mapEntryKey),
+          sizedBits.openerField(MdiShaftMsg$.mapEntryValue),
           MenuItem(
-            label: "Save Entry",
-            callback: () {},
+            label: "Add Entry",
+            callback: () {
+              final keyValue = keyFw.read();
+              final mapFu = mapFieldShaft.pfeMapFieldFu;
+              final valueValue = valueFw.read();
+              final messages = [
+                if (keyValue == null) "Key is null.",
+                if (mapFu.read().containsKey(keyValue)) "Key already exists.",
+              ];
+              if (messages.isNotEmpty) {
+                sizedBits.showNotifications(messages);
+              } else {
+                shaftCalcBuildBits.fwUpdateGroup.run(() {
+                  mapFu.update((items) {
+                    items[keyValue] = valueValue;
+                    // sizedBits.closeShaft();
+                  });
+                });
+              }
+            },
           ),
         ]);
       },

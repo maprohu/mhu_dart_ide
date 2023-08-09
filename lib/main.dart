@@ -100,7 +100,7 @@ class MdiApp extends StatelessWidget {
           stream: listenable,
           busy: (context) => mdiBusyWidget,
           builder: (context, value) {
-            return value.layout();
+            return value.layout().let((e) => e.withKey(e));
           },
         ),
       ),
