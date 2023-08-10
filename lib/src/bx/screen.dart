@@ -54,6 +54,7 @@ Bx mdiBuildScreen({
       appBits: appBits,
       shaftMsg: state.effectiveTopShaft,
       shaftIndexFromRight: 0,
+      stateMsg: state,
     );
 
     final doubleChain = ComposedShaftDoubleChain(

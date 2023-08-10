@@ -7,6 +7,7 @@ import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/notification.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 

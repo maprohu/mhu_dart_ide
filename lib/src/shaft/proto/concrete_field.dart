@@ -1,6 +1,8 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/field/scalar.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
@@ -25,10 +27,9 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
   static PfeShaftConcreteField of(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
-    late final messageShaftCalc =
-        shaftCalcBuildBits.leftCalc as PfeMessageShaftCalc;
+    late final messageShaftCalc = shaftCalcBuildBits.leftCalc as HasEditingFw;
 
-    final mfw = messageShaftCalc.mfw;
+    final mfw = messageShaftCalc.editingFw as Mfw;
     final shaftValue = shaftCalcBuildBits.shaftMsg.pfeConcreteField;
     final concreteFieldKey = ConcreteFieldKey(
       messageType: mfw.read().runtimeType,
@@ -53,6 +54,11 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
           pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
           concreteFieldCalc: concreteFieldCalc,
           mapDataType: dataType,
+          mfw: mfw,
+        ),
+      ScalarDataType() => PfeShaftScalarField.of(
+          pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
+          scalarDataType: dataType,
           mfw: mfw,
         ),
       _ => throw dataType,

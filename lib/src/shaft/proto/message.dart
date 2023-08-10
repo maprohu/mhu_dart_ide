@@ -1,6 +1,7 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
+import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:recase/recase.dart';
@@ -15,7 +16,8 @@ import '../../op.dart';
 part 'message.g.compose.dart';
 
 @Compose()
-abstract class PfeMessageShaftCalc implements ShaftCalcBuildBits, ShaftCalc, HasMfw {
+abstract class PfeMessageShaftCalc
+    implements ShaftCalcBuildBits, EditingShaftContentBits, ShaftCalc, HasMfw {
   static PfeMessageShaftCalc of({
     required ShaftCalcBuildBits shaftCalcBuildBits,
     required Mfw mfw,
@@ -24,9 +26,28 @@ abstract class PfeMessageShaftCalc implements ShaftCalcBuildBits, ShaftCalc, Has
 
     late final messageCalc = pbi.calc;
 
-    return ComposedPfeMessageShaftCalc.shaftCalcBuildBits(
+    return ComposedPfeMessageShaftCalc.merge$(
       shaftCalcBuildBits: shaftCalcBuildBits,
+      editingShaftContentBits: MessageEditingShaftContentBits.of(
+        mfw: mfw,
+        messageDataType: messageCalc.messageDataType,
+      ),
       shaftHeaderLabel: messageCalc.messageName.titleCase,
+      mfw: mfw,
+    );
+  }
+}
+
+@Compose()
+abstract class MessageEditingShaftContentBits
+    implements EditingShaftContentBits {
+  static MessageEditingShaftContentBits of({
+    required Mfw mfw,
+    required MessageDataType messageDataType,
+  }) {
+    late final pbi = mfw.read().pbi;
+    late final messageCalc = pbi.calc;
+    return ComposedMessageEditingShaftContentBits(
       buildShaftContent: (SizedShaftBuilderBits sizedBits) {
         return sizedBits.menu(
           items: messageCalc.topFieldKeys.map((fieldKey) {
@@ -51,7 +72,8 @@ abstract class PfeMessageShaftCalc implements ShaftCalcBuildBits, ShaftCalc, Has
           }).toList(),
         );
       },
-      mfw: mfw,
+      editingFw: mfw,
+      scalarDataType: messageDataType,
     );
   }
 }

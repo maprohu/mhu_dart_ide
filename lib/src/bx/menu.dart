@@ -133,6 +133,7 @@ extension MenuShaftBitsX on ShaftBuilderBits {
       appBits: this,
       shaftMsg: MdiShaftMsg().also(builder)..freeze(),
       shaftIndexFromRight: 0,
+      stateMsg:  MdiStateMsg.getDefault(),
     ).calc.shaftHeaderLabel;
 
     return MenuItem(

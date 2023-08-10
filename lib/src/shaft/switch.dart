@@ -35,7 +35,7 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
     MdiShaftMsg_Type$newMapEntry() => PfeShaftMapFieldNewEntry.of(buildBits),
     MdiShaftMsg_Type$mapEntryKey() => PfeShaftMapEntryKey.of(buildBits),
     MdiShaftMsg_Type$mapEntryValue() => PfeShaftMapEntryValue.of(buildBits),
-    MdiShaftMsg_Type$editInt() => editIntShaftCalc(buildBits),
+    MdiShaftMsg_Type$editScalar() => editIntShaftCalc(buildBits),
     _ => notImplementedShaftCalc(
         shaftCalcBuildBits: buildBits,
         message: "no shaft: ${shaftMsg.whichType().name}",

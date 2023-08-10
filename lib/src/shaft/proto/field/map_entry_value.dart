@@ -1,14 +1,25 @@
 part of 'map.dart';
 
 @Compose()
-abstract class PfeShaftMapEntryValue implements ShaftCalc, ShaftCalcBuildBits {
+abstract class PfeShaftMapEntryValue
+    implements ShaftCalcBuildBits, EditingShaftContentBits, ShaftCalc {
   static PfeShaftMapEntryValue of(ShaftCalcBuildBits shaftCalcBuildBits) {
     final mapEntry = shaftCalcBuildBits.leftCalc as PfeMapEntryShaft;
 
-    return ComposedPfeShaftMapEntryValue.shaftCalcBuildBits(
+    final dataType = mapEntry.mapDataType.mapValueDataType;
+
+    final contentBits = switch (dataType) {
+      MessageDataType() => MessageEditingShaftContentBits.of(
+          mfw: mapEntry.pfeMapValueFw as Mfw,
+          messageDataType: dataType,
+        ),
+      final other => throw other,
+    };
+
+    return ComposedPfeShaftMapEntryValue.merge$(
       shaftCalcBuildBits: shaftCalcBuildBits,
       shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
-      buildShaftContent: (sizedBits) => sizedBits.fillVerticalSharing(),
+      editingShaftContentBits: contentBits,
     );
   }
 }

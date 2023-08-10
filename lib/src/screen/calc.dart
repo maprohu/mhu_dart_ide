@@ -33,6 +33,8 @@ typedef BuildShaftOptions = List<MenuItem> Function(
 
 @Has()
 typedef ShaftMsg = MdiShaftMsg;
+@Has()
+typedef StateMsg = MdiStateMsg;
 
 @Has()
 typedef ShaftCalcChainLeft = ShaftCalcChain?;
@@ -44,7 +46,7 @@ typedef ShaftHeaderLabel = String;
 @HasDefault(true)
 typedef ShaftSignificant = bool;
 
-abstract class ShaftCalcBits implements HasShaftMsg, AppBits {}
+abstract class ShaftCalcBits implements HasShaftMsg, HasStateMsg, AppBits {}
 
 @Has()
 typedef ShaftStateField<T> = ScalarFieldAccess<MdiShaftMsg, T>;
@@ -70,11 +72,15 @@ abstract base class ShaftCalcChain
       appBits: this,
       shaftMsg: parent,
       shaftIndexFromRight: shaftIndexFromRight + 1,
+      stateMsg: stateMsg,
     );
   });
 
   late final ShaftIndexFromLeft shaftIndexFromLeft =
       shaftCalcChainLeft?.shaftIndexFromLeft.let((i) => i + 1) ?? 0;
+
+  late final isFocused =
+      shaftIndexFromLeft == stateMsg.focusedShaft.indexFromLeftOpt;
 }
 
 extension HasShaftMsgX on HasShaftMsg {
@@ -86,6 +92,7 @@ extension HasShaftMsgX on HasShaftMsg {
 abstract class ShaftCalc<T>
     implements
         ShaftCalcBuildBits<T>,
+        ShaftLabeledContentBits,
         ShaftCalcBits,
         HasShaftCalcChain,
         HasShaftHeaderLabel,
@@ -140,6 +147,10 @@ extension HasShaftCalcChainX on HasShaftCalcChain {
 @Compose()
 abstract class ShaftContentBits
     implements HasBuildShaftContent, HasBuildShaftOptions {}
+
+@Compose()
+abstract class ShaftLabeledContentBits
+    implements ShaftContentBits, HasShaftHeaderLabel {}
 
 extension ShaftCalcBxX on Bx {
   SharingBx get shaftContentSharing => SharingBx.fixedVertical(this);

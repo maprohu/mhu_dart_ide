@@ -7,11 +7,17 @@ message  MdiConfigMsg {
 }
 
 message  MdiDartPackageMsg {
+  string path = 1;
 }
 
 message MdiStateMsg {
   MdiShaftMsg top_shaft = 1;
   double min_shaft_width = 2;
+  MdiFocusedShaftMsg focused_shaft = 3;
+}
+
+message  MdiFocusedShaftMsg {
+  int32  index_from_left = 1;
 }
 
 message  MdiBuildRunnerPackagesMsg {
@@ -51,7 +57,7 @@ message MdiShaftMsg {
     MdiEmptyMsg map_entry_key = 11;
     MdiEmptyMsg map_entry_value = 12;
     MdiEmptyMsg error = 13;
-    MdiEmptyMsg edit_int = 14;
+    MdiEditScalarMsg edit_scalar = 14;
   }
 }
 
@@ -93,6 +99,9 @@ message  MdiMapEntryKeyMsg {
     string string_key = 1;
     int32 int_key = 2;
   }
+}
+
+message  MdiEditScalarMsg {
 }
 // inner state
 

@@ -28,7 +28,7 @@ List<MenuItem> intEditOptions({
 }) {
   return [
     shaftBuilderBits.openerField(
-      MdiShaftMsg$.editInt,
+      MdiShaftMsg$.editScalar,
       before: (shaftMsg) {
         shaftBuilderBits.accessInnerState(
           shaftBuilderBits.shaftCalcChain.shaftIndexFromLeft + 1,
