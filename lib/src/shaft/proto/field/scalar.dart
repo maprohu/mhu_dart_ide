@@ -18,27 +18,27 @@ abstract class PfeShaftScalarField<T>
         PfeShaftConcreteFieldBits,
         EditingShaftContentBits<T>,
         PfeShaftConcreteField {
-  static PfeShaftScalarField of({
+  static PfeShaftScalarField<T> of<T>({
     required PfeShaftConcreteFieldBits pfeShaftConcreteFieldBits,
-    required ScalarDataType scalarDataType,
+    required ScalarDataType<T> scalarDataType,
     required Mfw mfw,
   }) {
-    return scalarDataType.scalarDataTypeGeneric(<T>(scalarDataType) {
-      final fieldFw = scalarDataType.fwForField(
-        fieldCoordinates:
-            pfeShaftConcreteFieldBits.concreteFieldKey.concreteFieldCalc,
-        mfw: mfw,
-      );
+    assert(T != dynamic);
 
-      return ComposedPfeShaftScalarField.merge$(
-        pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
-        editingShaftContentBits: editScalarShaftLabeledContentBits<T>(
-          editScalarShaftBits: ComposedEditScalarShaftBits(
-            editingFw: fieldFw,
-            scalarDataType: scalarDataType,
-          ),
+    final fieldFw = scalarDataType.fwForField(
+      fieldCoordinates:
+      pfeShaftConcreteFieldBits.concreteFieldKey.concreteFieldCalc,
+      mfw: mfw,
+    );
+
+    return ComposedPfeShaftScalarField.merge$(
+      pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
+      editingShaftContentBits: editScalarShaftLabeledContentBits<T>(
+        editScalarShaftBits: ComposedEditScalarShaftBits(
+          editingFw: fieldFw,
+          scalarDataType: scalarDataType,
         ),
-      );
-    });
+      ),
+    );
   }
 }

@@ -40,7 +40,7 @@ void main() async {
       final appBits = ComposedAppBits.configBits(
         configBits: configBits,
         screenSizeFr: screenSizeFr,
-        opBuilder: OpBuilder(),
+        opBuilder: OpBuilder(configBits),
         accessInnerState: createAccessInnerState(
           isarDatabase: isar,
           disposers: disposers,
@@ -80,31 +80,32 @@ class MdiApp extends StatelessWidget {
 
   late final _shortcuts = {
     // ...WidgetsApp.defaultShortcuts,
-    for (final kh in appBits.opBuilder.allShortcutKeys)
-      SingleActivator(kh.keyboardKey): VoidCallbackIntent(
-        appBits.opBuilder.let(
-          (opBuilder) => () => opBuilder.keyPressed(kh),
-        ),
-      ),
   };
+
+  final _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "MHU Dart IDE",
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        body: streamBuilder(
-          stream: listenable,
-          busy: (context) => mdiBusyWidget,
-          builder: (context, value) {
-            return value.layout().let((e) => e.withKey(e));
-          },
+    return KeyboardListener(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKeyEvent: appBits.opBuilder.onKeyEvent,
+      child: MaterialApp(
+        title: "MHU Dart IDE",
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.dark,
+        darkTheme: ThemeData.dark(),
+        home: Scaffold(
+          body: streamBuilder(
+            stream: listenable,
+            busy: (context) => mdiBusyWidget,
+            builder: (context, value) {
+              return value.layout().let((e) => e.withKey(e));
+            },
+          ),
         ),
+        shortcuts: const {},
       ),
-      shortcuts: _shortcuts,
     );
   }
 }

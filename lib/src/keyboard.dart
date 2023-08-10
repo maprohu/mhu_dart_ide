@@ -3,8 +3,13 @@ import 'dart:collection';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/op.dart';
+
+part 'keyboard.freezed.dart';
+
+part 'keyboard.g.has.dart';
 
 class OpShortcuts {
   static const digitKeys = [
@@ -27,34 +32,35 @@ class OpShortcuts {
   static const lowercaseKeyOrder = r"fjdksla;ghvnmruc,eix.woz/tybqp['";
   static final keyChars = lowercaseKeyOrder.characters;
   static const keyCount = lowercaseKeyOrder.length;
-  static final uppercaseKeyLabelSet =
-      keyChars.map((e) => e.toUpperCase()).toISet();
-  static final lowercaseKeyLabelSet =
-      keyChars.map((e) => e.toLowerCase()).toISet();
 
-  static final uppercaseCharToLogicalKey = {
-    for (final lk in LogicalKeyboardKey.knownLogicalKeys)
-      if (uppercaseKeyLabelSet.contains(lk.keyLabel)) lk.keyLabel: lk
-  }.toIMap();
+  // static final uppercaseKeyLabelSet =
+  //     keyChars.map((e) => e.toUpperCase()).toISet();
+  // static final lowercaseKeyLabelSet =
+  //     keyChars.map((e) => e.toLowerCase()).toISet();
 
-  static final logicalKeyOrder = lowercaseKeyOrder.characters
-      .map((e) => uppercaseCharToLogicalKey[e.toUpperCase()]!)
-      .toIList();
+  // static final uppercaseCharToLogicalKey = {
+  //   for (final lk in LogicalKeyboardKey.knownLogicalKeys)
+  //     if (uppercaseKeyLabelSet.contains(lk.keyLabel)) lk.keyLabel: lk
+  // }.toIMap();
+
+  // static final logicalKeyOrder = lowercaseKeyOrder.characters
+  //     .map((e) => uppercaseCharToLogicalKey[e.toUpperCase()]!)
+  //     .toIList();
 
   static final shortcutKeyOrder =
-      logicalKeyOrder.map((e) => ShortcutKey.of(e)).toIList();
+      keyChars.map(_CharacterShortcutKey.new).toIList();
   static final IList<OpShortcut> singleShortcutKeyOrder =
-      shortcutKeyOrder.map((sk) => IList<ShortcutKey>([sk])).toIList();
+      shortcutKeyOrder.map((sk) => IList<CharacterShortcutKey>([sk])).toIList();
 
-  static final allShortcutLogicalKeys = IList([
-    ...logicalKeyOrder,
-    LogicalKeyboardKey.escape,
-    LogicalKeyboardKey.backspace,
-    LogicalKeyboardKey.enter,
-    ...digitKeys,
-  ]);
-  static final allShortcutKeys =
-      allShortcutLogicalKeys.map(ShortcutKey.of).toIList();
+  // static final allShortcutLogicalKeys = IList([
+  //   ...logicalKeyOrder,
+  //   LogicalKeyboardKey.escape,
+  //   LogicalKeyboardKey.backspace,
+  //   LogicalKeyboardKey.enter,
+  //   ...digitKeys,
+  // ]);
+  // static final allShortcutKeys =
+  //     allShortcutLogicalKeys.map(ShortcutKey.of).toIList();
 
   static Iterable<OpShortcut> generateShortcuts(int count) {
     final singleKeyOpShortcuts = singleShortcutKeyOrder;
@@ -85,28 +91,38 @@ class OpShortcuts {
   }
 }
 
-class ShortcutKey {
-  final LogicalKeyboardKey keyboardKey;
+typedef OpShortcut = IList<CharacterShortcutKey>;
 
-  final String display;
-
-  ShortcutKey._(this.keyboardKey)
-      : display = keyboardKey.keyLabel.toLowerCase();
-
-  static final of = Cache(ShortcutKey._);
-
-  @override
-  String toString() {
-    return 'ShortcutKey{$display}';
-  }
-
-  static final escape = of(LogicalKeyboardKey.escape);
-  static final backspace = of(LogicalKeyboardKey.backspace);
-  static final enter = of(LogicalKeyboardKey.enter);
+sealed class ShortcutKey {
+  static const escape = LogicalShortcutKey(LogicalKeyboardKey.escape);
+  static const backspace = LogicalShortcutKey(LogicalKeyboardKey.backspace);
+  static const enter = LogicalShortcutKey(LogicalKeyboardKey.enter);
 }
 
+@freezed
+class CharacterShortcutKey with _$CharacterShortcutKey implements ShortcutKey {
+  const factory CharacterShortcutKey(String character) = _CharacterShortcutKey;
+}
+
+@freezed
+class LogicalShortcutKey with _$LogicalShortcutKey implements ShortcutKey {
+  const factory LogicalShortcutKey(LogicalKeyboardKey logicalKeyboardKey) =
+      _LogicalShortcutKey;
+}
+
+@freezed
+class ShortcutData with _$ShortcutData {
+  const factory ShortcutData({
+    required OpShortcut shortcut,
+    required int pressedCount,
+  }) = _ShortcutData;
+}
+
+@Has()
+typedef Character = String;
+
 class ShortcutSet with HasNext<ShortcutSet> {
-  final IList<ShortcutKey> _keys;
+  final IList<CharacterShortcutKey> _keys;
   final IList<OpShortcut> shortcutList;
 
   @override
@@ -121,7 +137,7 @@ class ShortcutSet with HasNext<ShortcutSet> {
   int get count => shortcutList.length;
 
   static IList<OpShortcut> nextList({
-    required IList<ShortcutKey> keys,
+    required IList<CharacterShortcutKey> keys,
     required IList<OpShortcut> list,
   }) {
     final prefixShortcut = list.first;
@@ -164,10 +180,10 @@ class ShortcutSet with HasNext<ShortcutSet> {
 
   ShortcutSet({
     required this.shortcutList,
-    required IList<ShortcutKey> keys,
+    required IList<CharacterShortcutKey> keys,
   }) : _keys = keys;
 
-  ShortcutSet.first(IList<ShortcutKey> keys)
+  ShortcutSet.first(IList<CharacterShortcutKey> keys)
       : this(
           keys: keys,
           shortcutList: IList(

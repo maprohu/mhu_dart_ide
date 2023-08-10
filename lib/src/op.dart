@@ -2,25 +2,39 @@
 
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/keyboard.dart';
+
+part 'op.freezed.dart';
 
 part 'op.g.has.dart';
 // part 'op.g.compose.dart';
 
-typedef OpShortcut = IList<ShortcutKey>;
 typedef OpCallback = VoidCallback;
 
 typedef OpState = int?;
 
 final emptyShortcut = OpShortcut();
 
-typedef OpBuildHandle = ({
-  OpShortcut Function() shortcut,
-  OpState Function() watchState,
-});
+@freezedStruct
+class OpBuildHandle with _$OpBuildHandle {
+  OpBuildHandle._();
+
+  factory OpBuildHandle({
+    required OpShortcut Function() shortcut,
+    required OpState Function() watchState,
+  }) = _OpBuildHandle;
+
+  static final empty = OpBuildHandle(
+    shortcut: () => emptyShortcut,
+    watchState: () => 0,
+  );
+}
 
 class _BuildReg {
   late final OpShortcut shortcut;
@@ -34,9 +48,15 @@ class _BuildReg {
 class _OpBuild {
   final OpBuilder builder;
   final ops = <_BuildReg>[];
-  final keyListeners = <ShortcutKeyListener>[];
+  final keyListeners = <ShortcutKeyListener>{};
+  final rawKeyListeners = <RawKeyListener>{};
 
-  _OpBuild(this.builder);
+  final bool isFocused;
+
+  _OpBuild(
+    this.builder, {
+    required this.isFocused,
+  });
 
   late final node = _OpNode(
     regs: ops,
@@ -44,10 +64,41 @@ class _OpBuild {
     build: this,
   );
 
+  late _OpNode currentNode = node;
+
   void invokeKeyListeners(ShortcutKey key) {
     for (final listener in keyListeners) {
       listener(key);
     }
+  }
+
+  void invokeRawKeyListeners(KeyEvent keyEvent) {
+    for (final listener in rawKeyListeners) {
+      listener(keyEvent);
+    }
+  }
+
+  void keyPressed(ShortcutKey key) {
+    currentNode.keyPressed(key);
+  }
+
+  void onKeyEvent(KeyEvent keyEvent) {
+    if (keyEvent is KeyDownEvent) {
+      ShortcutKey shortcutKey;
+      final character = keyEvent.character;
+      if (character != null) {
+        shortcutKey = CharacterShortcutKey(character);
+      } else {
+        shortcutKey = LogicalShortcutKey(keyEvent.logicalKey);
+      }
+
+      if (isFocused) {
+        invokeKeyListeners(shortcutKey);
+      } else {
+        keyPressed(shortcutKey);
+      }
+    }
+    invokeRawKeyListeners(keyEvent);
   }
 }
 
@@ -104,7 +155,7 @@ class _OpNode {
           }
         }
       }
-      build.builder._node = this;
+      build.currentNode = this;
     } else {
       final action = regs.single.action;
       build.builder._clearPressed();
@@ -114,15 +165,16 @@ class _OpNode {
 }
 
 typedef ShortcutKeyListener = void Function(ShortcutKey key);
+typedef RawKeyListener = void Function(KeyEvent keyEvent);
 
 @Has()
 class OpBuilder {
+  final ConfigBits configBits;
   late _OpBuild _opBuild;
-  late _OpNode _node;
 
   // final _pressed = fw(emptyShortcut);
 
-  final allShortcutKeys = OpShortcuts.allShortcutKeys;
+  // final allShortcutKeys = OpShortcuts.allShortcutKeys;
 
   final _exclude = <OpShortcut>{};
 
@@ -132,38 +184,57 @@ class OpBuilder {
     shortcutKeysInOrder,
   );
 
+  OpBuilder(this.configBits);
+
   void _clearPressed() {
-    _node = _opBuild.node;
+    // _node = _opBuild.node;
     for (final reg in _opBuild.ops) {
       reg.pressed.value = 0;
     }
   }
-
 
   void addKeyListener(ShortcutKeyListener listener) {
     assert(!_built);
     _opBuild.keyListeners.add(listener);
   }
 
+  void _clearFocusOnEscape(ShortcutKey shortcutKey) {
+    if (shortcutKey == ShortcutKey.escape) {
+      configBits.stateFw.rebuild((message) {
+        message.clearFocusedShaft();
+      });
+    }
+  }
+
+  void registerClearFocusOnEscape() {
+    addKeyListener(_clearFocusOnEscape);
+  }
 
   void keyPressed(ShortcutKey key) {
-    if (key == ShortcutKey.escape) {
-      _clearPressed();
-      return;
-    }
+    _opBuild.keyPressed(key);
 
-    _node.keyPressed(key);
+    // if (key == ShortcutKey.escape) {
+    //   _clearPressed();
+    //   return;
+    // }
+
+    // _node.keyPressed(key);
   }
 
   static const shortuctEq = IterableEquality<ShortcutKey>();
 
   OpBuildHandle register(OpCallback callback) {
     assert(!_built);
+
+    if (_opBuild.isFocused) {
+      return OpBuildHandle.empty;
+    }
+
     final reg = _BuildReg(callback);
 
     _opBuild.ops.add(reg);
 
-    return (
+    return OpBuildHandle(
       shortcut: () => reg.shortcut,
       watchState: () {
         return reg.pressed();
@@ -204,7 +275,6 @@ class OpBuilder {
     _opBuild.ops.zipForEachWith(shortcuts, (reg, shortcut) {
       reg.shortcut = shortcut;
     });
-    _node = _opBuild.node;
   }
 
   T build<T>(
@@ -212,7 +282,11 @@ class OpBuilder {
   ) {
     assert(_built);
     _built = false;
-    _opBuild = _OpBuild(this);
+    _opBuild = _OpBuild(
+      this,
+      isFocused:
+          configBits.stateFw.read().focusedShaft.indexFromLeftOpt != null,
+    );
 
     try {
       return builder();
@@ -220,4 +294,27 @@ class OpBuilder {
       _build();
     }
   }
+
+  void onKeyEvent(KeyEvent keyEvent) {
+    _opBuild.onKeyEvent(keyEvent);
+  }
 }
+
+// class OpBuilderShortcutActivator extends ShortcutActivator {
+//   final OpBuilder opBuilder;
+//
+//   OpBuilderShortcutActivator(this.opBuilder);
+//
+//   @override
+//   bool accepts(RawKeyEvent event, RawKeyboard state) {
+//     return opBuilder._opBuild.isFocused;
+//   }
+//
+//   @override
+//   String debugDescribeKeys() {
+//     return runtimeType.toString();
+//   }
+//
+//   @override
+//   Iterable<LogicalKeyboardKey>? get triggers => null;
+// }

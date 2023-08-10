@@ -80,7 +80,10 @@ abstract class PfeShaftMapField
         final value = mapFieldBits.pfeMapFieldFu();
 
         if (value.isEmpty) {
-          return sizedBits.itemText.left("<empty map>").shaftContentSharing;
+          return sizedBits.itemText
+              .left("<empty map>")
+              .shaftContentSharing
+              .toSingleElementIterable;
         }
 
         final sorted = value.entries.sortedByCompare(

@@ -9,17 +9,7 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import '../builder/shaft.dart';
 import 'boxed.dart';
 
-part 'shortcut.freezed.dart';
-
 typedef ShortcutCallback = VoidCallback;
-
-@freezed
-class ShortcutData with _$ShortcutData {
-  const factory ShortcutData({
-    required OpShortcut shortcut,
-    required int pressedCount,
-  }) = _ShortcutData;
-}
 
 TextSpan shortcutTextSpan({
   required String pressed,
@@ -48,7 +38,8 @@ Widget shortcutWidget({
     :shortcut,
     :pressedCount,
   ) = data;
-  String str(Iterable<ShortcutKey> sc) => sc.map((e) => e.display).join();
+  String str(Iterable<CharacterShortcutKey> sc) =>
+      sc.map((e) => e.character).join();
   return RichText(
     textAlign: TextAlign.center,
     softWrap: false,
@@ -82,8 +73,6 @@ Bx shortcutBx({
     widget: child,
   );
 }
-
-
 
 extension NodeBuildBitxX on ShaftBuilderBits {
   Bx shortcut(VoidCallback callback) {

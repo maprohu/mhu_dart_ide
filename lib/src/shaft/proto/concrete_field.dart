@@ -45,8 +45,6 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
       shaftHeaderLabel: concreteFieldCalc.protoName,
     );
 
-    // final access = concreteFieldKey.calc.access;
-
     final dataType = concreteFieldCalc.dataType;
 
     return switch (dataType) {
@@ -56,11 +54,13 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
           mapDataType: dataType,
           mfw: mfw,
         ),
-      ScalarDataType() => PfeShaftScalarField.of(
-          pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
-          scalarDataType: dataType,
-          mfw: mfw,
-        ),
+      ScalarDataType() => dataType.scalarDataTypeGeneric(<T>(scalarDataType) {
+          return PfeShaftScalarField.of(
+            pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
+            scalarDataType: scalarDataType,
+            mfw: mfw,
+          );
+        }),
       _ => throw dataType,
     };
   }

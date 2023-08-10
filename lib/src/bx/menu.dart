@@ -80,7 +80,7 @@ Bx menuItemBx({
 }
 
 extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
-  SharingBx menu({
+  Iterable<SharingBx> menu({
     required List<MenuItem> items,
   }) {
     return menuSharingBx(
@@ -92,7 +92,7 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
           sizedBits: sizedBits,
         );
       },
-    );
+    ).toSingleElementIterable;
   }
 }
 

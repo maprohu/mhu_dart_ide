@@ -123,10 +123,15 @@ Bx sharedLayoutBx({
   double? dividerThickness,
 }) {
   final itemList = items.toList();
+
+  if (itemList.isEmpty) {
+    return Bx.fill(size);
+  }
+
   final itemCount = itemList.length;
 
   final totalDividerThickness =
-      dividerThickness == null ? 0 : (itemCount - 1) * dividerThickness;
+      dividerThickness == null ? 0 : ((itemCount - 1) * dividerThickness);
 
   final availableSpace = size.axis(axis) - totalDividerThickness;
 
@@ -184,10 +189,13 @@ Bx sharedLayoutBx({
           .toList(),
     );
 
-    return itemList.mapIndexed(
-      (index, element) => element.dimensionBxBuilder(
-        sharedSizes[index]!,
-      ),
-    ).let(linear);
+    return itemList
+        .mapIndexed(
+          (index, element) => element.dimensionBxBuilder(
+            sharedSizes[index]!,
+          ),
+        )
+        .let(addDividers)
+        .let(linear);
   }
 }

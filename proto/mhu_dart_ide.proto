@@ -108,9 +108,13 @@ message  MdiEditScalarMsg {
 message  MdiInnerStateMsg {
   oneof type {
     MdiInnerEditIntMsg edit_int = 1;
+    MdiInnerEditStringMsg edit_string = 2;
   }
 }
 
 message  MdiInnerEditIntMsg {
+  string text = 1;
+}
+message  MdiInnerEditStringMsg {
   string text = 1;
 }

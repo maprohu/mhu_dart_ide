@@ -19,7 +19,7 @@ enum MdiSingleton {
 Future<Isar> mdiCreateIsar() async {
   final dir = await getApplicationSupportDirectory();
 
-  _logger.w("isar dir: $dir");
+  _logger.i("isar dir: $dir");
 
   return await Isar.open(
     [

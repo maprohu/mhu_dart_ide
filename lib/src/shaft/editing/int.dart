@@ -9,9 +9,11 @@ import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/screen/inner_state.dart';
 import 'package:mhu_dart_ide/src/screen/notification.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
+import 'package:mhu_dart_ide/src/shaft/editing/string.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/widgets/async.dart';
 import 'package:mhu_dart_ide/src/widgets/busy.dart';
@@ -102,101 +104,52 @@ ShaftCalc editIntShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
 
           final gridSizeWithCursorMargin = gridPixelSize
               .withWidth(gridPixelSize.width + textCursorThickness);
-          final widget = futureBuilderNull(
-            future: sizedBits.accessInnerState(
-              sizedBits.shaftCalcChain.shaftIndexFromLeft,
-              (fv) async {
-                keyListener = (key) {
-                  if (key == ShortcutKey.enter) {
-                    try {
-                      sizedBits.fwUpdateGroup.run(() {
-                        fv
-                            .read()
-                            ?.editInt
-                            .text
-                            .let(int.parse)
-                            .let(editingFw.set);
-                        sizedBits.closeShaft();
-                      });
-                    } catch (e) {
-                      sizedBits.showNotification(e.toString());
-                    }
-                    return;
+
+          final widget = sizedBits.innerStateWidgetVoid(
+            access: (fv) {
+              keyListener = (key) {
+                if (key == ShortcutKey.enter) {
+                  try {
+                    sizedBits.fwUpdateGroup.run(() {
+                      fv.read()?.editInt.text.let(int.parse).let(editingFw.set);
+                      sizedBits.closeShaft();
+                    });
+                  } catch (e) {
+                    sizedBits.showNotification(e.toString());
                   }
-                  fv.update((innerState) {
-                    innerState ??= MdiInnerStateMsg.getDefault();
-                    return innerState.deepRebuild((message) {
-                      final editInt = message.ensureEditInt();
-                      final display = key.display;
-                      if (key == ShortcutKey.backspace) {
+                  return;
+                }
+                fv.update((innerState) {
+                  innerState ??= MdiInnerStateMsg.getDefault();
+                  return innerState.deepRebuild((message) {
+                    final editInt = message.ensureEditInt();
+                    switch (key) {
+                      case ShortcutKey.backspace:
                         final length = editInt.text.length;
                         if (length > 0) {
                           editInt.text = editInt.text.substring(0, length - 1);
                         }
-                      } else if (isDigit(display, 0)) {
-                        editInt.text = "${editInt.text}$display";
-                      }
-                    });
+                      case CharacterShortcutKey():
+                        editInt.text = "${editInt.text}${key.character}";
+                      case _:
+                    }
                   });
-                };
+                });
+              };
+            },
+            builder: (innerState, update) {
+              final text = innerState.editInt.text;
 
-                return fv;
-              },
-            ),
-            builder: (context, innerStateFw) {
-              return flcFrr(() {
-                final innerState = innerStateFw();
-                if (innerState == null) {
-                  return mdiBusyWidget;
-                }
-                final text = innerState.editInt.text;
-
-                final textLength = text.length;
-
-                final clipCount = textLength - cellCount;
-                final isClipped = clipCount > 0;
-
-                final textAfterClipping =
-                    isClipped ? text.substring(clipCount) : text;
-
-                final lineSlices =
-                    textAfterClipping.slices(gridSize.columnCount);
-
-                final lines = lineSlices.isEmpty ? const [""] : lineSlices;
-
-                final cursorLineIndex = lines.length - 1;
-                final cursorColumnIndex = lines.last.length;
-
-                return Stack(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: textCursorThickness / 2,
-                      ),
-                      child: stringLinesWidget(
-                        lines: lines,
-                        isClipped: isClipped,
-                        themeCalc: sizedBits.themeCalc,
-                      ),
-                    ),
-                    Positioned(
-                      left: cursorColumnIndex * stringTextStyle.width,
-                      top: cursorLineIndex * stringTextStyle.height,
-                      child: SizedBox(
-                        width: textCursorThickness,
-                        height: stringTextStyle.height,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: sizedBits.themeCalc.textCursorColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              });
+              return stringWidgetWithCursor(
+                text: text,
+                gridSize: gridSize,
+                themeCalc: sizedBits.themeCalc,
+                isFocused: false,
+              );
             },
           );
+
+          ;
 
           return Bx.pad(
             padding: Paddings.topLeft(
@@ -210,7 +163,7 @@ ShaftCalc editIntShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
             size: bxSize,
           );
         },
-      );
+      ).toSingleElementIterable;
     },
   );
 }

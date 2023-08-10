@@ -148,13 +148,13 @@ Bx defaultShaftBx({
         size: contentBits.size,
         axis: Axis.vertical,
         items: [
-          content,
+          ...content,
           for (final notification in contentBits.shaftMsg.notifications)
             notificationSharingBx(
               sizedShaftBuilderBits: contentBits,
               notificationMsg: notification,
             ),
-          if (options.isNotEmpty) contentBits.menu(items: options),
+          if (options.isNotEmpty) ...contentBits.menu(items: options),
         ],
         dividerThickness: contentBits.themeCalc.shaftSharingDividerThickness,
       );

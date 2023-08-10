@@ -22,7 +22,9 @@ part 'calc.g.has.dart';
 part 'calc.g.compose.dart';
 
 @Has()
-typedef BuildShaftContent = SharingBx Function(SizedShaftBuilderBits sizedBits);
+typedef BuildShaftContent = Iterable<SharingBx> Function(
+  SizedShaftBuilderBits sizedBits,
+);
 
 List<MenuItem> emptyShaftOptions(ShaftBuilderBits shaftBuilderBits) => const [];
 
