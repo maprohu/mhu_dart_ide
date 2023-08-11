@@ -114,13 +114,16 @@ extension MenuShaftBitsX on ShaftBuilderBits {
   MenuItem openerField(
     ScalarFieldAccess<MdiShaftMsg, dynamic> access, {
     void Function(MdiShaftMsg shaftMsg) before = ignore1,
+    bool autoFocus = false,
+    String? label,
   }) {
     return opener(
       (shaft) {
         access.set(shaft, access.defaultSingleValue);
       },
       before: before,
-      label: access.name.titleCase,
+      label: label ?? access.name.titleCase,
+      autoFocus: autoFocus,
     );
   }
 
@@ -128,12 +131,13 @@ extension MenuShaftBitsX on ShaftBuilderBits {
     ShaftOpener builder, {
     void Function(MdiShaftMsg shaftMsg) before = ignore1,
     String? label,
+    bool autoFocus = false,
   }) {
     label ??= ComposedShaftCalcChain.appBits(
       appBits: this,
       shaftMsg: MdiShaftMsg().also(builder)..freeze(),
       shaftIndexFromRight: 0,
-      stateMsg:  MdiStateMsg.getDefault(),
+      stateMsg: MdiStateMsg.getDefault(),
     ).calc.shaftHeaderLabel;
 
     return MenuItem(
@@ -141,6 +145,8 @@ extension MenuShaftBitsX on ShaftBuilderBits {
       callback: openerCallback(
         builder,
         before: before,
+        focusShaftIndexFromLeft:
+            autoFocus ? shaftCalcChain.shaftIndexFromLeft + 1 : null,
       ),
     );
   }

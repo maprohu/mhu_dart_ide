@@ -16,6 +16,7 @@ import '../config.dart';
 import '../op.dart';
 import '../shaft/switch.dart';
 import '../bx/boxed.dart';
+import 'inner_state.dart';
 
 part 'calc.g.has.dart';
 
@@ -136,6 +137,18 @@ extension ShaftCalcChainX on ShaftCalcChain {
       },
     );
   }
+
+  Future<T> accessOwnInnerState<T>(
+    Future<T> Function(InnerStateFw innerStateFw) action,
+  ) {
+    return accessInnerState(shaftIndexFromLeft, action);
+  }
+
+  Future<T> accessInnerStateRight<T>(
+    Future<T> Function(InnerStateFw innerStateFw) action,
+  ) {
+    return accessInnerState(shaftIndexFromLeft + 1, action);
+  }
 }
 
 extension ShaftCalcX on ShaftCalc {
@@ -144,6 +157,18 @@ extension ShaftCalcX on ShaftCalc {
 
 extension HasShaftCalcChainX on HasShaftCalcChain {
   ShaftCalc? get leftCalc => shaftCalcChain.leftCalc;
+
+  Future<R> accessOwnInnerState<R>(
+    Future<R> Function(InnerStateFw innerStateFw) action,
+  ) {
+    return shaftCalcChain.accessOwnInnerState(action);
+  }
+
+  Future<R> accessInnerStateRight<R>(
+    Future<R> Function(InnerStateFw innerStateFw) action,
+  ) {
+    return shaftCalcChain.accessInnerStateRight(action);
+  }
 }
 
 @Compose()

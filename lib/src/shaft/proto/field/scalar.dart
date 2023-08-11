@@ -1,5 +1,6 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/scalar/string.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
 import '../../../app.dart';
@@ -31,14 +32,18 @@ abstract class PfeShaftScalarField<T>
       mfw: mfw,
     );
 
+    final ScalarDataType sdt = scalarDataType;
+    final content = switch (sdt) {
+      StringDataType() => PfeShaftString.of(
+        fv: fieldFw as Fw<String?>,
+        stringDataType: sdt,
+      ),
+      final other => throw other,
+    };
+
     return ComposedPfeShaftScalarField.merge$(
       pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
-      editingShaftContentBits: editScalarShaftLabeledContentBits<T>(
-        editScalarShaftBits: ComposedEditScalarShaftBits(
-          editingFw: fieldFw,
-          scalarDataType: scalarDataType,
-        ),
-      ),
+      editingShaftContentBits: content as EditingShaftContentBits<T>,
     );
   }
 }

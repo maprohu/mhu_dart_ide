@@ -46,7 +46,11 @@ SharingBx stringVerticalSharingBx({
   required String string,
 }) {
   return ComposedSharingBx(
-    intrinsicDimension: sizedBits.themeCalc.stringTextStyle.height,
+    intrinsicDimension:
+        sizedBits.themeCalc.stringTextStyle.calculateIntrinsicHeight(
+      string: string,
+      width: sizedBits.width,
+    ),
     dimensionBxBuilder: (dimension) {
       return stringBx(
         sizedBits: sizedBits.withHeight(dimension),
@@ -67,11 +71,8 @@ Bx stringBx({
     rowCount: fitHeight,
   ) = style.maxGridSize(sizedBits.size);
 
-  final lines = string.characters
-      .slices(fitWidth)
-      .map((e) => e.join())
-      .take(fitHeight)
-      .toList();
+  final lines =
+      string.slices(fitWidth).take(fitHeight).toList().orIfEmpty(const [""]);
 
   final lineSize = Size(
     style.width * fitWidth,
@@ -119,11 +120,28 @@ extension StringTextStyleX on TextStyle {
 }
 
 extension MonoTextStyleX on MonoTextStyle {
+  int maxColumnCount(double width) => width ~/ this.width;
+
+  int maxRowCount(double height) => height ~/ this.height;
+
   GridSize maxGridSize(Size size) {
     return ComposedGridSize(
-      columnCount: size.width ~/ width,
-      rowCount: size.height ~/ height,
+      columnCount: maxColumnCount(size.width),
+      rowCount: maxRowCount(size.height),
     );
+  }
+
+  double calculateIntrinsicHeight({
+    required String string,
+    required width,
+  }) {
+    final stringLength = string.length;
+
+    final columnCount = maxColumnCount(width);
+
+    final intrinsicRowCount = (stringLength - 1) ~/ columnCount + 1;
+
+    return height * intrinsicRowCount;
   }
 }
 

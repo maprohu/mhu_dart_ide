@@ -32,16 +32,13 @@ List<MenuItem> intEditOptions({
     shaftBuilderBits.openerField(
       MdiShaftMsg$.editScalar,
       before: (shaftMsg) {
-        shaftBuilderBits.accessInnerState(
-          shaftBuilderBits.shaftCalcChain.shaftIndexFromLeft + 1,
-          (innerStateFw) async {
-            innerStateFw.value = MdiInnerStateMsg$.create(
-              editInt: MdiInnerEditIntMsg$.create(
-                text: currentValue?.let((v) => v.toString()) ?? "",
-              ),
-            )..freeze();
-          },
-        );
+        shaftBuilderBits.accessInnerStateRight((innerStateFw) async {
+          innerStateFw.value = MdiInnerStateMsg$.create(
+            editInt: MdiInnerEditIntMsg$.create(
+              text: currentValue?.let((v) => v.toString()) ?? "",
+            ),
+          )..freeze();
+        });
       },
     ),
   ];

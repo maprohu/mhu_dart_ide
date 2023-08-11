@@ -18,6 +18,7 @@ extension ScreenShaftBuilderBitsX on ShaftBuilderBits {
   VoidCallback openerCallback(
     ShaftOpener builder, {
     void Function(MdiShaftMsg shaftMsg) before = ignore1,
+    int? focusShaftIndexFromLeft,
   }) {
     return () {
       final newShaft = MdiShaftMsg$.create(
@@ -29,6 +30,9 @@ extension ScreenShaftBuilderBitsX on ShaftBuilderBits {
 
       stateFw.rebuild((message) {
         message.topShaft = newShaft;
+        if (focusShaftIndexFromLeft != null) {
+          message.ensureFocusedShaft().indexFromLeft = focusShaftIndexFromLeft;
+        }
       });
     };
   }
