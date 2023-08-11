@@ -45,6 +45,7 @@ message MdiShaftMsg {
   MdiShaftMsg parent = 1;
   int32 width = 9;
   repeated MdiNotificationMsg notifications = 15;
+//  MdiInnerStateMsg inner_state = 17;
   oneof type {
     MdiEmptyMsg main_menu = 2;
     MdiEmptyMsg build_runner = 3;
@@ -59,6 +60,7 @@ message MdiShaftMsg {
     MdiEmptyMsg error = 13;
     MdiEditScalarMsg edit_scalar = 14;
   }
+
 }
 
 message MdiNotificationMsg {
@@ -102,6 +104,7 @@ message  MdiMapEntryKeyMsg {
 }
 
 message  MdiEditScalarMsg {
+  MdiInnerStateMsg inner_state = 1;
 }
 // inner state
 

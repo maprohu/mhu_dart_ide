@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/inner_state.dart';
+import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../bx/boxed.dart';
+import '../../keyboard.dart';
+import '../../op.dart';
 import '../../theme.dart';
 
 // part 'string.g.has.dart';
@@ -26,12 +32,14 @@ abstract class EditScalarStringBits
         EditingShaftLabeledContentBits<String> {
   static const headerLabel = "Edit String";
 
-  static EditScalarStringBits of({
+  static EditScalarStringBits create({
     required EditScalarShaftBits<String> editScalarShaftBits,
   }) {
     return ComposedEditScalarStringBits.editScalarShaftBits(
       editScalarShaftBits: editScalarShaftBits,
-      buildShaftContent: editScalarStringBuildShaftContent(),
+      buildShaftContent: editScalarStringBuildShaftContent(
+        onSubmit: editScalarShaftBits.editingFw.set,
+      ),
       shaftHeaderLabel: headerLabel,
     );
   }
@@ -39,6 +47,7 @@ abstract class EditScalarStringBits
 
 BuildShaftContent editScalarStringBuildShaftContent({
   int? maxStringLength,
+  required void Function(String string) onSubmit,
 }) {
   return (sizedBits) {
     final SizedShaftBuilderBits(
@@ -51,54 +60,106 @@ BuildShaftContent editScalarStringBuildShaftContent({
         :shaftIndexFromLeft,
       ),
       :stateFw,
+      :opBuilder,
     ) = sizedBits;
 
     final availableWidth = sizedBits.width - textCursorThickness;
 
-    final columnCount = stringTextStyle
-        .maxGridSize(
-          sizedBits.size.withWidth(availableWidth),
-        )
-        .columnCount;
+    SharingBx editorSharingBxFromWidget({
+      required double intrinsicHeight,
+      required Widget Function(
+        GridSize gridSize,
+      ) builder,
+    }) {
+      return ComposedSharingBx(
+        intrinsicDimension: intrinsicHeight,
+        dimensionBxBuilder: (height) {
+          final widgetSize = sizedBits.size.withHeight(height);
+          final gridSize = stringTextStyle.maxGridSize(widgetSize);
 
-    double calcIntrinsicHeight(int? stringLength) {
-      if (stringLength == null) {
-        return sizedBits.height;
-      } else {
-        final intrinsicRowCount = (stringLength - 1) ~/ columnCount + 1;
+          final widget = builder(gridSize);
 
-        return stringTextStyle.height * intrinsicRowCount;
-      }
+          return Bx.leaf(
+            size: widgetSize,
+            widget: widget,
+          );
+        },
+      );
     }
 
-    final intrinsicHeight = calcIntrinsicHeight(maxStringLength);
+    SharingBx editorBxNotFocused() {
+      final text = sizedBits.shaftMsg.editScalar.innerState.editString.text;
+      final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
+        stringLength: text.length,
+        width: availableWidth,
+      );
+      return editorSharingBxFromWidget(
+        intrinsicHeight: intrinsicHeight,
+        builder: (gridSize) {
+          return stringWidgetWithCursor(
+            text: text,
+            gridSize: gridSize,
+            themeCalc: sizedBits.themeCalc,
+            isFocused: false,
+          );
+        },
+      );
+    }
 
-    final intrinsicSize = sizedBits.size.withHeight(intrinsicHeight);
-
-    late final editorBx = ComposedSharingBx(
-      intrinsicDimension: intrinsicHeight,
-      dimensionBxBuilder: (height) {
-        final widgetSize = sizedBits.size.withHeight(height);
-        final gridSize = stringTextStyle.maxGridSize(widgetSize);
-
-        final widget = sizedBits.innerStateWidgetVoid(
-          builder: (innerState, update) {
-            final text = innerState.editString.text;
-
-            return stringWidgetWithCursor(
-              text: text,
-              gridSize: gridSize,
-              themeCalc: sizedBits.themeCalc,
-              isFocused: isFocused,
+    SharingBx editorBxFocused() {
+      final intrinsicHeight = maxStringLength == null
+          ? sizedBits.height
+          : stringTextStyle.calculateIntrinsicHeight(
+              stringLength: maxStringLength,
+              width: availableWidth,
             );
-          },
-        );
+      return editorSharingBxFromWidget(
+        intrinsicHeight: intrinsicHeight,
+        builder: (gridSize) {
+          return sizedBits.innerStateWidgetVoid(
+            access: createStringEditorKeyListenerAccess(
+              opBuilder: opBuilder,
+              onEscape: (innerStateFw) {
+                sizedBits.fwUpdateGroup.run(() {
+                  sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
+                    shaftMsg.editScalar.innerState = innerStateFw.read()!;
+                  });
+                  sizedBits.clearFocusedShaft();
+                });
+              },
+              onEnter: (innerStateFw) {
+                sizedBits.fwUpdateGroup.run(() {
+                  final text = innerStateFw.read()!.editString.text;
+                  onSubmit(text);
+                  sizedBits.clearFocusedShaft();
+                  sizedBits.closeShaft();
+                });
+              },
+              textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
+                MdiInnerEditStringMsg$.text,
+              ),
+              acceptCharacter: (text, character) => true,
+            ),
+            builder: (innerState, update) {
+              final text = innerState.editString.text;
 
-        return Bx.leaf(size: widgetSize, widget: widget);
-      },
-    );
+              return stringWidgetWithCursor(
+                text: text,
+                gridSize: gridSize,
+                themeCalc: sizedBits.themeCalc,
+                isFocused: isFocused,
+              );
+            },
+          );
+        },
+      );
+    }
 
-    if (!isFocused) {
+    if (isFocused) {
+      return [
+        editorBxFocused(),
+      ];
+    } else {
       return [
         ...sizedBits.menu(
           items: [
@@ -115,11 +176,8 @@ BuildShaftContent editScalarStringBuildShaftContent({
             ),
           ],
         ),
-        editorBx,
+        editorBxNotFocused(),
       ];
-    } else {
-      sizedBits.opBuilder.registerClearFocusOnEscape();
-      return const [];
     }
   };
 }
@@ -180,4 +238,56 @@ Widget stringWidgetWithCursor({
       ),
     ],
   );
+}
+
+void Function(InnerStateFw innerStateFw) createStringEditorKeyListenerAccess({
+  required OpBuilder opBuilder,
+  required void Function(InnerStateFw innerStateFw) onEnter,
+  required void Function(InnerStateFw innerStateFw) onEscape,
+  required ReadWriteAttribute<MdiInnerStateMsg, String> textAttribute,
+  required bool Function(String text, String character) acceptCharacter,
+}) {
+  ShortcutKeyListener keyListener = (key) {};
+
+  opBuilder.addKeyListener((key) {
+    keyListener(key);
+  });
+  return (innerStateFw) {
+    keyListener = (key) {
+      switch (key) {
+        case ShortcutKey.enter:
+          onEnter(innerStateFw);
+          return;
+        case ShortcutKey.escape:
+          onEscape(innerStateFw);
+          return;
+        default:
+      }
+      innerStateFw.update((innerState) {
+        innerState ??= MdiInnerStateMsg.getDefault();
+        return innerState.deepRebuild((message) {
+          final text = textAttribute.readAttribute(message);
+          switch (key) {
+            case ShortcutKey.backspace:
+              final length = text.length;
+              if (length > 0) {
+                textAttribute.writeAttribute(
+                  message,
+                  text.substring(0, length - 1),
+                );
+              }
+            case CharacterShortcutKey(:final character):
+              if (acceptCharacter(text, character)) {
+                textAttribute.writeAttribute(
+                  message,
+                  "$text$character",
+                );
+              }
+
+            case _:
+          }
+        });
+      });
+    };
+  };
 }

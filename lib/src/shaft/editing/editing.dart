@@ -44,7 +44,7 @@ EditingShaftLabeledContentBits<T> editScalarShaftLabeledContentBits<T>({
   final ScalarDataType scalarDataType = editScalarShaftBits.scalarDataType;
 
   final EditingShaftLabeledContentBits result = switch (scalarDataType) {
-    StringDataType() => EditScalarStringBits.of(
+    StringDataType() => EditScalarStringBits.create(
         editScalarShaftBits: editScalarShaftBits as EditScalarShaftBits<String>,
       ),
     final other => throw other,

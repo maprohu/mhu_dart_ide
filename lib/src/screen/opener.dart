@@ -28,7 +28,7 @@ extension ScreenShaftBuilderBitsX on ShaftBuilderBits {
 
       before(newShaft);
 
-      stateFw.rebuild((message) {
+      stateFw.deepRebuild((message) {
         message.topShaft = newShaft;
         if (focusShaftIndexFromLeft != null) {
           message.ensureFocusedShaft().indexFromLeft = focusShaftIndexFromLeft;
@@ -42,7 +42,7 @@ extension OpenerShaftCalcBitsX on HasShaftCalcChain {
   void closeShaft() {
     shaftCalcChain.stateFw.rebuild((message) {
       message.topShaft = message.topShaft
-          .shaftByIndexFromLeft(shaftCalcChain.shaftIndexFromLeft - 1);
+          .shaftByIndexFromLeft(shaftCalcChain.shaftIndexFromLeft - 1)!;
     });
   }
 }

@@ -27,9 +27,10 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
   static PfeShaftConcreteField of(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
-    late final messageShaftCalc = shaftCalcBuildBits.leftCalc as HasEditingFw;
+    late final messageShaftCalc =
+        shaftCalcBuildBits.leftCalc as EditScalarShaftBits;
 
-    final mfw = messageShaftCalc.editingFw as Mfw;
+    final mfw = messageShaftCalc.editingFw as Fw<GeneratedMessage?>;
     final shaftValue = shaftCalcBuildBits.shaftMsg.pfeConcreteField;
     final concreteFieldKey = ConcreteFieldKey(
       messageType: mfw.read().runtimeType,

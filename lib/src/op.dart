@@ -7,8 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_dart_ide/src/bx/screen.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/keyboard.dart';
+import 'package:mhu_dart_ide/src/model.dart';
 
 part 'op.freezed.dart';
 
@@ -200,15 +202,16 @@ class OpBuilder {
 
   void _clearFocusOnEscape(ShortcutKey shortcutKey) {
     if (shortcutKey == ShortcutKey.escape) {
-      configBits.stateFw.rebuild((message) {
-        message.clearFocusedShaft();
-      });
+      configBits.clearFocusedShaft();
+      // configBits.stateFw.rebuild((message) {
+      //   message.clearFocusedShaft();
+      // });
     }
   }
 
-  void registerClearFocusOnEscape() {
-    addKeyListener(_clearFocusOnEscape);
-  }
+  // void registerClearFocusOnEscape() {
+  //   addKeyListener(_clearFocusOnEscape);
+  // }
 
   void keyPressed(ShortcutKey key) {
     _opBuild.keyPressed(key);
@@ -282,10 +285,16 @@ class OpBuilder {
   ) {
     assert(_built);
     _built = false;
+
+    final state = configBits.stateCalcFr().state;
+    final focusedIndex = state.focusedShaft.indexFromLeftOpt;
+
+    final isFocused = focusedIndex != null &&
+        state.effectiveTopShaft.shaftByIndexFromLeft(focusedIndex) != null;
+
     _opBuild = _OpBuild(
       this,
-      isFocused:
-          configBits.stateFw.read().focusedShaft.indexFromLeftOpt != null,
+      isFocused: isFocused,
     );
 
     try {

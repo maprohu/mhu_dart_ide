@@ -48,7 +48,7 @@ SharingBx stringVerticalSharingBx({
   return ComposedSharingBx(
     intrinsicDimension:
         sizedBits.themeCalc.stringTextStyle.calculateIntrinsicHeight(
-      string: string,
+      stringLength: string.length,
       width: sizedBits.width,
     ),
     dimensionBxBuilder: (dimension) {
@@ -132,11 +132,9 @@ extension MonoTextStyleX on MonoTextStyle {
   }
 
   double calculateIntrinsicHeight({
-    required String string,
+    required int stringLength,
     required width,
   }) {
-    final stringLength = string.length;
-
     final columnCount = maxColumnCount(width);
 
     final intrinsicRowCount = (stringLength - 1) ~/ columnCount + 1;

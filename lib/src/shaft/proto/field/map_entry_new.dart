@@ -44,8 +44,41 @@ abstract class PfeShaftMapFieldNewEntry
 
     final mapValueDataType = mapFieldShaft.mapDataType.mapValueDataType;
 
+    Fw<M?> messageValueFw<M>(
+      MessageDataType messageDataType,
+    ) {
+      return Fw.fromFr(
+        fr: shaftMsgFu.map((t) {
+          final bytes = t.newMapEntry.mapEntry.bytesValueOpt;
+          if (bytes != null) {
+            return messageDataType.pbiMessage.instance.rebuild((m) {
+              m.mergeFromBuffer(bytes);
+            }) as M;
+          } else {
+            return null;
+          }
+        }),
+        set: (value) {
+          shaftMsgFu.update((shaft) {
+            if (value == null) {
+              shaft.ensureNewMapEntry().ensureMapEntry().clearBytesValue();
+            } else {
+              value as GeneratedMessage;
+              shaft.ensureNewMapEntry().ensureMapEntry().bytesValue ==
+                  value.writeToBuffer();
+            }
+          });
+        },
+      );
+    }
+
     final valueFw = mapValueDataType.dataTypeGeneric<Fw>(
-      <V>() => fw<V>(mapValueDataType.defaultValue),
+      <V>() {
+        return switch (mapValueDataType) {
+          MessageDataType() => messageValueFw<V>(mapValueDataType),
+          final other => throw other,
+        };
+      },
     );
 
     final entryBits = ComposedPfeMapFieldEntryNewBits(

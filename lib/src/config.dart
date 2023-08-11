@@ -102,3 +102,11 @@ class ConfigCalc {
 
   ConfigCalc(this.config);
 }
+
+extension HasStateFwX on HasStateFw {
+  void clearFocusedShaft() {
+    stateFw.rebuild((state) {
+      state.clearFocusedShaft();
+    });
+  }
+}

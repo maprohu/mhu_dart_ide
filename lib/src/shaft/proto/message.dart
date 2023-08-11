@@ -42,11 +42,10 @@ abstract class PfeMessageShaftCalc
 abstract class MessageEditingShaftContentBits
     implements EditingShaftContentBits {
   static MessageEditingShaftContentBits of({
-    required Mfw mfw,
+    required Fw<GeneratedMessage?> mfw,
     required MessageDataType messageDataType,
   }) {
-    late final pbi = mfw.read().pbi;
-    late final messageCalc = pbi.calc;
+    late final messageCalc = messageDataType.pbiMessageCalc;
     return ComposedMessageEditingShaftContentBits(
       buildShaftContent: (SizedShaftBuilderBits sizedBits) {
         return sizedBits.menu(

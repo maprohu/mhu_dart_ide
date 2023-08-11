@@ -10,7 +10,7 @@ abstract class PfeShaftMapEntryValue
 
     final contentBits = switch (dataType) {
       MessageDataType() => MessageEditingShaftContentBits.of(
-          mfw: mapEntry.pfeMapValueFw as Mfw,
+          mfw: mapEntry.pfeMapValueFw as Fw<GeneratedMessage?>,
           messageDataType: dataType,
         ),
       final other => throw other,

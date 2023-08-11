@@ -62,7 +62,7 @@ abstract class PfeShaftMapField
     required PfeShaftConcreteFieldBits pfeShaftConcreteFieldBits,
     required ConcreteFieldCalc concreteFieldCalc,
     required MapDataType mapDataType,
-    required Mfw mfw,
+    required Fw<GeneratedMessage?> mfw,
   }) {
     return mapDataType.mapKeyValueGeneric(<K, V>(mapDataType) {
       final mapFieldFu = fuCold(

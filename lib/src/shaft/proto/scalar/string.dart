@@ -5,6 +5,7 @@ import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
+import 'package:mhu_dart_ide/src/shaft/editing/string.dart';
 import 'package:mhu_dart_ide/src/shaft/string.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
@@ -18,6 +19,11 @@ abstract class PfeShaftString implements EditingShaftContentBits<String> {
     required StringDataType stringDataType,
   }) {
     final currentValue = fv();
+    final innerState = MdiInnerStateMsg$.create(
+      editString: MdiInnerEditStringMsg$.create(
+        text: currentValue ?? "",
+      ),
+    )..freeze();
     return ComposedPfeShaftString(
       buildShaftContent: (sizedBits) => [
         stringVerticalSharingBx(
@@ -27,19 +33,18 @@ abstract class PfeShaftString implements EditingShaftContentBits<String> {
         ...sizedBits.menu(items: [
           sizedBits.openerField(
             MdiShaftMsg$.editScalar,
+            updateShaft: (shaftMsg) {
+              shaftMsg.ensureEditScalar().innerState = innerState;
+            },
             before: (shaftMsg) {
               sizedBits.accessInnerStateRight(
                 (innerStateFw) async {
-                  innerStateFw.value = MdiInnerStateMsg$.create(
-                    editString: MdiInnerEditStringMsg$.create(
-                      text: currentValue ?? "",
-                    ),
-                  )..freeze();
+                  innerStateFw.value = innerState;
                 },
               );
             },
             autoFocus: true,
-            label: "Edit String",
+            label: EditScalarStringBits.headerLabel,
           ),
         ]),
       ],

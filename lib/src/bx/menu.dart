@@ -113,6 +113,7 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
 extension MenuShaftBitsX on ShaftBuilderBits {
   MenuItem openerField(
     ScalarFieldAccess<MdiShaftMsg, dynamic> access, {
+    void Function(MdiShaftMsg shaftMsg) updateShaft = ignore1,
     void Function(MdiShaftMsg shaftMsg) before = ignore1,
     bool autoFocus = false,
     String? label,
@@ -120,6 +121,7 @@ extension MenuShaftBitsX on ShaftBuilderBits {
     return opener(
       (shaft) {
         access.set(shaft, access.defaultSingleValue);
+        updateShaft(shaft);
       },
       before: before,
       label: label ?? access.name.titleCase,
