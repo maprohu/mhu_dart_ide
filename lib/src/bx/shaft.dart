@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/notification.dart';
@@ -164,8 +165,8 @@ Bx defaultShaftBx({
             sizedBits.shaftHeaderLabel,
           ),
           right: headerBits.centerHeight(
-            headerBits.shortcut(
-              headerBits.optionsOpenerCallback(),
+            headerBits.openerFieldShortcut(
+              MdiShaftMsg$.options,
             ),
           ),
         ),

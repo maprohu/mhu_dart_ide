@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 
@@ -24,6 +25,7 @@ class MenuItem with _$MenuItem {
   factory MenuItem({
     required String label,
     required ShortcutCallback callback,
+    bool Function(MdiShaftMsg rightShaft)? isOpen,
   }) = _MenuItem;
 }
 
@@ -59,6 +61,10 @@ Bx menuItemBx({
 }) {
   final themeCalc = sizedBits.themeCalc;
 
+  final MenuItem(
+    :isOpen,
+  ) = menuItem;
+
   return sizedBits.padding(
     padding: themeCalc.menuItemPadding,
     builder: (sizedBits) {
@@ -76,6 +82,7 @@ Bx menuItemBx({
         },
       );
     },
+    backgroundColor: sizedBits.openerBackgroundColor(isOpen: isOpen),
   );
 }
 
@@ -96,27 +103,39 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
   }
 }
 
-// extension MenuHasShaftBitsX on HasShaftBuilderBits {
-//   MenuItem openerField(ScalarFieldAccess<MdiShaftMsg, dynamic> access) =>
-//       shaftBits.openerField(access);
-//
-//   MenuItem opener(
-//     ShaftOpener builder, {
-//     String? label,
-//   }) =>
-//       shaftBits.opener(
-//         builder,
-//         label: label,
-//       );
-// }
+extension MenuShaftBuilderBitsX on ShaftBuilderBits {
+  Color? openerBackgroundColor({
+    bool Function(MdiShaftMsg rightShaft)? isOpen,
+  }) {
+    if (isOpen != null) {
+      final rightCalc =
+          shaftDoubleChain.shaftDoubleChainRight?.shaftCalcChain.shaftMsg;
+      if (rightCalc != null) {
+        if (isOpen(rightCalc)) {
+          return themeCalc.openItemColor;
+        }
+      }
+    }
 
-extension MenuShaftBitsX on ShaftBuilderBits {
+    return null;
+  }
+
+  Color? openerFieldBackgroundColor(
+    ScalarFieldAccess<MdiShaftMsg, dynamic> access,
+  ) {
+    return openerBackgroundColor(
+      isOpen: access.has,
+    );
+  }
+
+
   MenuItem openerField(
     ScalarFieldAccess<MdiShaftMsg, dynamic> access, {
     void Function(MdiShaftMsg shaftMsg) updateShaft = ignore1,
     void Function(MdiShaftMsg shaftMsg) before = ignore1,
     bool autoFocus = false,
     String? label,
+    bool Function(MdiShaftMsg rightShaft)? isOpen,
   }) {
     return opener(
       (shaft) {
@@ -126,6 +145,7 @@ extension MenuShaftBitsX on ShaftBuilderBits {
       before: before,
       label: label ?? access.name.titleCase,
       autoFocus: autoFocus,
+      isOpen: isOpen ?? access.has,
     );
   }
 
@@ -134,6 +154,7 @@ extension MenuShaftBitsX on ShaftBuilderBits {
     void Function(MdiShaftMsg shaftMsg) before = ignore1,
     String? label,
     bool autoFocus = false,
+    bool Function(MdiShaftMsg rightShaft)? isOpen,
   }) {
     label ??= ComposedShaftCalcChain.appBits(
       appBits: this,
@@ -150,6 +171,7 @@ extension MenuShaftBitsX on ShaftBuilderBits {
         focusShaftIndexFromLeft:
             autoFocus ? shaftCalcChain.shaftIndexFromLeft + 1 : null,
       ),
+      isOpen: isOpen,
     );
   }
 }

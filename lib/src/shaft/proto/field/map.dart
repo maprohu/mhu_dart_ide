@@ -62,12 +62,13 @@ abstract class PfeShaftMapField
     required PfeShaftConcreteFieldBits pfeShaftConcreteFieldBits,
     required ConcreteFieldCalc concreteFieldCalc,
     required MapDataType mapDataType,
-    required Fw<GeneratedMessage?> mfw,
+    required MessageEditingBits messageEditingBits,
   }) {
     return mapDataType.mapKeyValueGeneric(<K, V>(mapDataType) {
-      final mapFieldFu = fuCold(
-        mfw,
-        mapDataType.readFieldValueFor(
+      final mapFieldFu = fuColdNullable(
+        fv: messageEditingBits.editingFw,
+        defaultMessage: messageEditingBits.messageDataType.pbiMessage.instance,
+        get: mapDataType.readFieldValueFor(
           concreteFieldCalc.fieldIndex,
         ),
       );

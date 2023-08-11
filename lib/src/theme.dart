@@ -108,6 +108,13 @@ class ThemeCalc {
   late final textClipMarkerColor = Colors.red;
 
   late final notificationTextStyle = robotoSlabTextStyle;
+
+  static Color grayscale(double value) {
+    final rgb = (value * 255).round();
+    return Color.fromARGB(255, rgb, rgb, rgb);
+  }
+
+  late final openItemColor = grayscale(0.5);
 }
 
 mixin HasThemeCalc {

@@ -16,37 +16,49 @@ import '../../op.dart';
 part 'message.g.compose.dart';
 
 @Compose()
-abstract class PfeMessageShaftCalc
-    implements ShaftCalcBuildBits, EditingShaftContentBits, ShaftCalc, HasMfw {
-  static PfeMessageShaftCalc of({
+abstract class PfeMessageShaftCalc<M extends GeneratedMessage>
+    implements
+        ShaftCalcBuildBits,
+        MessageEditingShaftContentBits<M>,
+        ShaftCalc,
+        HasEditScalarShaftBits<M> {
+  static PfeMessageShaftCalc of<M extends GeneratedMessage>({
     required ShaftCalcBuildBits shaftCalcBuildBits,
-    required Mfw mfw,
+    required Fw<M> mfw,
   }) {
-    late final pbi = mfw.read().pbi;
+    assert(M != GeneratedMessage);
 
+    late final pbi = mfw.read().pbi;
     late final messageCalc = pbi.calc;
 
+    final contentBits = MessageEditingShaftContentBits.create(
+      editingFw: mfw,
+      messageDataType: messageCalc.messageDataType,
+    );
     return ComposedPfeMessageShaftCalc.merge$(
       shaftCalcBuildBits: shaftCalcBuildBits,
-      editingShaftContentBits: MessageEditingShaftContentBits.of(
-        mfw: mfw,
-        messageDataType: messageCalc.messageDataType,
-      ),
+      messageEditingShaftContentBits: contentBits,
       shaftHeaderLabel: messageCalc.messageName.titleCase,
-      mfw: mfw,
+      editScalarShaftBits: contentBits,
     );
   }
 }
 
 @Compose()
-abstract class MessageEditingShaftContentBits
-    implements EditingShaftContentBits {
-  static MessageEditingShaftContentBits of({
-    required Fw<GeneratedMessage?> mfw,
+abstract class MessageEditingShaftContentBits<M extends GeneratedMessage>
+    implements EditingShaftContentBits<M>, MessageEditingBits<M> {
+  static MessageEditingShaftContentBits create<M extends GeneratedMessage>({
+    required Fw<M?> editingFw,
     required MessageDataType messageDataType,
   }) {
+    assert(M != GeneratedMessage);
+
     late final messageCalc = messageDataType.pbiMessageCalc;
-    return ComposedMessageEditingShaftContentBits(
+    return ComposedMessageEditingShaftContentBits.messageEditingBits(
+      messageEditingBits: MessageEditingBits.create(
+        editingFw: editingFw,
+        messageDataType: messageDataType,
+      ),
       buildShaftContent: (SizedShaftBuilderBits sizedBits) {
         return sizedBits.menu(
           items: messageCalc.topFieldKeys.map((fieldKey) {
@@ -71,8 +83,6 @@ abstract class MessageEditingShaftContentBits
           }).toList(),
         );
       },
-      editingFw: mfw,
-      scalarDataType: messageDataType,
     );
   }
 }

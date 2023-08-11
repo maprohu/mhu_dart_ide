@@ -10,7 +10,8 @@ import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 part 'int.g.compose.dart';
 
 @Compose()
-abstract class PfeShaftInt implements EditingShaftContentBits<int?> {
+abstract class PfeShaftInt implements EditingShaftContentBits<int> {
+  static const headerLabel = "Edit Int";
   static EditingShaftContentBits of({
     required Fw<int?> fv,
     required CoreIntDataType coreIntDataType,

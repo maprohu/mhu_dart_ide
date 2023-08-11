@@ -27,13 +27,14 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
   static PfeShaftConcreteField of(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
-    late final messageShaftCalc =
-        shaftCalcBuildBits.leftCalc as EditScalarShaftBits;
+    final leftCalc = shaftCalcBuildBits.leftCalc as HasEditScalarShaftBits;
 
-    final mfw = messageShaftCalc.editingFw as Fw<GeneratedMessage?>;
+    final messageEditingBits =
+        leftCalc.editScalarShaftBits as MessageEditingBits;
+
     final shaftValue = shaftCalcBuildBits.shaftMsg.pfeConcreteField;
     final concreteFieldKey = ConcreteFieldKey(
-      messageType: mfw.read().runtimeType,
+      messageType: messageEditingBits.messageDataType.pbiMessage.messageType,
       tagNumber: shaftValue.tagNumber,
     );
 
@@ -53,13 +54,13 @@ abstract class PfeShaftConcreteField implements ShaftCalcBits, ShaftCalc {
           pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
           concreteFieldCalc: concreteFieldCalc,
           mapDataType: dataType,
-          mfw: mfw,
+          messageEditingBits: messageEditingBits,
         ),
       ScalarDataType() => dataType.scalarDataTypeGeneric(<T>(scalarDataType) {
-          return PfeShaftScalarField.of(
+          return PfeShaftScalarField.create(
             pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
             scalarDataType: scalarDataType,
-            mfw: mfw,
+            messageEditingBits: messageEditingBits,
           );
         }),
       _ => throw dataType,

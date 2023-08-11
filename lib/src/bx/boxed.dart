@@ -1,10 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/padding.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 part 'boxed.freezed.dart';
+
+part 'boxed.g.has.dart';
+// part 'boxed.g.compose.dart';
 
 extension _Assert on Iterable<double> {
   bool _assertEqual() {
@@ -13,33 +17,40 @@ extension _Assert on Iterable<double> {
   }
 }
 
+@Has()
+typedef BackgroundColor = Color?;
+
 @freezedStruct
-sealed class Bx with _$Bx implements HasSize {
+sealed class Bx with _$Bx implements HasSize, HasBackgroundColor {
   Bx._();
 
   @Assert("Bx.calculateRowSize(columns).assertEqual(size)")
   factory Bx.row({
     required List<Bx> columns,
     required Size size,
+    Color? backgroundColor,
   }) = BxRow;
 
   @Assert("Bx.calculateColumnSize(rows).assertEqual(size)")
   factory Bx.col({
     required List<Bx> rows,
     required Size size,
+    Color? backgroundColor,
   }) = BxCol;
 
   @Assert("Bx.calculatePadSize(padding, child).assertEqual(size)")
   factory Bx.pad({
     required Size size,
-    required EdgeInsets padding,
+    required EdgeInsets? padding,
     required Bx child,
+    Color? backgroundColor,
   }) = BxPad;
 
   @Assert("widget is! SizedBox")
   factory Bx.leaf({
     required Size size,
     required Widget? widget,
+    Color? backgroundColor,
   }) = BxLeaf;
 
   static const overflow = Placeholder();
@@ -72,9 +83,10 @@ sealed class Bx with _$Bx implements HasSize {
       );
 
   static Size calculatePadSize(
-    EdgeInsets padding,
+    EdgeInsets? padding,
     Bx child,
   ) {
+    if (padding == null) return child.size;
     assert(padding.isNonNegative, padding.toString());
     return padding.inflateSize(child.size);
   }
@@ -106,22 +118,37 @@ sealed class Bx with _$Bx implements HasSize {
         BxCol(:final rows) => calculateColumnSize(rows),
       };
 
-  Widget layout() => switch (this) {
-        BxLeaf(:final size, :final widget) => SizedBox.fromSize(
-            size: size,
-            child: widget,
-          ),
-        BxPad(:final padding, :final child) => Padding(
-            padding: padding,
-            child: child.layout(),
-          ),
-        BxRow(:final columns) => Row(
-            children: columns.map((e) => e.layout()).toList(),
-          ),
-        BxCol(:final rows) => Column(
-            children: rows.map((e) => e.layout()).toList(),
-          ),
-      };
+  Widget layout() {
+    final widget = switch (this) {
+      BxLeaf(:final size, :final widget) => SizedBox.fromSize(
+          size: size,
+          child: widget,
+        ),
+      BxPad(:final padding, :final child) => padding == null
+          ? child.layout()
+          : Padding(
+              padding: padding,
+              child: child.layout(),
+            ),
+      BxRow(:final columns) => Row(
+          children: columns.map((e) => e.layout()).toList(),
+        ),
+      BxCol(:final rows) => Column(
+          children: rows.map((e) => e.layout()).toList(),
+        ),
+    };
+
+    if (backgroundColor == null) {
+      return widget;
+    } else {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: backgroundColor,
+        ),
+        child: widget,
+      );
+    }
+  }
 
   static Bx linear({
     required Axis axis,

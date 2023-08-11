@@ -64,7 +64,7 @@ abstract class PfeShaftMapFieldNewEntry
               shaft.ensureNewMapEntry().ensureMapEntry().clearBytesValue();
             } else {
               value as GeneratedMessage;
-              shaft.ensureNewMapEntry().ensureMapEntry().bytesValue ==
+              shaft.ensureNewMapEntry().ensureMapEntry().bytesValue =
                   value.writeToBuffer();
             }
           });

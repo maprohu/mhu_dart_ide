@@ -54,6 +54,7 @@ extension SizedNodeBuildBitsX on SizedShaftBuilderBits {
   Bx padding({
     required EdgeInsets padding,
     required SizedBuilder builder,
+    Color? backgroundColor,
   }) {
     return Bx.pad(
       padding: padding,
@@ -63,6 +64,7 @@ extension SizedNodeBuildBitsX on SizedShaftBuilderBits {
         ),
       ),
       size: size,
+      backgroundColor: backgroundColor,
     );
   }
 

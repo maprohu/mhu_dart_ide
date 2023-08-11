@@ -12,8 +12,8 @@ final ShaftCalcBuilder mainMenuShaftCalc = (shaftCalcBuildBits) => ComposedShaft
   buildShaftContent: (SizedShaftBuilderBits sizedBits) {
     return sizedBits.menu(
       items: [
-        sizedBits.opener(
-          (shaft) => shaft.ensureConfig(),
+        sizedBits.openerField(
+          MdiShaftMsg$.config,
         ),
         MenuItem(
           label: "theme",

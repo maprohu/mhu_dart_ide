@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
@@ -11,6 +12,7 @@ import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/inner_state.dart';
+import 'package:mhu_dart_ide/src/screen/notification.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
@@ -32,7 +34,7 @@ abstract class EditScalarStringBits
         EditingShaftLabeledContentBits<String> {
   static const headerLabel = "Edit String";
 
-  static EditScalarStringBits create({
+  static EditingShaftLabeledContentBits create({
     required EditScalarShaftBits<String> editScalarShaftBits,
   }) {
     return ComposedEditScalarStringBits.editScalarShaftBits(
@@ -138,10 +140,161 @@ BuildShaftContent editScalarStringBuildShaftContent({
               textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
                 MdiInnerEditStringMsg$.text,
               ),
-              acceptCharacter: (text, character) => true,
+              acceptCharacter: (text, character) =>
+                  character == " " ||
+                  !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
             ),
             builder: (innerState, update) {
               final text = innerState.editString.text;
+
+              return stringWidgetWithCursor(
+                text: text,
+                gridSize: gridSize,
+                themeCalc: sizedBits.themeCalc,
+                isFocused: isFocused,
+              );
+            },
+          );
+        },
+      );
+    }
+
+    if (isFocused) {
+      return [
+        editorBxFocused(),
+      ];
+    } else {
+      return [
+        ...sizedBits.menu(
+          items: [
+            MenuItem(
+              label: "Focus",
+              callback: () {
+                stateFw.deepRebuild(
+                  (state) {
+                    state.ensureFocusedShaft().indexFromLeft =
+                        shaftIndexFromLeft;
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        editorBxNotFocused(),
+      ];
+    }
+  };
+}
+
+BuildShaftContent editScalarAsStringBuildShaftContent<T>({
+  int? maxStringLength,
+  required void Function(T value) onSubmit,
+  required ValidatingFunction<String, T> parser,
+  required ReadWriteAttribute<MdiInnerStateMsg, String> textAttribute,
+}) {
+  return (sizedBits) {
+    final SizedShaftBuilderBits(
+      themeCalc: ThemeCalc(
+        :textCursorThickness,
+        :stringTextStyle,
+      ),
+      shaftCalcChain: ShaftCalcChain(
+        :isFocused,
+        :shaftIndexFromLeft,
+      ),
+      :stateFw,
+      :opBuilder,
+    ) = sizedBits;
+
+    final availableWidth = sizedBits.width - textCursorThickness;
+
+    SharingBx editorSharingBxFromWidget({
+      required double intrinsicHeight,
+      required Widget Function(
+        GridSize gridSize,
+      ) builder,
+    }) {
+      return ComposedSharingBx(
+        intrinsicDimension: intrinsicHeight,
+        dimensionBxBuilder: (height) {
+          final widgetSize = sizedBits.size.withHeight(height);
+          final gridSize = stringTextStyle.maxGridSize(widgetSize);
+
+          final widget = builder(gridSize);
+
+          return Bx.leaf(
+            size: widgetSize,
+            widget: widget,
+          );
+        },
+      );
+    }
+
+    SharingBx editorBxNotFocused() {
+      final text = sizedBits.shaftMsg.editScalar.innerState.editString.text;
+      final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
+        stringLength: text.length,
+        width: availableWidth,
+      );
+      return editorSharingBxFromWidget(
+        intrinsicHeight: intrinsicHeight,
+        builder: (gridSize) {
+          return stringWidgetWithCursor(
+            text: text,
+            gridSize: gridSize,
+            themeCalc: sizedBits.themeCalc,
+            isFocused: false,
+          );
+        },
+      );
+    }
+
+    SharingBx editorBxFocused() {
+      final intrinsicHeight = maxStringLength == null
+          ? sizedBits.height
+          : stringTextStyle.calculateIntrinsicHeight(
+              stringLength: maxStringLength,
+              width: availableWidth,
+            );
+      return editorSharingBxFromWidget(
+        intrinsicHeight: intrinsicHeight,
+        builder: (gridSize) {
+          return sizedBits.innerStateWidgetVoid(
+            access: createStringEditorKeyListenerAccess(
+              opBuilder: opBuilder,
+              onEscape: (innerStateFw) {
+                sizedBits.fwUpdateGroup.run(() {
+                  sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
+                    shaftMsg.editScalar.innerState = innerStateFw.read()!;
+                  });
+                  sizedBits.clearFocusedShaft();
+                });
+              },
+              onEnter: (innerStateFw) {
+                final text = innerStateFw.read()!.editString.text;
+
+                final parseResult = parser(text);
+
+                switch (parseResult) {
+                  case ValidationSuccess<T>():
+                    sizedBits.fwUpdateGroup.run(() {
+                      onSubmit(parseResult.validationSuccessValue);
+                      sizedBits.clearFocusedShaft();
+                      sizedBits.closeShaft();
+                    });
+                  case ValidationFailure<T>():
+                    sizedBits.showNotifications(
+                      parseResult.validationFailureMessages,
+                    );
+                }
+              },
+              textAttribute: textAttribute,
+              acceptCharacter: (text, character) =>
+                  character == " " ||
+                  !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
+            ),
+            builder: (innerState, update) {
+              final text = textAttribute.readAttribute(innerState);
 
               return stringWidgetWithCursor(
                 text: text,
