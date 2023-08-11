@@ -157,6 +157,7 @@ extension ShaftCalcX on ShaftCalc {
 
 extension HasShaftCalcChainX on HasShaftCalcChain {
   ShaftCalc? get leftCalc => shaftCalcChain.leftCalc;
+  ShaftCalc? get leftSignificantCalc => shaftCalcChain.leftSignificantCalc;
 
   Future<R> accessOwnInnerState<R>(
     Future<R> Function(InnerStateFw innerStateFw) action,

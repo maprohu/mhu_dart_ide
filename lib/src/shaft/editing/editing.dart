@@ -30,7 +30,7 @@ abstract class EditingShaftLabeledContentBits<T>
         HasShaftHeaderLabel {}
 
 ShaftCalc editScalarShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
-  final leftBits = shaftCalcBuildBits.leftCalc as HasScalarDataType;
+  final leftBits = shaftCalcBuildBits.leftSignificantCalc as HasScalarDataType;
 
   return ComposedShaftCalc.merge$(
     shaftCalcBuildBits: shaftCalcBuildBits,

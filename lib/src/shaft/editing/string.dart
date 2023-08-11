@@ -39,152 +39,156 @@ abstract class EditScalarStringBits
   }) {
     return ComposedEditScalarStringBits.editScalarShaftBits(
       editScalarShaftBits: editScalarShaftBits,
-      buildShaftContent: editScalarStringBuildShaftContent(
+      buildShaftContent: editScalarAsStringBuildShaftContent(
         onSubmit: editScalarShaftBits.editingFw.set,
+        parser: (input) => ValidationSuccessImpl(input),
+        textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
+          MdiInnerEditStringMsg$.text,
+        ),
       ),
       shaftHeaderLabel: headerLabel,
     );
   }
 }
 
-BuildShaftContent editScalarStringBuildShaftContent({
-  int? maxStringLength,
-  required void Function(String string) onSubmit,
-}) {
-  return (sizedBits) {
-    final SizedShaftBuilderBits(
-      themeCalc: ThemeCalc(
-        :textCursorThickness,
-        :stringTextStyle,
-      ),
-      shaftCalcChain: ShaftCalcChain(
-        :isFocused,
-        :shaftIndexFromLeft,
-      ),
-      :stateFw,
-      :opBuilder,
-    ) = sizedBits;
-
-    final availableWidth = sizedBits.width - textCursorThickness;
-
-    SharingBx editorSharingBxFromWidget({
-      required double intrinsicHeight,
-      required Widget Function(
-        GridSize gridSize,
-      ) builder,
-    }) {
-      return ComposedSharingBx(
-        intrinsicDimension: intrinsicHeight,
-        dimensionBxBuilder: (height) {
-          final widgetSize = sizedBits.size.withHeight(height);
-          final gridSize = stringTextStyle.maxGridSize(widgetSize);
-
-          final widget = builder(gridSize);
-
-          return Bx.leaf(
-            size: widgetSize,
-            widget: widget,
-          );
-        },
-      );
-    }
-
-    SharingBx editorBxNotFocused() {
-      final text = sizedBits.shaftMsg.editScalar.innerState.editString.text;
-      final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
-        stringLength: text.length,
-        width: availableWidth,
-      );
-      return editorSharingBxFromWidget(
-        intrinsicHeight: intrinsicHeight,
-        builder: (gridSize) {
-          return stringWidgetWithCursor(
-            text: text,
-            gridSize: gridSize,
-            themeCalc: sizedBits.themeCalc,
-            isFocused: false,
-          );
-        },
-      );
-    }
-
-    SharingBx editorBxFocused() {
-      final intrinsicHeight = maxStringLength == null
-          ? sizedBits.height
-          : stringTextStyle.calculateIntrinsicHeight(
-              stringLength: maxStringLength,
-              width: availableWidth,
-            );
-      return editorSharingBxFromWidget(
-        intrinsicHeight: intrinsicHeight,
-        builder: (gridSize) {
-          return sizedBits.innerStateWidgetVoid(
-            access: createStringEditorKeyListenerAccess(
-              opBuilder: opBuilder,
-              onEscape: (innerStateFw) {
-                sizedBits.fwUpdateGroup.run(() {
-                  sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
-                    shaftMsg.editScalar.innerState = innerStateFw.read()!;
-                  });
-                  sizedBits.clearFocusedShaft();
-                });
-              },
-              onEnter: (innerStateFw) {
-                sizedBits.fwUpdateGroup.run(() {
-                  final text = innerStateFw.read()!.editString.text;
-                  onSubmit(text);
-                  sizedBits.clearFocusedShaft();
-                  sizedBits.closeShaft();
-                });
-              },
-              textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
-                MdiInnerEditStringMsg$.text,
-              ),
-              acceptCharacter: (text, character) =>
-                  character == " " ||
-                  !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
-            ),
-            builder: (innerState, update) {
-              final text = innerState.editString.text;
-
-              return stringWidgetWithCursor(
-                text: text,
-                gridSize: gridSize,
-                themeCalc: sizedBits.themeCalc,
-                isFocused: isFocused,
-              );
-            },
-          );
-        },
-      );
-    }
-
-    if (isFocused) {
-      return [
-        editorBxFocused(),
-      ];
-    } else {
-      return [
-        ...sizedBits.menu(
-          items: [
-            MenuItem(
-              label: "Focus",
-              callback: () {
-                stateFw.deepRebuild(
-                  (state) {
-                    state.ensureFocusedShaft().indexFromLeft =
-                        shaftIndexFromLeft;
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-        editorBxNotFocused(),
-      ];
-    }
-  };
-}
+// BuildShaftContent editScalarStringBuildShaftContent({
+//   int? maxStringLength,
+//   required void Function(String string) onSubmit,
+// }) {
+//   return (sizedBits) {
+//     final SizedShaftBuilderBits(
+//       themeCalc: ThemeCalc(
+//         :textCursorThickness,
+//         :stringTextStyle,
+//       ),
+//       shaftCalcChain: ShaftCalcChain(
+//         :isFocused,
+//         :shaftIndexFromLeft,
+//       ),
+//       :stateFw,
+//       :opBuilder,
+//     ) = sizedBits;
+//
+//     final availableWidth = sizedBits.width - textCursorThickness;
+//
+//     SharingBx editorSharingBxFromWidget({
+//       required double intrinsicHeight,
+//       required Widget Function(
+//         GridSize gridSize,
+//       ) builder,
+//     }) {
+//       return ComposedSharingBx(
+//         intrinsicDimension: intrinsicHeight,
+//         dimensionBxBuilder: (height) {
+//           final widgetSize = sizedBits.size.withHeight(height);
+//           final gridSize = stringTextStyle.maxGridSize(widgetSize);
+//
+//           final widget = builder(gridSize);
+//
+//           return Bx.leaf(
+//             size: widgetSize,
+//             widget: widget,
+//           );
+//         },
+//       );
+//     }
+//
+//     SharingBx editorBxNotFocused() {
+//       final text = sizedBits.shaftMsg.editScalar.innerState.editString.text;
+//       final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
+//         stringLength: text.length,
+//         width: availableWidth,
+//       );
+//       return editorSharingBxFromWidget(
+//         intrinsicHeight: intrinsicHeight,
+//         builder: (gridSize) {
+//           return stringWidgetWithCursor(
+//             text: text,
+//             gridSize: gridSize,
+//             themeCalc: sizedBits.themeCalc,
+//             isFocused: false,
+//           );
+//         },
+//       );
+//     }
+//
+//     SharingBx editorBxFocused() {
+//       final intrinsicHeight = maxStringLength == null
+//           ? sizedBits.height
+//           : stringTextStyle.calculateIntrinsicHeight(
+//               stringLength: maxStringLength,
+//               width: availableWidth,
+//             );
+//       return editorSharingBxFromWidget(
+//         intrinsicHeight: intrinsicHeight,
+//         builder: (gridSize) {
+//           return sizedBits.innerStateWidgetVoid(
+//             access: createStringEditorKeyListenerAccess(
+//               opBuilder: opBuilder,
+//               onEscape: (innerStateFw) {
+//                 sizedBits.fwUpdateGroup.run(() {
+//                   sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
+//                     shaftMsg.editScalar.innerState = innerStateFw.read()!;
+//                   });
+//                   sizedBits.clearFocusedShaft();
+//                 });
+//               },
+//               onEnter: (innerStateFw) {
+//                 sizedBits.fwUpdateGroup.run(() {
+//                   final text = innerStateFw.read()!.editString.text;
+//                   onSubmit(text);
+//                   sizedBits.clearFocusedShaft();
+//                   sizedBits.closeShaft();
+//                 });
+//               },
+//               textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
+//                 MdiInnerEditStringMsg$.text,
+//               ),
+//               acceptCharacter: (text, character) =>
+//                   character == " " ||
+//                   !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
+//             ),
+//             builder: (innerState, update) {
+//               final text = innerState.editString.text;
+//
+//               return stringWidgetWithCursor(
+//                 text: text,
+//                 gridSize: gridSize,
+//                 themeCalc: sizedBits.themeCalc,
+//                 isFocused: isFocused,
+//               );
+//             },
+//           );
+//         },
+//       );
+//     }
+//
+//     if (isFocused) {
+//       return [
+//         editorBxFocused(),
+//       ];
+//     } else {
+//       return [
+//         ...sizedBits.menu(
+//           items: [
+//             MenuItem(
+//               label: "Focus",
+//               callback: () {
+//                 stateFw.deepRebuild(
+//                   (state) {
+//                     state.ensureFocusedShaft().indexFromLeft =
+//                         shaftIndexFromLeft;
+//                   },
+//                 );
+//               },
+//             ),
+//           ],
+//         ),
+//         editorBxNotFocused(),
+//       ];
+//     }
+//   };
+// }
 
 BuildShaftContent editScalarAsStringBuildShaftContent<T>({
   int? maxStringLength,
@@ -271,7 +275,7 @@ BuildShaftContent editScalarAsStringBuildShaftContent<T>({
                 });
               },
               onEnter: (innerStateFw) {
-                final text = innerStateFw.read()!.editString.text;
+                final text = innerStateFw.read()!.editInt.text;
 
                 final parseResult = parser(text);
 
