@@ -29,182 +29,58 @@ import '../../keyboard.dart';
 import '../proto/scalar/int.dart';
 
 // part 'int.g.has.dart';
-part 'int.g.compose.dart';
+// part 'int.g.compose.dart';
 
 List<MenuItem> intEditOptions({
   required ShaftBuilderBits shaftBuilderBits,
   required int? currentValue,
 }) {
   return [
-    shaftBuilderBits.openerField(
-      MdiShaftMsg$.editScalar,
-      before: (shaftMsg) {
-        shaftBuilderBits.accessInnerStateRight((innerStateFw) async {
-          innerStateFw.value = MdiInnerStateMsg$.create(
-            editInt: MdiInnerEditIntMsg$.create(
-              text: currentValue?.let((v) => v.toString()) ?? "",
-            ),
-          )..freeze();
-        });
+    ShaftTypes.editScalar.opener(
+      shaftBuilderBits,
+      innerState: () {
+        return MdiInnerStateMsg()
+          ..ensureEditInt().text = currentValue?.toString() ?? ""
+          ..freeze();
       },
-      label: PfeShaftInt.headerLabel,
     ),
   ];
 }
 
 final _maxLength = 0x7FFFFFFF.toString().length;
 
-// ShaftCalc editIntShaftCalc(ShaftCalcBuildBits shaftCalcBuildBits) {
-//   final HasEditingFw(
-//     :editingFw,
-//   ) = shaftCalcBuildBits.leftCalc as HasEditingFw;
+// @Compose()
+// abstract class EditScalarIntBits
+//     implements
+//         EditScalarShaftBits<int>,
+//         EditingShaftContentBits<int>,
+//         EditingShaftLabeledContentBits<int> {
+//   static const headerLabel = "Edit Int";
 //
-//   return ComposedShaftCalc.shaftCalcBuildBits(
-//     shaftCalcBuildBits: shaftCalcBuildBits,
-//     shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
-//     buildShaftContent: (sizedBits) {
-//       final SizedShaftBuilderBits(
-//         themeCalc: ThemeCalc(
-//           :textCursorThickness,
-//           :stringTextStyle,
-//         ),
-//       ) = sizedBits;
-//
-//       final availableWidth = sizedBits.width - textCursorThickness;
-//
-//       final columnCount = stringTextStyle
-//           .maxGridSize(
-//             sizedBits.size.withWidth(availableWidth),
-//           )
-//           .columnCount;
-//
-//       final intrinsicRowCount = (_maxLength - 1) ~/ columnCount + 1;
-//
-//       final intrinsicHeight = stringTextStyle.height * intrinsicRowCount;
-//
-//       return ComposedSharingBx(
-//         intrinsicDimension: intrinsicHeight,
-//         dimensionBxBuilder: (height) {
-//           final bxBits = sizedBits.withHeight(height);
-//
-//           final bxSize = bxBits.size;
-//
-//           final widgetSize = Size(
-//             availableWidth,
-//             height,
-//           );
-//
-//           final gridSize = stringTextStyle.maxGridSize(widgetSize);
-//
-//           final cellCount = gridSize.cellCount;
-//
-//           final gridPixelSize =
-//               gridSize.sizeFrom(cellSize: stringTextStyle.size);
-//
-//           ShortcutKeyListener keyListener = (key) {};
-//
-//           sizedBits.opBuilder.addKeyListener((key) {
-//             keyListener(key);
-//           });
-//
-//           final gridSizeWithCursorMargin = gridPixelSize
-//               .withWidth(gridPixelSize.width + textCursorThickness);
-//
-//           final widget = sizedBits.innerStateWidgetVoid(
-//             access: (fv) {
-//               keyListener = (key) {
-//                 if (key == ShortcutKey.enter) {
-//                   try {
-//                     sizedBits.fwUpdateGroup.run(() {
-//                       fv.read()?.editInt.text.let(int.parse).let(editingFw.set);
-//                       sizedBits.closeShaft();
-//                     });
-//                   } catch (e) {
-//                     sizedBits.showNotification(e.toString());
-//                   }
-//                   return;
-//                 }
-//                 fv.update((innerState) {
-//                   innerState ??= MdiInnerStateMsg.getDefault();
-//                   return innerState.deepRebuild((message) {
-//                     final editInt = message.ensureEditInt();
-//                     switch (key) {
-//                       case ShortcutKey.backspace:
-//                         final length = editInt.text.length;
-//                         if (length > 0) {
-//                           editInt.text = editInt.text.substring(0, length - 1);
-//                         }
-//                       case CharacterShortcutKey():
-//                         editInt.text = "${editInt.text}${key.character}";
-//                       case _:
-//                     }
-//                   });
-//                 });
-//               };
-//             },
-//             builder: (innerState, update) {
-//               final text = innerState.editInt.text;
-//
-//               return stringWidgetWithCursor(
-//                 text: text,
-//                 gridSize: gridSize,
-//                 themeCalc: sizedBits.themeCalc,
-//                 isFocused: false,
-//               );
-//             },
-//           );
-//
-//           ;
-//
-//           return Bx.pad(
-//             padding: Paddings.topLeft(
-//               outer: widgetSize,
-//               inner: gridPixelSize,
-//             ),
-//             child: Bx.leaf(
-//               size: gridSizeWithCursorMargin,
-//               widget: widget,
-//             ),
-//             size: bxSize,
-//           );
+//   static EditScalarIntBits create({
+//     required EditScalarShaftBits<int> editScalarShaftBits,
+//   }) {
+//     return ComposedEditScalarIntBits.editScalarShaftBits(
+//       editScalarShaftBits: editScalarShaftBits,
+//       buildShaftContent: editScalarAsStringBuildShaftContent<int>(
+//         onSubmit: editScalarShaftBits.editingFw.set,
+//         parser: (string) {
+//           try {
+//             return ValidationSuccessImpl(
+//               int.parse(string),
+//             );
+//           } catch (e) {
+//             return ValidationFailureImpl(
+//               [e.toString()],
+//             );
+//           }
 //         },
-//       ).toSingleElementIterable;
-//     },
-//   );
+//         textAttribute: MdiInnerStateMsg$.editInt.thenReadWrite(
+//           MdiInnerEditIntMsg$.text,
+//         ),
+//         maxStringLength: _maxLength,
+//       ),
+//       shaftHeaderLabel: headerLabel,
+//     );
+//   }
 // }
-
-@Compose()
-abstract class EditScalarIntBits
-    implements
-        EditScalarShaftBits<int>,
-        EditingShaftContentBits<int>,
-        EditingShaftLabeledContentBits<int> {
-  static const headerLabel = "Edit Int";
-
-  static EditScalarIntBits create({
-    required EditScalarShaftBits<int> editScalarShaftBits,
-  }) {
-    return ComposedEditScalarIntBits.editScalarShaftBits(
-      editScalarShaftBits: editScalarShaftBits,
-      buildShaftContent: editScalarAsStringBuildShaftContent<int>(
-        onSubmit: editScalarShaftBits.editingFw.set,
-        parser: (string) {
-          try {
-            return ValidationSuccessImpl(
-              int.parse(string),
-            );
-          } catch (e) {
-            return ValidationFailureImpl(
-              [e.toString()],
-            );
-          }
-        },
-        textAttribute: MdiInnerStateMsg$.editInt.thenReadWrite(
-          MdiInnerEditIntMsg$.text,
-        ),
-        maxStringLength: _maxLength,
-      ),
-      shaftHeaderLabel: headerLabel,
-    );
-  }
-}

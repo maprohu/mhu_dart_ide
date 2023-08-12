@@ -6,6 +6,8 @@ import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/notification.dart';
 import 'package:mhu_dart_ide/src/bx/share.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
+import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/screen/options.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
@@ -165,9 +167,7 @@ Bx defaultShaftBx({
             sizedBits.shaftHeaderLabel,
           ),
           right: headerBits.centerHeight(
-            headerBits.openerFieldShortcut(
-              MdiShaftMsg$.options,
-            ),
+            ShaftTypes.options.openerShortcut(headerBits),
           ),
         ),
         content: contentSharing,

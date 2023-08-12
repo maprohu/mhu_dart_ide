@@ -51,12 +51,17 @@ typedef ShaftSignificant = bool;
 
 abstract class ShaftCalcBits implements HasShaftMsg, HasStateMsg, AppBits {}
 
+// @Has()
+// typedef ShaftStateField<T> = ScalarFieldAccess<MdiShaftMsg, T>;
+
 @Has()
-typedef ShaftStateField<T> = ScalarFieldAccess<MdiShaftMsg, T>;
+typedef ShaftType = MdiShaftIdentifierMsg_Type$;
+
+typedef ShaftTypes = MdiShaftIdentifierMsg$;
 
 @Compose()
-abstract class ShaftCalcBuildBits<T>
-    implements ShaftCalcBits, HasShaftCalcChain, HasShaftStateField<T> {}
+abstract class ShaftCalcBuildBits
+    implements ShaftCalcBits, HasShaftCalcChain, HasShaftType {}
 
 @Has()
 typedef ShaftIndexFromRight = int;
@@ -92,26 +97,25 @@ extension HasShaftMsgX on HasShaftMsg {
 
 @Has()
 @Compose()
-abstract class ShaftCalc<T>
+abstract class ShaftCalc
     implements
-        ShaftCalcBuildBits<T>,
+        ShaftCalcBuildBits,
         ShaftLabeledContentBits,
         ShaftCalcBits,
         HasShaftCalcChain,
         HasShaftHeaderLabel,
         HasBuildShaftContent,
         HasBuildShaftOptions,
-        HasShaftSignificant,
-        HasShaftStateField<T> {}
+        HasShaftSignificant {}
 
 extension ShaftCalcChainX on ShaftCalcChain {
   ShaftCalcBuildBits toBuildBits({
-    required ShaftStateField shaftStateField,
+    required ShaftType shaftType,
   }) =>
       ComposedShaftCalcBuildBits.shaftCalcBits(
         shaftCalcBits: this,
         shaftCalcChain: this,
-        shaftStateField: shaftStateField,
+        shaftType: shaftType,
       );
 
   ShaftCalc? get leftCalc => shaftCalcChainLeft?.calc;
@@ -157,6 +161,7 @@ extension ShaftCalcX on ShaftCalc {
 
 extension HasShaftCalcChainX on HasShaftCalcChain {
   ShaftCalc? get leftCalc => shaftCalcChain.leftCalc;
+
   ShaftCalc? get leftSignificantCalc => shaftCalcChain.leftSignificantCalc;
 
   Future<R> accessOwnInnerState<R>(
@@ -180,10 +185,19 @@ abstract class ShaftContentBits
 abstract class ShaftLabeledContentBits
     implements ShaftContentBits, HasShaftHeaderLabel {}
 
+abstract class ShaftMergeBits
+    implements ShaftLabeledContentBits, HasShaftSignificant {}
+
 extension ShaftCalcBxX on Bx {
   SharingBx get shaftContentSharing => SharingBx.fixedVertical(this);
 }
 
-extension ShaftCalcBuildBitsX<T> on ShaftCalcBuildBits<T> {
-  String get defaultShaftHeaderLabel => shaftStateField.name.titleCase;
+extension ShaftCalcBuildBitsX on ShaftCalcBuildBits {
+  String get defaultShaftHeaderLabel {
+    final fieldKey = lookupPbiMessageOf<MdiShaftIdentifierMsg>()
+            .calc
+            .concreteFieldKeysByTagNumber[shaftType.tagNumber$] ??
+        MdiShaftIdentifierMsg$.notImplemented.fieldKey;
+    return fieldKey.concreteFieldCalc.protoName.titleCase;
+  }
 }

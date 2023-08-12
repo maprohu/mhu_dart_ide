@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
@@ -5,6 +7,7 @@ import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/paginate.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+import 'package:protobuf/protobuf.dart';
 import 'package:recase/recase.dart';
 
 import '../../proto.dart';
@@ -25,7 +28,7 @@ class MenuItem with _$MenuItem {
   factory MenuItem({
     required String label,
     required ShortcutCallback callback,
-    bool Function(MdiShaftMsg rightShaft)? isOpen,
+    @Default(OpenerState.closed) OpenerState openerState,
   }) = _MenuItem;
 }
 
@@ -62,7 +65,7 @@ Bx menuItemBx({
   final themeCalc = sizedBits.themeCalc;
 
   final MenuItem(
-    :isOpen,
+    :openerState,
   ) = menuItem;
 
   return sizedBits.padding(
@@ -82,7 +85,7 @@ Bx menuItemBx({
         },
       );
     },
-    backgroundColor: sizedBits.openerBackgroundColor(isOpen: isOpen),
+    backgroundColor: sizedBits.openerBackgroundColor(openerState),
   );
 }
 
@@ -104,74 +107,124 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
 }
 
 extension MenuShaftBuilderBitsX on ShaftBuilderBits {
-  Color? openerBackgroundColor({
-    bool Function(MdiShaftMsg rightShaft)? isOpen,
-  }) {
-    if (isOpen != null) {
-      final rightCalc =
-          shaftDoubleChain.shaftDoubleChainRight?.shaftCalcChain.shaftMsg;
-      if (rightCalc != null) {
-        if (isOpen(rightCalc)) {
-          return themeCalc.openItemColor;
-        }
-      }
+  Color? openerBackgroundColor(OpenerState openerState) {
+    if (openerState == OpenerState.open) {
+      return themeCalc.openItemColor;
     }
 
     return null;
   }
 
-  Color? openerFieldBackgroundColor(
-    ScalarFieldAccess<MdiShaftMsg, dynamic> access,
-  ) {
-    return openerBackgroundColor(
-      isOpen: access.has,
+  // Color? openerFieldBackgroundColor(
+  //   ScalarFieldAccess<MdiShaftMsg, dynamic> access,
+  // ) {
+  //   return openerBackgroundColor(
+  //     isOpen: access.has,
+  //   );
+  // }
+
+  // MenuItem openerField<T extends GeneratedMessage>(
+  //   MessageFieldAccess<MdiShaftMsg, T> access, {
+  //   void Function(T shaftTypeMsg) updateShaft = ignore1,
+  //   void Function(MdiShaftMsg shaftMsg) before = ignore1,
+  //   bool autoFocus = false,
+  //   String? label,
+  //   bool Function(MdiShaftMsg rightShaft)? isOpen,
+  // }) {
+  //   final shaftType = access.defaultSingleValue.rebuild(updateShaft);
+  //   return opener(
+  //     (shaft) {
+  //       access.set(
+  //         shaft,
+  //         shaftType,
+  //       );
+  //     },
+  //     before: before,
+  //     label: label ?? access.name.titleCase,
+  //     autoFocus: autoFocus,
+  //     isOpen: isOpen ?? (shaftMsg) => access.getOpt(shaftMsg) == shaftType,
+  //   );
+  // }
+
+  OpenerBits openerBits(
+    ShaftIdentifier shaftIdentifier, {
+    FutureOr<MdiInnerStateMsg> Function()? innerState,
+    bool autoFocus = false,
+  }) {
+    final newShaftMessage = MdiShaftMsg()
+      ..parent = shaftMsg
+      ..shaftIdentifier = shaftIdentifier
+      ..freeze();
+
+    final callback = () {
+      if (innerState != null) {
+        accessInnerStateRight((innerStateFw) async {
+          innerStateFw.value = await innerState();
+        });
+      }
+
+      stateFw.deepRebuild((message) {
+        message.topShaft = newShaftMessage;
+
+        if (autoFocus) {
+          message.ensureFocusedShaft().indexFromLeft =
+              shaftCalcChain.shaftIndexFromLeft + 1;
+        }
+      });
+    };
+
+    return ComposedOpenerBits(
+      openerState: shaftDoubleChain.shaftDoubleChainRight?.shaftCalcChain
+                  .shaftMsg.shaftIdentifier ==
+              shaftIdentifier
+          ? OpenerState.open
+          : OpenerState.closed,
+      shortcutCallback: callback,
     );
   }
 
-
-  MenuItem openerField(
-    ScalarFieldAccess<MdiShaftMsg, dynamic> access, {
-    void Function(MdiShaftMsg shaftMsg) updateShaft = ignore1,
-    void Function(MdiShaftMsg shaftMsg) before = ignore1,
+  Bx openerShortcut(
+    ShaftIdentifier shaftIdentifier, {
+    FutureOr<MdiInnerStateMsg> Function()? innerState,
     bool autoFocus = false,
-    String? label,
-    bool Function(MdiShaftMsg rightShaft)? isOpen,
   }) {
-    return opener(
-      (shaft) {
-        access.set(shaft, access.defaultSingleValue);
-        updateShaft(shaft);
-      },
-      before: before,
-      label: label ?? access.name.titleCase,
-      autoFocus: autoFocus,
-      isOpen: isOpen ?? access.has,
+    return openerShortcutFromBits(
+      openerBits(
+        shaftIdentifier,
+        innerState: innerState,
+        autoFocus: autoFocus,
+      ),
     );
   }
 
   MenuItem opener(
-    ShaftOpener builder, {
-    void Function(MdiShaftMsg shaftMsg) before = ignore1,
+    ShaftIdentifier shaftIdentifier, {
+    FutureOr<MdiInnerStateMsg> Function()? innerState,
     String? label,
     bool autoFocus = false,
-    bool Function(MdiShaftMsg rightShaft)? isOpen,
   }) {
+    final newShaftMessage = MdiShaftMsg()
+      ..parent = shaftMsg
+      ..shaftIdentifier = shaftIdentifier
+      ..freeze();
+
     label ??= ComposedShaftCalcChain.appBits(
       appBits: this,
-      shaftMsg: MdiShaftMsg().also(builder)..freeze(),
+      shaftMsg: newShaftMessage,
       shaftIndexFromRight: 0,
       stateMsg: MdiStateMsg.getDefault(),
     ).calc.shaftHeaderLabel;
 
+    final bits = openerBits(
+      shaftIdentifier,
+      innerState: innerState,
+      autoFocus: autoFocus,
+    );
+
     return MenuItem(
       label: label,
-      callback: openerCallback(
-        builder,
-        before: before,
-        focusShaftIndexFromLeft:
-            autoFocus ? shaftCalcChain.shaftIndexFromLeft + 1 : null,
-      ),
-      isOpen: isOpen,
+      callback: bits.shortcutCallback,
+      openerState: bits.openerState,
     );
   }
 }

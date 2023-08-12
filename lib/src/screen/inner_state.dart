@@ -51,7 +51,7 @@ AccessInnerState createAccessInnerState({
   };
 }
 
-extension InnerStateShaftCalcBuildBitsX<T> on ShaftCalcBuildBits<T> {
+extension InnerStateShaftCalcBuildBitsX on ShaftCalcBuildBits {
   Widget innerStateWidget<S>({
     required Future<S> Function(InnerStateFw innerStateFw) access,
     required Widget Function(MdiInnerStateMsg innerState, S value) builder,

@@ -24,171 +24,33 @@ import '../../op.dart';
 import '../../theme.dart';
 
 // part 'string.g.has.dart';
-part 'string.g.compose.dart';
+// part 'string.g.compose.dart';
 
-@Compose()
-abstract class EditScalarStringBits
-    implements
-        EditScalarShaftBits<String>,
-        EditingShaftContentBits<String>,
-        EditingShaftLabeledContentBits<String> {
-  static const headerLabel = "Edit String";
-
-  static EditingShaftLabeledContentBits create({
-    required EditScalarShaftBits<String> editScalarShaftBits,
-  }) {
-    return ComposedEditScalarStringBits.editScalarShaftBits(
-      editScalarShaftBits: editScalarShaftBits,
-      buildShaftContent: editScalarAsStringBuildShaftContent(
-        onSubmit: editScalarShaftBits.editingFw.set,
-        parser: (input) => ValidationSuccessImpl(input),
-        textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
-          MdiInnerEditStringMsg$.text,
-        ),
-      ),
-      shaftHeaderLabel: headerLabel,
-    );
-  }
-}
-
-// BuildShaftContent editScalarStringBuildShaftContent({
-//   int? maxStringLength,
-//   required void Function(String string) onSubmit,
-// }) {
-//   return (sizedBits) {
-//     final SizedShaftBuilderBits(
-//       themeCalc: ThemeCalc(
-//         :textCursorThickness,
-//         :stringTextStyle,
-//       ),
-//       shaftCalcChain: ShaftCalcChain(
-//         :isFocused,
-//         :shaftIndexFromLeft,
-//       ),
-//       :stateFw,
-//       :opBuilder,
-//     ) = sizedBits;
+// @Compose()
+// abstract class EditScalarStringBits
+//     implements
+//         EditScalarShaftBits<String>,
+//         EditingShaftContentBits<String>,
+//         EditingShaftLabeledContentBits<String> {
+//   static const headerLabel = "Edit String";
 //
-//     final availableWidth = sizedBits.width - textCursorThickness;
-//
-//     SharingBx editorSharingBxFromWidget({
-//       required double intrinsicHeight,
-//       required Widget Function(
-//         GridSize gridSize,
-//       ) builder,
-//     }) {
-//       return ComposedSharingBx(
-//         intrinsicDimension: intrinsicHeight,
-//         dimensionBxBuilder: (height) {
-//           final widgetSize = sizedBits.size.withHeight(height);
-//           final gridSize = stringTextStyle.maxGridSize(widgetSize);
-//
-//           final widget = builder(gridSize);
-//
-//           return Bx.leaf(
-//             size: widgetSize,
-//             widget: widget,
-//           );
-//         },
-//       );
-//     }
-//
-//     SharingBx editorBxNotFocused() {
-//       final text = sizedBits.shaftMsg.editScalar.innerState.editString.text;
-//       final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
-//         stringLength: text.length,
-//         width: availableWidth,
-//       );
-//       return editorSharingBxFromWidget(
-//         intrinsicHeight: intrinsicHeight,
-//         builder: (gridSize) {
-//           return stringWidgetWithCursor(
-//             text: text,
-//             gridSize: gridSize,
-//             themeCalc: sizedBits.themeCalc,
-//             isFocused: false,
-//           );
-//         },
-//       );
-//     }
-//
-//     SharingBx editorBxFocused() {
-//       final intrinsicHeight = maxStringLength == null
-//           ? sizedBits.height
-//           : stringTextStyle.calculateIntrinsicHeight(
-//               stringLength: maxStringLength,
-//               width: availableWidth,
-//             );
-//       return editorSharingBxFromWidget(
-//         intrinsicHeight: intrinsicHeight,
-//         builder: (gridSize) {
-//           return sizedBits.innerStateWidgetVoid(
-//             access: createStringEditorKeyListenerAccess(
-//               opBuilder: opBuilder,
-//               onEscape: (innerStateFw) {
-//                 sizedBits.fwUpdateGroup.run(() {
-//                   sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
-//                     shaftMsg.editScalar.innerState = innerStateFw.read()!;
-//                   });
-//                   sizedBits.clearFocusedShaft();
-//                 });
-//               },
-//               onEnter: (innerStateFw) {
-//                 sizedBits.fwUpdateGroup.run(() {
-//                   final text = innerStateFw.read()!.editString.text;
-//                   onSubmit(text);
-//                   sizedBits.clearFocusedShaft();
-//                   sizedBits.closeShaft();
-//                 });
-//               },
-//               textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
-//                 MdiInnerEditStringMsg$.text,
-//               ),
-//               acceptCharacter: (text, character) =>
-//                   character == " " ||
-//                   !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
-//             ),
-//             builder: (innerState, update) {
-//               final text = innerState.editString.text;
-//
-//               return stringWidgetWithCursor(
-//                 text: text,
-//                 gridSize: gridSize,
-//                 themeCalc: sizedBits.themeCalc,
-//                 isFocused: isFocused,
-//               );
-//             },
-//           );
-//         },
-//       );
-//     }
-//
-//     if (isFocused) {
-//       return [
-//         editorBxFocused(),
-//       ];
-//     } else {
-//       return [
-//         ...sizedBits.menu(
-//           items: [
-//             MenuItem(
-//               label: "Focus",
-//               callback: () {
-//                 stateFw.deepRebuild(
-//                   (state) {
-//                     state.ensureFocusedShaft().indexFromLeft =
-//                         shaftIndexFromLeft;
-//                   },
-//                 );
-//               },
-//             ),
-//           ],
+//   static EditingShaftLabeledContentBits create({
+//     required EditScalarShaftBits<String> editScalarShaftBits,
+//   }) {
+//     return ComposedEditScalarStringBits.editScalarShaftBits(
+//       editScalarShaftBits: editScalarShaftBits,
+//       buildShaftContent: editScalarAsStringBuildShaftContent(
+//         onSubmit: editScalarShaftBits.editingFw.set,
+//         parser: (input) => ValidationSuccessImpl(input),
+//         textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
+//           MdiInnerEditStringMsg$.text,
 //         ),
-//         editorBxNotFocused(),
-//       ];
-//     }
-//   };
+//       ),
+//       shaftHeaderLabel: headerLabel,
+//     );
+//   }
 // }
+
 
 BuildShaftContent editScalarAsStringBuildShaftContent<T>({
   int? maxStringLength,
@@ -235,7 +97,7 @@ BuildShaftContent editScalarAsStringBuildShaftContent<T>({
     }
 
     SharingBx editorBxNotFocused() {
-      final text = sizedBits.shaftMsg.editScalar.innerState.editString.text;
+      final text = sizedBits.shaftMsg.innerState.editString.text;
       final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
         stringLength: text.length,
         width: availableWidth,
@@ -269,7 +131,7 @@ BuildShaftContent editScalarAsStringBuildShaftContent<T>({
               onEscape: (innerStateFw) {
                 sizedBits.fwUpdateGroup.run(() {
                   sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
-                    shaftMsg.editScalar.innerState = innerStateFw.read()!;
+                    shaftMsg.innerState = innerStateFw.read()!;
                   });
                   sizedBits.clearFocusedShaft();
                 });

@@ -19,8 +19,8 @@ import 'paginate.dart';
 import '../screen/calc.dart';
 import 'divider.dart';
 
-final _defaultMainMenuShaft = MdiShaftMsg()
-  ..ensureMainMenu()
+final defaultMainMenuShaft = MdiShaftMsg()
+  ..ensureShaftIdentifier().ensureMainMenu()
   ..freeze();
 
 const _defaultMinShaftWidth = 200.0;
@@ -116,11 +116,10 @@ Bx mdiBuildScreen({
   });
 }
 
-void mdiStartScreenStream({
-  required AppBits appBits,
-  required DspReg disposers,
-  required StreamConsumer<Bx> screenStream
-}) {
+void mdiStartScreenStream(
+    {required AppBits appBits,
+    required DspReg disposers,
+    required StreamConsumer<Bx> screenStream}) {
   // final streamController = StreamController<Bx>();
   // streamController.add(
   //   Bx.leaf(
@@ -143,7 +142,7 @@ void mdiStartScreenStream({
 }
 
 extension ScreenMdiStateMsgX on MdiStateMsg {
-  MdiShaftMsg get effectiveTopShaft => topShaftOpt ?? _defaultMainMenuShaft;
+  MdiShaftMsg get effectiveTopShaft => topShaftOpt ?? defaultMainMenuShaft;
 }
 
 extension ScreenMdiShaftMsgX on MdiShaftMsg {

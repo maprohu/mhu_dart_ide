@@ -1,40 +1,67 @@
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/bx/menu.dart';
+import 'package:mhu_dart_ide/src/bx/screen.dart';
+import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/shaft/switch.dart';
+import 'package:mhu_dart_ide/src/screen/opener.dart';
 
-import '../builder/sized.dart';
-import '../bx/menu.dart';
+part 'main_menu.g.has.dart';
 
-final ShaftCalcBuilder mainMenuShaftCalc = (shaftCalcBuildBits) => ComposedShaftCalc.shaftCalcBuildBits(
-  shaftCalcBuildBits: shaftCalcBuildBits,
-  shaftHeaderLabel: "Main Menu",
-  buildShaftContent: (SizedShaftBuilderBits sizedBits) {
-    return sizedBits.menu(
-      items: [
-        sizedBits.openerField(
-          MdiShaftMsg$.config,
-        ),
-        MenuItem(
-          label: "theme",
-          callback: (() {}),
-        ),
-        MenuItem(
-          label: "state",
-          callback: (() {}),
-        ),
-        MenuItem(
-          label: "build_runner",
-          callback: (() {
-            sizedBits.stateFw.rebuild((message) {
-              message.topShaft = MdiShaftMsg$.create(
-                parent: sizedBits.shaftMsg,
-              )..ensureBuildRunner();
-            });
-          }),
-        ),
-      ],
+part 'main_menu.g.compose.dart';
+
+@Has()
+@Compose()
+abstract class MainMenuShaftLeft {}
+
+@Compose()
+abstract class MainMenuShaftMerge implements ShaftMergeBits {}
+
+@Compose()
+abstract class MainMenuShaft
+    implements
+        ShaftCalcBuildBits,
+        MainMenuShaftMerge,
+        HasMainMenuShaftLeft,
+        ShaftCalc {
+  static MainMenuShaft create(
+    ShaftCalcBuildBits shaftCalcBuildBits,
+  ) {
+    final shaftLeft = ComposedMainMenuShaftLeft();
+    final shaftMerge = ComposedMainMenuShaftMerge(
+      shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
+      buildShaftContent: (sizedBits) {
+        return sizedBits.menu(
+          items: [
+            ShaftTypes.config.opener(sizedBits),
+            MenuItem(
+              label: "theme",
+              callback: (() {}),
+            ),
+            MenuItem(
+              label: "state",
+              callback: (() {}),
+            ),
+            ShaftTypes.buildRunner.opener(sizedBits),
+            MenuItem(
+              label: "Reset View",
+              callback: () {
+                sizedBits.stateFw.rebuild((message) {
+                  message.topShaft = defaultMainMenuShaft;
+                });
+              },
+            ),
+          ],
+        );
+      },
     );
-  },
-);
 
+    return ComposedMainMenuShaft.merge$(
+      shaftCalcBuildBits: shaftCalcBuildBits,
+      mainMenuShaftMerge: shaftMerge,
+      mainMenuShaftLeft: shaftLeft,
+    );
+  }
+}

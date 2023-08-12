@@ -13,44 +13,44 @@ import '../concrete_field.dart';
 import '../scalar/int.dart';
 
 // part 'scalar.g.has.dart';
-part 'scalar.g.compose.dart';
+// part 'scalar.g.compose.dart';
 
-@Compose()
-abstract class PfeShaftScalarField<T>
-    implements
-        PfeShaftConcreteFieldBits,
-        EditingShaftContentBits<T>,
-        PfeShaftConcreteField {
-  static PfeShaftScalarField<T> create<T>({
-    required PfeShaftConcreteFieldBits pfeShaftConcreteFieldBits,
-    required ScalarDataType<T> scalarDataType,
-    required MessageEditingBits messageEditingBits,
-  }) {
-    assert(T != dynamic);
-
-    final fieldFw = scalarDataType.fwForField(
-      fieldCoordinates:
-      pfeShaftConcreteFieldBits.concreteFieldKey.concreteFieldCalc,
-      mfw: messageEditingBits.editingFw,
-      defaultMessage: messageEditingBits.messageDataType.defaultValue,
-    );
-
-    final ScalarDataType sdt = scalarDataType;
-    final content = switch (sdt) {
-      StringDataType() => PfeShaftString.of(
-        fv: fieldFw as Fw<String?>,
-        stringDataType: sdt,
-      ),
-      CoreIntDataType() => PfeShaftInt.of(
-        fv: fieldFw as Fw<int?>,
-        coreIntDataType: sdt,
-      ),
-      final other => throw other,
-    };
-
-    return ComposedPfeShaftScalarField.merge$(
-      pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
-      editingShaftContentBits: content as EditingShaftContentBits<T>,
-    );
-  }
-}
+// @Compose()
+// abstract class PfeShaftScalarField<T>
+//     implements
+//         PfeShaftConcreteFieldBits,
+//         EditingShaftContentBits<T>,
+//         PfeShaftConcreteField {
+//   static PfeShaftScalarField<T> create<T>({
+//     required PfeShaftConcreteFieldBits pfeShaftConcreteFieldBits,
+//     required ScalarDataType<T> scalarDataType,
+//     required MessageEditingBits messageEditingBits,
+//   }) {
+//     assert(T != dynamic);
+//
+//     final fieldFw = scalarDataType.fwForField(
+//       fieldCoordinates:
+//       pfeShaftConcreteFieldBits.concreteFieldKey.concreteFieldCalc,
+//       mfw: messageEditingBits.editingFw,
+//       defaultMessage: messageEditingBits.messageDataType.defaultValue,
+//     );
+//
+//     final ScalarDataType sdt = scalarDataType;
+//     final content = switch (sdt) {
+//       StringDataType() => PfeShaftString.of(
+//         fv: fieldFw as Fw<String?>,
+//         stringDataType: sdt,
+//       ),
+//       CoreIntDataType() => PfeShaftInt.of(
+//         fv: fieldFw as Fw<int?>,
+//         coreIntDataType: sdt,
+//       ),
+//       final other => throw other,
+//     };
+//
+//     return ComposedPfeShaftScalarField.merge$(
+//       pfeShaftConcreteFieldBits: pfeShaftConcreteFieldBits,
+//       editingShaftContentBits: content as EditingShaftContentBits<T>,
+//     );
+//   }
+// }

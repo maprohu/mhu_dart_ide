@@ -41,48 +41,73 @@ message MdiDividerThicknessThemeMsg {
 
 // shafts
 
-message MdiShaftMsg {
-  MdiShaftMsg parent = 1;
-  int32 width = 9;
-  repeated MdiNotificationMsg notifications = 15;
-//  MdiInnerStateMsg inner_state = 17;
-  oneof type {
-    MdiEmptyMsg main_menu = 2;
-    MdiEmptyMsg build_runner = 3;
-    MdiEmptyMsg config = 4;
-    MdiPfeConcreteFieldShaftMsg pfe_concrete_field = 6;
-    MdiPfeOneofFieldShaftMsg pfe_oneof_field = 7;
-    MdiEmptyMsg options = 8;
-    MdiMapAddShaftMsg new_map_entry = 10;
-    MdiMapEntryShaftMsg map_entry = 16;
-    MdiEmptyMsg map_entry_key = 11;
-    MdiEmptyMsg map_entry_value = 12;
-    MdiEmptyMsg error = 13;
-    MdiEditScalarMsg edit_scalar = 14;
-  }
-
-}
-
 message MdiNotificationMsg {
   string text = 1;
 }
 
+message MdiShaftMsg {
+  MdiShaftMsg parent = 1;
+  int32 width = 9;
+  repeated MdiNotificationMsg notifications = 15;
+
+  MdiShaftIdentifierMsg shaft_identifier = 20;
+  MdiInnerStateMsg inner_state = 19;
+}
+
+message MdiShaftIdentifierMsg {
+  oneof type {
+    MdiEmptyMsg not_implemented = 1;
+    MdiEmptyMsg main_menu = 2;
+    MdiEmptyMsg options = 3;
+
+    MdiConcreteFieldMsg concrete_field = 100;
+    MdiOneofFieldMsg oneof_field = 101;
+    MdiMapEntryKeyMsg map_entry = 102;
+    MdiEmptyMsg new_map_entry = 103;
+    MdiMapEntryKeyMsg map_entry_key = 104;
+    MdiEmptyMsg map_entry_value = 105;
+    MdiEmptyMsg edit_scalar = 106;
+
+    MdiEmptyMsg config = 200;
+    MdiEmptyMsg build_runner = 201;
+  }
+}
+
+// identifier
+
 message  MdiEmptyMsg {}
 
-message  MdiPfeConcreteFieldShaftMsg {
+message  MdiConcreteFieldMsg {
   int32 tag_number = 1;
-
 }
-message  MdiPfeOneofFieldShaftMsg {
+
+message  MdiOneofFieldMsg {
   int32 oneof_index = 1;
 }
 
-message  MdiMapAddShaftMsg {
-  MdiMapEntryMsg map_entry = 1;
+message  MdiMapEntryKeyMsg {
+  oneof type {
+    string string_key = 1;
+    int32 int_key = 2;
+  }
 }
 
-message  MdiMapEntryShaftMsg {
-  MdiMapEntryKeyMsg map_entry_key = 1;
+// inner state
+
+message  MdiInnerStateMsg {
+  oneof type {
+    MdiEditIntMsg edit_int = 1;
+    MdiEditStringMsg edit_string = 2;
+    MdiMapEntryMsg map_entry = 3;
+  }
+}
+
+message  MdiEditIntMsg {
+  string text = 1;
+}
+
+message  MdiEditStringMsg {
+  string text = 1;
 }
 
 message  MdiMapEntryMsg {
@@ -94,30 +119,4 @@ message  MdiMapEntryMsg {
     bool bool_value = 5;
     bytes bytes_value = 6;
   }
-}
-
-message  MdiMapEntryKeyMsg {
-  oneof type {
-    string string_key = 1;
-    int32 int_key = 2;
-  }
-}
-
-message  MdiEditScalarMsg {
-  MdiInnerStateMsg inner_state = 1;
-}
-// inner state
-
-message  MdiInnerStateMsg {
-  oneof type {
-    MdiInnerEditIntMsg edit_int = 1;
-    MdiInnerEditStringMsg edit_string = 2;
-  }
-}
-
-message  MdiInnerEditIntMsg {
-  string text = 1;
-}
-message  MdiInnerEditStringMsg {
-  string text = 1;
 }

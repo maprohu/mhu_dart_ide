@@ -1,5 +1,6 @@
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/op.dart';
@@ -13,6 +14,10 @@ import '../../proto.dart';
 import '../builder/shaft.dart';
 import 'boxed.dart';
 
+part 'shortcut.g.has.dart';
+// part 'shortcut.g.compose.dart';
+
+@Has()
 typedef ShortcutCallback = VoidCallback;
 
 TextSpan shortcutTextSpan({
@@ -79,16 +84,12 @@ Bx shortcutBx({
 }
 
 extension NodeBuildBitxX on ShaftBuilderBits {
-  Bx openerFieldShortcut(
-    ScalarFieldAccess<MdiShaftMsg, dynamic> access,
+  Bx openerShortcutFromBits(
+      OpenerBits openerBits,
   ) {
     return shortcut(
-      openerCallback(
-        (shaft) {
-          access.set(shaft, access.defaultSingleValue);
-        },
-      ),
-      backgroundColor: openerFieldBackgroundColor(access),
+      openerBits.shortcutCallback,
+      backgroundColor: openerBackgroundColor(openerBits.openerState),
     );
   }
 
