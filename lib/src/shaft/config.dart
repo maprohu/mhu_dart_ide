@@ -1,22 +1,15 @@
-// import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
-// import 'package:mhu_dart_ide/src/shaft/switch.dart';
-//
-// final ShaftCalcBuilder configShaftCalc =
-//     (shaftCalcBuildBits) => PfeMessageShaftCalc.of(
-//           shaftCalcBuildBits: shaftCalcBuildBits,
-//           mfw: shaftCalcBuildBits.configFw,
-//         );
-
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
+import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/message.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/content/message.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+
+import 'editing/editing.dart';
 
 part 'config.g.has.dart';
 
@@ -28,40 +21,32 @@ abstract class ConfigShaftRight
     implements HasMessageEditingBits<MdiConfigMsg> {}
 
 @Compose()
-abstract class ConfigShaftMerge implements ShaftMergeBits {}
-
-@Compose()
 abstract class ConfigShaft
     implements
         ShaftCalcBuildBits,
-        ConfigShaftMerge,
+        ShaftContentBits,
         ConfigShaftRight,
         ShaftCalc {
   static ConfigShaft create(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
     final messageEditingBits = MessageEditingBits.create(
-      editingFw: shaftCalcBuildBits.configFw,
       messageDataType:
           shaftCalcBuildBits.configFw.read().pbi.calc.messageDataType,
-    );
-
-    final messageBits = PfeMessageBits.create(
-      messageEditingBits: messageEditingBits,
+      scalarValue: shaftCalcBuildBits.configFw.toScalarValue,
     );
 
     final shaftRight = ComposedConfigShaftRight(
       messageEditingBits: messageEditingBits,
     );
-    final shaftMerge = ComposedConfigShaftMerge(
-      shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
-      buildShaftContent: messageBits.buildShaftContent,
-    );
 
     return ComposedConfigShaft.merge$(
+      shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
       shaftCalcBuildBits: shaftCalcBuildBits,
-      configShaftMerge: shaftMerge,
       configShaftRight: shaftRight,
+      shaftContentBits: MessageContent.create(
+        messageEditingBits: messageEditingBits,
+      ),
     );
   }
 }

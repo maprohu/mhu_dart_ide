@@ -1,20 +1,20 @@
-import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/scalar/string.dart';
-import 'package:mhu_dart_proto/mhu_dart_proto.dart';
-import 'package:protobuf/protobuf.dart';
-
-import '../../../app.dart';
-import '../../../config.dart';
-import '../../../op.dart';
-import '../../../screen/calc.dart';
-import '../../editing/editing.dart';
-import '../concrete_field.dart';
-import '../scalar/int.dart';
-
+// import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
+// import 'package:mhu_dart_commons/commons.dart';
+// import 'package:mhu_dart_ide/src/shaft/proto/scalar/string.dart';
+// import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+// import 'package:protobuf/protobuf.dart';
+//
+// import '../../../app.dart';
+// import '../../../config.dart';
+// import '../../../op.dart';
+// import '../../../screen/calc.dart';
+// import '../../editing/editing.dart';
+// import '../concrete_field.dart';
+// import '../scalar/int.dart';
+//
 // part 'scalar.g.has.dart';
 // part 'scalar.g.compose.dart';
-
+//
 // @Compose()
 // abstract class PfeShaftScalarField<T>
 //     implements

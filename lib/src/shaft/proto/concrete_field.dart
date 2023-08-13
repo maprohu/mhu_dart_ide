@@ -5,56 +5,66 @@ import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/content/value_browsing.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+import 'package:protobuf/protobuf.dart';
+
+import '../../proto.dart';
 
 part 'concrete_field.g.has.dart';
+
 part 'concrete_field.g.compose.dart';
 
 @Has()
 @Compose()
-abstract class ConcreteFieldShaftRight {}
-
-@Compose()
-abstract class ConcreteFieldShaftMerge implements ShaftMergeBits {}
+abstract class ConcreteFieldShaftRight implements HasEditingBits {}
 
 @Compose()
 abstract class ConcreteFieldShaft
     implements
         ShaftCalcBuildBits,
-        ConcreteFieldShaftMerge,
+        ShaftContentBits,
         ConcreteFieldShaftRight,
         ShaftCalc {
   static ConcreteFieldShaft create(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
     final left = shaftCalcBuildBits.leftCalc as HasMessageEditingBits;
-    final tagNumber = shaftCalcBuildBits.shaftMsg.shaftIdentifier.concreteField.tagNumber;
-    final messageType = left.messageEditingBits.messageDataType.pbiMessage.messageType;
+    final tagNumber =
+        shaftCalcBuildBits.shaftMsg.shaftIdentifier.concreteField.tagNumber;
+    final messageType =
+        left.messageEditingBits.messageDataType.pbiMessage.messageType;
 
     final fieldKey = ConcreteFieldKey(
       messageType: messageType,
       tagNumber: tagNumber,
     );
 
-    final fieldCalc = fieldKey.concreteFieldCalc;
+    return fieldKey.concreteFieldCalc.concreteFieldCalcGeneric(
+      <M extends GeneratedMessage, F>(concreteFieldCalc) {
+        final messageEditingBits =
+            left.messageEditingBits as MessageEditingBits<M>;
+        final editingContent = ValueBrowsingContent.concreteField(
+          dataType: concreteFieldCalc.dataType,
+          messageUpdateBits: messageEditingBits.messageDataType.pbiMessageCalc,
+          fieldCoordinates: concreteFieldCalc,
+          messageValue: messageEditingBits,
+        );
 
-    final shaftRight = ComposedConcreteFieldShaftRight();
-    final shaftMerge = ComposedConcreteFieldShaftMerge(
-      shaftHeaderLabel: fieldCalc.protoName,
-      buildShaftContent: (sizedBits) {
-        throw "todo";
+        final shaftRight = ComposedConcreteFieldShaftRight(
+          editingBits: editingContent.editingBits,
+        );
+
+        return ComposedConcreteFieldShaft.merge$(
+          shaftCalcBuildBits: shaftCalcBuildBits,
+          shaftHeaderLabel: concreteFieldCalc.protoName,
+          concreteFieldShaftRight: shaftRight,
+          shaftContentBits: editingContent,
+        );
       },
-    );
-
-    return ComposedConcreteFieldShaft.merge$(
-      shaftCalcBuildBits: shaftCalcBuildBits,
-      concreteFieldShaftMerge: shaftMerge,
-      concreteFieldShaftRight: shaftRight,
     );
   }
 }
-
-
 
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
@@ -74,7 +84,7 @@ abstract class ConcreteFieldShaft
 // part 'concrete_field.g.has.dart';
 //
 // part 'concrete_field.g.compose.dart';
-//
+
 // @Compose()
 // abstract class PfeShaftConcreteFieldBits
 //     implements ShaftCalcBuildBits, HasConcreteFieldKey, HasShaftHeaderLabel {}
