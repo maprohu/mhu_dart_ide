@@ -2,46 +2,60 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/model.dart';
 import 'package:mhu_dart_ide/src/op.dart';
+import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/content/value_browsing.dart';
 
 part 'map_entry.g.has.dart';
+
 part 'map_entry.g.compose.dart';
 
 @Has()
 @Compose()
-abstract class MapEntryShaftRight {}
-
-@Compose()
-abstract class MapEntryShaftMerge implements ShaftMergeBits {}
+abstract class MapEntryShaftRight implements HasEditingBits {}
 
 @Compose()
 abstract class MapEntryShaft
     implements
         ShaftCalcBuildBits,
-        MapEntryShaftMerge,
+        ShaftContentBits,
         MapEntryShaftRight,
         ShaftCalc {
   static MapEntryShaft create(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
+    final left = shaftCalcBuildBits.leftCalc as HasEditingBits;
+    final mapEditingBits = left.editingBits as MapEditingBits;
 
-    final shaftRight = ComposedMapEntryShaftRight();
-    final shaftMerge = ComposedMapEntryShaftMerge(
-      shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
-      buildShaftContent: (sizedBits) {
-        throw "todo";
+    return mapEditingBits.mapEditingBitsGeneric(
+      <K, V>(mapEditingBits) {
+        final key = mapEditingBits
+            .mapDataType.mapKeyDataType.mapEntryKeyMsgAttribute
+            .readAttribute(
+          shaftCalcBuildBits.shaftMsg.shaftIdentifier.mapEntry,
+        );
+
+        final content = ValueBrowsingContent.scalar(
+          scalarDataType: mapEditingBits.mapDataType.mapValueDataType,
+          scalarValue: mapEditingBits.itemValue(key),
+        );
+
+        final shaftRight = ComposedMapEntryShaftRight(
+          editingBits: content.editingBits,
+        );
+
+        return ComposedMapEntryShaft.merge$(
+          shaftCalcBuildBits: shaftCalcBuildBits,
+          shaftHeaderLabel: key.toString(),
+          shaftContentBits: content,
+          mapEntryShaftRight: shaftRight,
+        );
       },
-    );
-
-    return ComposedMapEntryShaft.merge$(
-      shaftCalcBuildBits: shaftCalcBuildBits,
-      mapEntryShaftMerge: shaftMerge,
-      mapEntryShaftRight: shaftRight,
     );
   }
 }
-
 
 // part of 'map.dart';
 //

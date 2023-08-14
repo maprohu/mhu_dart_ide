@@ -21,6 +21,7 @@ part 'proto.g.compose.dart';
 abstract class EditingBits<T> implements ReadWatchValue<T?>, HasDataType<T> {}
 
 @Compose()
+@Has()
 abstract class ScalarEditingBits<T>
     implements ScalarValue<T>, HasScalarDataType<T>, EditingBits<T> {
   static ScalarEditingBits<T> create<T>({
@@ -31,6 +32,22 @@ abstract class ScalarEditingBits<T>
       scalarValue: scalarValue,
       scalarDataType: scalarDataType,
       dataType: scalarDataType,
+    );
+  }
+}
+
+extension ScalarEditingBitsX<T> on ScalarEditingBits<T> {
+  R scalarEditingBitsGeneric<R>(
+    R Function<T>(
+      ScalarEditingBits<T> scalarEditingBits,
+    ) fn,
+  ) {
+    return scalarDataType.scalarDataTypeGeneric(
+      <TT>(scalarDataType) {
+        return fn(
+          this as ScalarEditingBits<TT>,
+        );
+      },
     );
   }
 }
@@ -54,7 +71,7 @@ abstract class ScalarEditingBits<T>
 @Compose()
 abstract class MapEditingBits<K, V>
     implements MapValue<K, V>, HasMapDataType<K, V>, EditingBits<Map<K, V>> {
-  static MapEditingBits create<K, V>({
+  static MapEditingBits<K, V> create<K, V>({
     required MapDataType<K, V> mapDataType,
     required MapValue<K, V> mapValue,
   }) {
@@ -65,6 +82,22 @@ abstract class MapEditingBits<K, V>
       ),
       mapDataType: mapDataType,
       updateValue: mapValue.updateValue,
+    );
+  }
+}
+
+extension MapEditingBitsX<K, V> on MapEditingBits<K, V> {
+  R mapEditingBitsGeneric<R>(
+    R Function<KK, VV>(
+      MapEditingBits<KK, VV> mapEditingBits,
+    ) fn,
+  ) {
+    return mapDataType.mapKeyValueGeneric(
+      <KK, VV>(mapDataType) {
+        return fn(
+          this as MapEditingBits<KK, VV>,
+        );
+      },
     );
   }
 }

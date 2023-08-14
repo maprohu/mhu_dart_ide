@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
@@ -11,7 +13,7 @@ import 'package:recase/recase.dart';
 
 import '../builder/sized.dart';
 import '../bx/menu.dart';
-import '../bx/share.dart';
+import '../sharing_box.dart';
 import '../config.dart';
 import '../op.dart';
 import '../shaft/switch.dart';
@@ -23,7 +25,7 @@ part 'calc.g.has.dart';
 part 'calc.g.compose.dart';
 
 @Has()
-typedef BuildShaftContent = Iterable<SharingBx> Function(
+typedef BuildShaftContent = SharingBoxes Function(
   SizedShaftBuilderBits sizedBits,
 );
 
@@ -44,6 +46,13 @@ typedef ShaftCalcChainLeft = ShaftCalcChain?;
 
 @Has()
 typedef ShaftHeaderLabel = String;
+
+@Has()
+typedef ShaftInitState = FutureOr<MdiInnerStateMsg> Function()?;
+
+@Has()
+@HasDefault(false)
+typedef ShaftAutoFocus = bool;
 
 @Has()
 @HasDefault(true)
@@ -93,6 +102,8 @@ abstract base class ShaftCalcChain
 
 extension HasShaftMsgX on HasShaftMsg {
   int get shaftWidth => shaftMsg.widthOpt ?? 1;
+
+  MdiInnerStateMsg get innerState => shaftMsg.innerState;
 }
 
 @Has()
@@ -106,7 +117,9 @@ abstract class ShaftCalc
         HasShaftHeaderLabel,
         HasBuildShaftContent,
         HasBuildShaftOptions,
-        HasShaftSignificant {}
+        HasShaftSignificant,
+        HasShaftInitState,
+        HasShaftAutoFocus {}
 
 extension ShaftCalcChainX on ShaftCalcChain {
   ShaftCalcBuildBits toBuildBits({
@@ -142,6 +155,8 @@ extension ShaftCalcChainX on ShaftCalcChain {
     );
   }
 
+  MutableValue<ShaftMsg> get shaftUpdateValue => shaftMsgFu.toMutableValue;
+
   Future<T> accessOwnInnerState<T>(
     Future<T> Function(InnerStateFw innerStateFw) action,
   ) {
@@ -175,6 +190,8 @@ extension HasShaftCalcChainX on HasShaftCalcChain {
   ) {
     return shaftCalcChain.accessInnerStateRight(action);
   }
+
+  bool get isFocused => shaftCalcChain.isFocused;
 }
 
 @Compose()
@@ -189,7 +206,7 @@ abstract class ShaftMergeBits
     implements ShaftLabeledContentBits, HasShaftSignificant {}
 
 extension ShaftCalcBxX on Bx {
-  SharingBx get shaftContentSharing => SharingBx.fixedVertical(this);
+  SharingBox get shaftContentSharing => SharingBox.fixedVertical(this);
 }
 
 extension ShaftCalcBuildBitsX on ShaftCalcBuildBits {
@@ -200,4 +217,6 @@ extension ShaftCalcBuildBitsX on ShaftCalcBuildBits {
         MdiShaftIdentifierMsg$.notImplemented.fieldKey;
     return fieldKey.concreteFieldCalc.protoName.titleCase;
   }
+
+
 }

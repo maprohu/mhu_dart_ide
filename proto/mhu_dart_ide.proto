@@ -96,9 +96,8 @@ message  MdiMapEntryKeyMsg {
 
 message  MdiInnerStateMsg {
   oneof type {
-    MdiEditIntMsg edit_int = 1;
-    MdiEditStringMsg edit_string = 2;
-    MdiMapEntryMsg map_entry = 3;
+    MdiGenericMsg generic = 1;
+    MdiStringEditStateMsg string_edit = 2;
   }
 }
 
@@ -112,11 +111,26 @@ message  MdiEditStringMsg {
 
 message  MdiMapEntryMsg {
   MdiMapEntryKeyMsg map_entry_key = 1;
+  MdiScalarValueMsg map_entry_value = 2;
+}
 
-  oneof entry_value {
+message  MdiScalarValueMsg {
+  oneof type {
     int32 int_value = 3;
     string string_value = 4;
     bool bool_value = 5;
     bytes bytes_value = 6;
   }
+}
+
+message  MdiGenericMsg {
+  oneof type {
+    string string_value = 1;
+    int32 int32_value = 2;
+  }
+}
+
+message MdiStringEditStateMsg {
+  string text = 1;
+  int32  cursor_position = 2;
 }

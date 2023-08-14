@@ -9,7 +9,7 @@ import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../builder/sized.dart';
-import 'share.dart';
+import '../sharing_box.dart';
 
 part 'string.g.has.dart';
 
@@ -41,11 +41,11 @@ abstract class MonoTextStyle implements HasSize, HasTextStyle {
       );
 }
 
-SharingBx stringVerticalSharingBx({
+SharingBox stringVerticalSharingBx({
   required SizedShaftBuilderBits sizedBits,
   required String string,
 }) {
-  return ComposedSharingBx(
+  return ComposedSharingBox(
     intrinsicDimension:
         sizedBits.themeCalc.stringTextStyle.calculateIntrinsicHeight(
       stringLength: string.length,

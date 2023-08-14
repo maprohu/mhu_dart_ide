@@ -24,12 +24,26 @@ Bx stringShaftBx({
   });
 }
 
-BuildShaftContent stringBuildShaftContent(String string) => (sizedBits) {
-      return stringVerticalSharingBx(
-        sizedBits: sizedBits,
-        string: string,
-      ).toSingleElementIterable;
+BuildShaftContent stringBuildShaftContent(
+  String? string, {
+  String nullLabel = "<null string>",
+}) {
+  if (string == null) {
+    return (sizedBits) {
+      return sizedBits.itemText
+          .left(nullLabel)
+          .shaftContentSharing
+          .toSingleElementIterable;
     };
+  }
+
+  return (sizedBits) {
+    return stringVerticalSharingBx(
+      sizedBits: sizedBits,
+      string: string,
+    ).toSingleElementIterable;
+  };
+}
 
 ShaftContentBits stringEditorShaftContentBits({
   required String stringValue,

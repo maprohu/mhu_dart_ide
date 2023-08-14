@@ -21,7 +21,6 @@ part 'opener.g.compose.dart';
 
 typedef ShaftOpener = void Function(MdiShaftMsg shaft);
 
-
 @Has()
 enum OpenerState {
   closed,
@@ -106,13 +105,11 @@ extension ShaftIdentifierShaftTypeX<M extends GeneratedMessage>
   }
 
   MenuItem opener(
-      ShaftBuilderBits shaftBuilderBits, {
-        ShaftKey<M> shaftKey,
-        FutureOr<MdiInnerStateMsg> Function()? innerState,
-      }) {
+    ShaftBuilderBits shaftBuilderBits, {
+    ShaftKey<M> shaftKey,
+  }) {
     return shaftBuilderBits.opener(
       shaftIdentifier(shaftKey),
-      innerState: innerState,
     );
   }
 

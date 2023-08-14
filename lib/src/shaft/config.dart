@@ -17,8 +17,7 @@ part 'config.g.compose.dart';
 
 @Has()
 @Compose()
-abstract class ConfigShaftRight
-    implements HasMessageEditingBits<MdiConfigMsg> {}
+abstract class ConfigShaftRight implements HasEditingBits<MdiConfigMsg> {}
 
 @Compose()
 abstract class ConfigShaft
@@ -37,7 +36,7 @@ abstract class ConfigShaft
     );
 
     final shaftRight = ComposedConfigShaftRight(
-      messageEditingBits: messageEditingBits,
+      editingBits: messageEditingBits,
     );
 
     return ComposedConfigShaft.merge$(

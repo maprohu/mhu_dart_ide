@@ -5,12 +5,12 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/padding.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-import 'boxed.dart';
-import 'divider.dart';
+import 'bx/boxed.dart';
+import 'bx/divider.dart';
 
-part 'share.g.has.dart';
+part 'sharing_box.g.has.dart';
 
-part 'share.g.compose.dart';
+part 'sharing_box.g.compose.dart';
 
 @Has()
 typedef IntrinsicDimension = double;
@@ -19,14 +19,14 @@ typedef IntrinsicDimension = double;
 typedef DimensionBxBuilder = Bx Function(double dimension);
 
 @Compose()
-abstract class SharingBx
+abstract class SharingBox
     implements HasIntrinsicDimension, HasDimensionBxBuilder {
-  static SharingBx fixed({
+  static SharingBox fixed({
     required Bx bx,
     required Axis axis,
   }) {
     final intrinsicDimension = bx.size.axis(axis);
-    return ComposedSharingBx(
+    return ComposedSharingBox(
       intrinsicDimension: bx.size.axis(axis),
       dimensionBxBuilder: (dimension) {
         return Bx.padOrFill(
@@ -45,16 +45,16 @@ abstract class SharingBx
     );
   }
 
-  static SharingBx fixedVertical(Bx bx) => fixed(
+  static SharingBox fixedVertical(Bx bx) => fixed(
         bx: bx,
         axis: Axis.vertical,
       );
 
-  static SharingBx empty({
+  static SharingBox empty({
     required Axis layoutAxis,
     required double crossAxisDimension,
   }) {
-    return ComposedSharingBx(
+    return ComposedSharingBox(
       intrinsicDimension: 0,
       dimensionBxBuilder: (dimension) {
         return Bx.fill(
@@ -119,7 +119,7 @@ Map<int, double> distributeSharedSpace({
 Bx sharedLayoutBx({
   required Size size,
   required Axis axis,
-  required Iterable<SharingBx> items,
+  required Iterable<SharingBox> items,
   double? dividerThickness,
 }) {
   final itemList = items.toList();
@@ -199,3 +199,5 @@ Bx sharedLayoutBx({
         .let(linear);
   }
 }
+
+typedef SharingBoxes = Iterable<SharingBox>;

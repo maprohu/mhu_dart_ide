@@ -8,7 +8,7 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../builder/sized.dart';
 import 'boxed.dart';
-import 'share.dart';
+import '../sharing_box.dart';
 
 int itemFitCount({
   required double available,
@@ -28,18 +28,18 @@ typedef PaginatorBx = ({
   bool showPaginator,
 });
 
-SharingBx paginatorAlongYSharingBx({
+SharingBox paginatorAlongYSharingBx({
   required SizedShaftBuilderBits sizedBits,
   required double itemHeight,
   required int itemCount,
   required int startAt,
   required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
   required double dividerThickness,
-  SharingBx? emptyBx,
+  SharingBox? emptyBx,
 }) {
   if (itemCount == 0) {
     return emptyBx ??
-        ComposedSharingBx(
+        ComposedSharingBox(
           intrinsicDimension: 0,
           dimensionBxBuilder: (dimension) =>
               sizedBits.withHeight(dimension).fill(),
@@ -47,7 +47,7 @@ SharingBx paginatorAlongYSharingBx({
   }
   final intrinsicHeight =
       itemCount * itemHeight + (itemCount - 1) * dividerThickness;
-  return ComposedSharingBx(
+  return ComposedSharingBox(
     intrinsicDimension: intrinsicHeight,
     dimensionBxBuilder: (dimension) {
       return paginatorAlongYBx(
@@ -69,7 +69,7 @@ Bx paginatorAlongYBx({
   required int startAt,
   required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
   required double dividerThickness,
-  SharingBx? emptyBx,
+  SharingBox? emptyBx,
 }) {
   final themeCalc = sizedBits.themeCalc;
   Bx page({

@@ -1,47 +1,108 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
+import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/screen/notification.dart';
+import 'package:mhu_dart_ide/src/shaft/editing/string.dart';
+import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
-part 'new_map_entry.g.has.dart';
+// part 'new_map_entry.g.has.dart';
+
 part 'new_map_entry.g.compose.dart';
 
-@Has()
 @Compose()
 abstract class NewMapEntryShaftRight {}
 
 @Compose()
-abstract class NewMapEntryShaftMerge implements ShaftMergeBits {}
-
-@Compose()
 abstract class NewMapEntryShaft
-    implements
-        ShaftCalcBuildBits,
-        NewMapEntryShaftMerge,
-        NewMapEntryShaftRight,
-        ShaftCalc {
+    implements ShaftCalcBuildBits, NewMapEntryShaftRight, ShaftCalc {
   static NewMapEntryShaft create(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
+    final left = shaftCalcBuildBits.leftCalc as HasEditingBits;
+    final mapEditingBits = left.editingBits as MapEditingBits;
 
-    final shaftRight = ComposedNewMapEntryShaftRight();
-    final shaftMerge = ComposedNewMapEntryShaftMerge(
-      shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
-      buildShaftContent: (sizedBits) {
-        throw "todo";
-      },
-    );
+    return mapEditingBits.mapEditingBitsGeneric(<K, V>(mapEditingBits) {
+      final shaftRight = ComposedNewMapEntryShaftRight();
 
-    return ComposedNewMapEntryShaft.merge$(
-      shaftCalcBuildBits: shaftCalcBuildBits,
-      newMapEntryShaftMerge: shaftMerge,
-      newMapEntryShaftRight: shaftRight,
-    );
+      return ComposedNewMapEntryShaft.merge$(
+        shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
+        shaftCalcBuildBits: shaftCalcBuildBits,
+        newMapEntryShaftRight: shaftRight,
+        shaftInitState: MdiInnerStateMsg.getDefault,
+        shaftAutoFocus: true,
+        buildShaftContent: (sizedBits) {
+          void submitKeyValue(Object key) {}
+          final MapKeyDataType mapKeyDataType =
+              mapEditingBits.mapDataType.mapKeyDataType;
+
+          final stringParsingBits = switch (mapKeyDataType) {
+            StringDataType() =>
+              StringParsingBits.stringType(submitValue: submitKeyValue),
+            CoreIntDataType() =>
+              StringParsingBits.intType(submitValue: submitKeyValue),
+            final other => throw other,
+          } as StringParsingBits<K>;
+
+          if (shaftCalcBuildBits.isFocused) {
+            return focusedStringEditorSharingBox(
+              sizedBits: sizedBits,
+              stringParsingBits: stringParsingBits,
+            ).toSingleElementIterable;
+          } else {
+            return [
+              ...unfocusedStringEditSharingBoxes(
+                sizedBits: sizedBits,
+              ),
+              ...sizedBits.menu(items: [
+                MenuItem(
+                  label: "Add Entry",
+                  callback: () {
+                    final text = sizedBits.innerState.stringEdit.text;
+                    final result = stringParsingBits.parseString(text);
+
+                    switch (result) {
+                      case ValidationFailure():
+                        sizedBits.showNotifications(
+                          result.validationFailureMessages,
+                        );
+
+                      case ValidationSuccess(value: final keyValue):
+                        final messages = [
+                          if (mapEditingBits
+                                  .readValue()
+                                  ?.containsKey(keyValue) ??
+                              false)
+                            "Key already exists.",
+                        ];
+
+                        if (messages.isNotEmpty) {
+                          sizedBits.showNotifications(messages);
+                        } else {
+                          shaftCalcBuildBits.fwUpdateGroup.run(() {
+                            mapEditingBits.updateValue((items) {
+                              items[keyValue] = mapEditingBits
+                                  .mapDataType.mapValueDataType.defaultValue;
+                              // sizedBits.closeShaft();
+                            });
+                          });
+                        }
+                    }
+                  },
+                ),
+              ]),
+            ];
+          }
+        },
+      );
+    });
   }
 }
-
 
 // part of 'map.dart';
 //

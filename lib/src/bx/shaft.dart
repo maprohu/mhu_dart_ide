@@ -4,7 +4,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/notification.dart';
-import 'package:mhu_dart_ide/src/bx/share.dart';
+import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';

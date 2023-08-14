@@ -7,7 +7,7 @@ import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/bx/share.dart';
+import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
@@ -23,182 +23,66 @@ import '../../keyboard.dart';
 import '../../op.dart';
 import '../../theme.dart';
 
-// part 'string.g.has.dart';
-// part 'string.g.compose.dart';
+part 'string.g.has.dart';
 
-// @Compose()
-// abstract class EditScalarStringBits
-//     implements
-//         EditScalarShaftBits<String>,
-//         EditingShaftContentBits<String>,
-//         EditingShaftLabeledContentBits<String> {
-//   static const headerLabel = "Edit String";
-//
-//   static EditingShaftLabeledContentBits create({
-//     required EditScalarShaftBits<String> editScalarShaftBits,
-//   }) {
-//     return ComposedEditScalarStringBits.editScalarShaftBits(
-//       editScalarShaftBits: editScalarShaftBits,
-//       buildShaftContent: editScalarAsStringBuildShaftContent(
-//         onSubmit: editScalarShaftBits.editingFw.set,
-//         parser: (input) => ValidationSuccessImpl(input),
-//         textAttribute: MdiInnerStateMsg$.editString.thenReadWrite(
-//           MdiInnerEditStringMsg$.text,
-//         ),
-//       ),
-//       shaftHeaderLabel: headerLabel,
-//     );
-//   }
-// }
+part 'string.g.compose.dart';
 
+@Has()
+typedef MaxStringLength = int?;
 
-BuildShaftContent editScalarAsStringBuildShaftContent<T>({
-  int? maxStringLength,
-  required void Function(T value) onSubmit,
-  required ValidatingFunction<String, T> parser,
-  required ReadWriteAttribute<MdiInnerStateMsg, String> textAttribute,
+@Has()
+typedef SubmitValue<T> = void Function(T value);
+
+@Has()
+typedef ParseString<T> = ValidatingFunction<String, T>;
+
+@Compose()
+abstract class StringParsingBits<T>
+    implements HasMaxStringLength, HasSubmitValue<T>, HasParseString<T> {
+  static StringParsingBits<String> stringType({
+    required SubmitValue<String> submitValue,
+  }) {
+    return ComposedStringParsingBits(
+      submitValue: submitValue,
+      parseString: ValidationSuccessImpl.new,
+    );
+  }
+
+  static final _maxIntLength = 0x7FFFFFFF.toString().length;
+
+  static StringParsingBits<int> intType({
+    required SubmitValue<int> submitValue,
+  }) {
+    return ComposedStringParsingBits(
+      submitValue: submitValue,
+      parseString: parseIntValidatingFunction,
+      maxStringLength: _maxIntLength,
+    );
+  }
+}
+
+SharingBoxes editScalarAsStringSharingBoxes<T>({
+  required SizedShaftBuilderBits sizedBits,
+  required StringParsingBits<T> stringParsingBits,
 }) {
-  return (sizedBits) {
-    final SizedShaftBuilderBits(
-      themeCalc: ThemeCalc(
-        :textCursorThickness,
-        :stringTextStyle,
+  final SizedShaftBuilderBits(
+    shaftCalcChain: ShaftCalcChain(
+      :isFocused,
+    ),
+  ) = sizedBits;
+
+  if (isFocused) {
+    return [
+      focusedStringEditorSharingBox(
+        sizedBits: sizedBits,
+        stringParsingBits: stringParsingBits,
       ),
-      shaftCalcChain: ShaftCalcChain(
-        :isFocused,
-        :shaftIndexFromLeft,
-      ),
-      :stateFw,
-      :opBuilder,
-    ) = sizedBits;
-
-    final availableWidth = sizedBits.width - textCursorThickness;
-
-    SharingBx editorSharingBxFromWidget({
-      required double intrinsicHeight,
-      required Widget Function(
-        GridSize gridSize,
-      ) builder,
-    }) {
-      return ComposedSharingBx(
-        intrinsicDimension: intrinsicHeight,
-        dimensionBxBuilder: (height) {
-          final widgetSize = sizedBits.size.withHeight(height);
-          final gridSize = stringTextStyle.maxGridSize(widgetSize);
-
-          final widget = builder(gridSize);
-
-          return Bx.leaf(
-            size: widgetSize,
-            widget: widget,
-          );
-        },
-      );
-    }
-
-    SharingBx editorBxNotFocused() {
-      final text = sizedBits.shaftMsg.innerState.editString.text;
-      final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
-        stringLength: text.length,
-        width: availableWidth,
-      );
-      return editorSharingBxFromWidget(
-        intrinsicHeight: intrinsicHeight,
-        builder: (gridSize) {
-          return stringWidgetWithCursor(
-            text: text,
-            gridSize: gridSize,
-            themeCalc: sizedBits.themeCalc,
-            isFocused: false,
-          );
-        },
-      );
-    }
-
-    SharingBx editorBxFocused() {
-      final intrinsicHeight = maxStringLength == null
-          ? sizedBits.height
-          : stringTextStyle.calculateIntrinsicHeight(
-              stringLength: maxStringLength,
-              width: availableWidth,
-            );
-      return editorSharingBxFromWidget(
-        intrinsicHeight: intrinsicHeight,
-        builder: (gridSize) {
-          return sizedBits.innerStateWidgetVoid(
-            access: createStringEditorKeyListenerAccess(
-              opBuilder: opBuilder,
-              onEscape: (innerStateFw) {
-                sizedBits.fwUpdateGroup.run(() {
-                  sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
-                    shaftMsg.innerState = innerStateFw.read()!;
-                  });
-                  sizedBits.clearFocusedShaft();
-                });
-              },
-              onEnter: (innerStateFw) {
-                final text = innerStateFw.read()!.editInt.text;
-
-                final parseResult = parser(text);
-
-                switch (parseResult) {
-                  case ValidationSuccess<T>():
-                    sizedBits.fwUpdateGroup.run(() {
-                      onSubmit(parseResult.validationSuccessValue);
-                      sizedBits.clearFocusedShaft();
-                      sizedBits.closeShaft();
-                    });
-                  case ValidationFailure<T>():
-                    sizedBits.showNotifications(
-                      parseResult.validationFailureMessages,
-                    );
-                }
-              },
-              textAttribute: textAttribute,
-              acceptCharacter: (text, character) =>
-                  character == " " ||
-                  !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
-            ),
-            builder: (innerState, update) {
-              final text = textAttribute.readAttribute(innerState);
-
-              return stringWidgetWithCursor(
-                text: text,
-                gridSize: gridSize,
-                themeCalc: sizedBits.themeCalc,
-                isFocused: isFocused,
-              );
-            },
-          );
-        },
-      );
-    }
-
-    if (isFocused) {
-      return [
-        editorBxFocused(),
-      ];
-    } else {
-      return [
-        ...sizedBits.menu(
-          items: [
-            MenuItem(
-              label: "Focus",
-              callback: () {
-                stateFw.deepRebuild(
-                  (state) {
-                    state.ensureFocusedShaft().indexFromLeft =
-                        shaftIndexFromLeft;
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-        editorBxNotFocused(),
-      ];
-    }
-  };
+    ];
+  } else {
+    return unfocusedStringEditSharingBoxes(
+      sizedBits: sizedBits,
+    );
+  }
 }
 
 Widget stringWidgetWithCursor({
@@ -263,7 +147,6 @@ void Function(InnerStateFw innerStateFw) createStringEditorKeyListenerAccess({
   required OpBuilder opBuilder,
   required void Function(InnerStateFw innerStateFw) onEnter,
   required void Function(InnerStateFw innerStateFw) onEscape,
-  required ReadWriteAttribute<MdiInnerStateMsg, String> textAttribute,
   required bool Function(String text, String character) acceptCharacter,
 }) {
   ShortcutKeyListener keyListener = (key) {};
@@ -285,22 +168,16 @@ void Function(InnerStateFw innerStateFw) createStringEditorKeyListenerAccess({
       innerStateFw.update((innerState) {
         innerState ??= MdiInnerStateMsg.getDefault();
         return innerState.deepRebuild((message) {
-          final text = textAttribute.readAttribute(message);
+          final text = message.stringEdit.text;
           switch (key) {
             case ShortcutKey.backspace:
               final length = text.length;
               if (length > 0) {
-                textAttribute.writeAttribute(
-                  message,
-                  text.substring(0, length - 1),
-                );
+                message.ensureStringEdit().text = text.substring(0, length - 1);
               }
             case CharacterShortcutKey(:final character):
               if (acceptCharacter(text, character)) {
-                textAttribute.writeAttribute(
-                  message,
-                  "$text$character",
-                );
+                message.ensureStringEdit().text = "$text$character";
               }
 
             case _:
@@ -309,4 +186,155 @@ void Function(InnerStateFw innerStateFw) createStringEditorKeyListenerAccess({
       });
     };
   };
+}
+
+SharingBox stringEditorSharingBoxFromGridSizeBuilder({
+  required SizedShaftBuilderBits sizedBits,
+  required double intrinsicHeight,
+  required Widget Function(
+    GridSize gridSize,
+  ) builder,
+}) {
+  return ComposedSharingBox(
+    intrinsicDimension: intrinsicHeight,
+    dimensionBxBuilder: (height) {
+      final widgetSize = sizedBits.size.withHeight(height);
+      final gridSize =
+          sizedBits.themeCalc.stringTextStyle.maxGridSize(widgetSize);
+
+      final widget = builder(gridSize);
+
+      return Bx.leaf(
+        size: widgetSize,
+        widget: widget,
+      );
+    },
+  );
+}
+
+SharingBox focusedStringEditorSharingBox<T>({
+  required SizedShaftBuilderBits sizedBits,
+  required StringParsingBits<T> stringParsingBits,
+}) {
+  final SizedShaftBuilderBits(
+    themeCalc: ThemeCalc(
+      :textCursorThickness,
+      :stringTextStyle,
+    ),
+    shaftCalcChain: ShaftCalcChain(
+      :isFocused,
+    ),
+    :opBuilder,
+  ) = sizedBits;
+
+  final StringParsingBits(
+    :maxStringLength,
+    :parseString,
+    :submitValue,
+  ) = stringParsingBits;
+
+  final availableWidth = sizedBits.width - textCursorThickness;
+  final intrinsicHeight = maxStringLength == null
+      ? sizedBits.height
+      : stringTextStyle.calculateIntrinsicHeight(
+          stringLength: maxStringLength,
+          width: availableWidth,
+        );
+
+  return stringEditorSharingBoxFromGridSizeBuilder(
+    sizedBits: sizedBits,
+    intrinsicHeight: intrinsicHeight,
+    builder: (gridSize) {
+      return sizedBits.innerStateWidgetVoid(
+        access: createStringEditorKeyListenerAccess(
+          opBuilder: opBuilder,
+          onEscape: (innerStateFw) {
+            sizedBits.fwUpdateGroup.run(() {
+              sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
+                shaftMsg.innerState = innerStateFw.read()!;
+              });
+              sizedBits.clearFocusedShaft();
+            });
+          },
+          onEnter: (innerStateFw) {
+            final innerState = innerStateFw.read()!;
+            final text = innerState.stringEdit.text;
+
+            final parseResult = parseString(text);
+
+            switch (parseResult) {
+              case ValidationSuccess<T>(:final value):
+                sizedBits.fwUpdateGroup.run(() {
+                  sizedBits.shaftCalcChain.shaftMsgFu.update((shaftMsg) {
+                    shaftMsg.innerState = innerState;
+                  });
+                  submitValue(value);
+                  sizedBits.clearFocusedShaft();
+                  // sizedBits.closeShaft();
+                });
+              case ValidationFailure<T>():
+                sizedBits.showNotifications(
+                  parseResult.validationFailureMessages,
+                );
+            }
+          },
+          acceptCharacter: (text, character) =>
+              character == " " ||
+              !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
+        ),
+        builder: (innerState, update) {
+          final text = innerState.stringEdit.text;
+
+          return stringWidgetWithCursor(
+            text: text,
+            gridSize: gridSize,
+            themeCalc: sizedBits.themeCalc,
+            isFocused: isFocused,
+          );
+        },
+      );
+    },
+  );
+}
+
+SharingBoxes unfocusedStringEditSharingBoxes({
+  required SizedShaftBuilderBits sizedBits,
+}) {
+  final SizedShaftBuilderBits(
+    themeCalc: ThemeCalc(
+      :textCursorThickness,
+      :stringTextStyle,
+    ),
+  ) = sizedBits;
+  final availableWidth = sizedBits.width - textCursorThickness;
+
+  final text = sizedBits.shaftMsg.innerState.stringEdit.text;
+  final intrinsicHeight = stringTextStyle.calculateIntrinsicHeight(
+    stringLength: text.length,
+    width: availableWidth,
+  );
+  final stringSharingBox = stringEditorSharingBoxFromGridSizeBuilder(
+    sizedBits: sizedBits,
+    intrinsicHeight: intrinsicHeight,
+    builder: (gridSize) {
+      return stringWidgetWithCursor(
+        text: text,
+        gridSize: gridSize,
+        themeCalc: sizedBits.themeCalc,
+        isFocused: false,
+      );
+    },
+  );
+
+  return [
+    ...sizedBits.menu(
+      items: [
+        MenuItem(
+          label: "Focus",
+          callback: sizedBits.requestFocus,
+        ),
+      ],
+    ),
+    stringSharingBox,
+  ];
 }

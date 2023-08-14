@@ -29,11 +29,12 @@ abstract class ConcreteFieldShaft
   static ConcreteFieldShaft create(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
-    final left = shaftCalcBuildBits.leftCalc as HasMessageEditingBits;
+    final left = shaftCalcBuildBits.leftCalc as HasEditingBits;
+    final messageEditingBits = left.editingBits as MessageEditingBits;
     final tagNumber =
         shaftCalcBuildBits.shaftMsg.shaftIdentifier.concreteField.tagNumber;
     final messageType =
-        left.messageEditingBits.messageDataType.pbiMessage.messageType;
+        messageEditingBits.messageDataType.pbiMessage.messageType;
 
     final fieldKey = ConcreteFieldKey(
       messageType: messageType,
@@ -42,9 +43,8 @@ abstract class ConcreteFieldShaft
 
     return fieldKey.concreteFieldCalc.concreteFieldCalcGeneric(
       <M extends GeneratedMessage, F>(concreteFieldCalc) {
-        final messageEditingBits =
-            left.messageEditingBits as MessageEditingBits<M>;
-        final editingContent = ValueBrowsingContent.concreteField(
+        messageEditingBits as MessageEditingBits<M>;
+        final browsingContent = ValueBrowsingContent.concreteField(
           dataType: concreteFieldCalc.dataType,
           messageUpdateBits: messageEditingBits.messageDataType.pbiMessageCalc,
           fieldCoordinates: concreteFieldCalc,
@@ -52,14 +52,14 @@ abstract class ConcreteFieldShaft
         );
 
         final shaftRight = ComposedConcreteFieldShaftRight(
-          editingBits: editingContent.editingBits,
+          editingBits: browsingContent.editingBits,
         );
 
         return ComposedConcreteFieldShaft.merge$(
           shaftCalcBuildBits: shaftCalcBuildBits,
           shaftHeaderLabel: concreteFieldCalc.protoName,
           concreteFieldShaftRight: shaftRight,
-          shaftContentBits: editingContent,
+          shaftContentBits: browsingContent,
         );
       },
     );

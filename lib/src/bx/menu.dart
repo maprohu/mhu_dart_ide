@@ -17,7 +17,7 @@ import '../bx/shortcut.dart';
 import '../screen/calc.dart';
 import '../theme.dart';
 import 'boxed.dart';
-import 'share.dart';
+import '../sharing_box.dart';
 
 part 'menu.freezed.dart';
 
@@ -32,11 +32,11 @@ class MenuItem with _$MenuItem {
   }) = _MenuItem;
 }
 
-SharingBx menuSharingBx({
+SharingBox menuSharingBx({
   required SizedShaftBuilderBits sizedBits,
   required int itemCount,
   required Bx Function(int index, SizedShaftBuilderBits sizedBits) itemBuilder,
-  SharingBx? emptyBx,
+  SharingBox? emptyBx,
 }) {
   final SizedShaftBuilderBits(
     :themeCalc,
@@ -90,7 +90,7 @@ Bx menuItemBx({
 }
 
 extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
-  Iterable<SharingBx> menu({
+  SharingBoxes menu({
     required List<MenuItem> items,
   }) {
     return menuSharingBx(
@@ -199,26 +199,26 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
 
   MenuItem opener(
     ShaftIdentifier shaftIdentifier, {
-    FutureOr<MdiInnerStateMsg> Function()? innerState,
     String? label,
-    bool autoFocus = false,
   }) {
     final newShaftMessage = MdiShaftMsg()
       ..parent = shaftMsg
       ..shaftIdentifier = shaftIdentifier
       ..freeze();
 
-    label ??= ComposedShaftCalcChain.appBits(
+    final calc = ComposedShaftCalcChain.appBits(
       appBits: this,
       shaftMsg: newShaftMessage,
       shaftIndexFromRight: 0,
       stateMsg: MdiStateMsg.getDefault(),
-    ).calc.shaftHeaderLabel;
+    ).calc;
+
+    label ??= calc.shaftHeaderLabel;
 
     final bits = openerBits(
       shaftIdentifier,
-      innerState: innerState,
-      autoFocus: autoFocus,
+      innerState: calc.shaftInitState,
+      autoFocus: calc.shaftAutoFocus,
     );
 
     return MenuItem(
