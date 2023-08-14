@@ -24,7 +24,7 @@ abstract class MessageContent implements ShaftContentBits {
     return ComposedMessageContent(
       buildShaftContent: (SizedShaftBuilderBits sizedBits) {
         return sizedBits.menu(
-          items: messageCalc.topFieldKeys.map((fieldKey) {
+          messageCalc.topFieldKeys.map((fieldKey) {
             switch (fieldKey) {
               case ConcreteFieldKey():
                 return ShaftTypes.concreteField.opener(

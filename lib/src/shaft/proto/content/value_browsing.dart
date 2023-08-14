@@ -76,8 +76,12 @@ abstract class ValueBrowsingContent<T>
         buildShaftContent: (sizedBits) {
           return [
             ...result.buildShaftContent(sizedBits),
-            ...sizedBits.menu(items: [
+            ...sizedBits.menu([
               ShaftTypes.editScalar.opener(sizedBits),
+              MenuItem(
+                label: "Paste from Clipboard",
+                callback: () {},
+              )
             ]),
           ];
         },

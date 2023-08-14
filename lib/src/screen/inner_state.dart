@@ -46,7 +46,7 @@ AccessInnerState createAccessInnerState({
 
     return taskQueue.submit(
       key,
-      () => action(innerStateFw),
+      () async => await action(innerStateFw),
     );
   };
 }

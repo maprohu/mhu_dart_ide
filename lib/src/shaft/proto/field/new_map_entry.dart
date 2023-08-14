@@ -59,7 +59,7 @@ abstract class NewMapEntryShaft
               ...unfocusedStringEditSharingBoxes(
                 sizedBits: sizedBits,
               ),
-              ...sizedBits.menu(items: [
+              ...sizedBits.menu([
                 MenuItem(
                   label: "Add Entry",
                   callback: () {

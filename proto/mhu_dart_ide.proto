@@ -133,4 +133,5 @@ message  MdiGenericMsg {
 message MdiStringEditStateMsg {
   string text = 1;
   int32  cursor_position = 2;
+  bool pasting = 3;
 }

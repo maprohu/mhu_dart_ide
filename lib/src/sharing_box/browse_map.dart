@@ -42,7 +42,7 @@ SharingBoxes browseMapSharingBoxes<K, V>({
   final keyAttribute = mapDataType.mapKeyDataType.mapEntryKeyMsgAttribute;
 
   return sizedShaftBuilderBits.menu(
-    items: sorted.map(
+    sorted.map(
       (entry) {
         final shaftIdentifier = ShaftIdentifier()
           ..ensureMapEntry().let(

@@ -34,7 +34,7 @@ abstract class MainMenuShaft
       shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
       buildShaftContent: (sizedBits) {
         return sizedBits.menu(
-          items: [
+          [
             ShaftTypes.config.opener(sizedBits),
             MenuItem(
               label: "theme",

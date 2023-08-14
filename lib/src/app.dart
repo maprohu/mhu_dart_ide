@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
@@ -22,7 +24,7 @@ typedef ScreenSizeFr = Fr<Size>;
 @Has()
 typedef AccessInnerState = Future<T> Function<T>(
   InnerStateKey key,
-  Future<T> Function(InnerStateFw innerStateFw) action,
+  FutureOr<T> Function(InnerStateFw innerStateFw) action,
 );
 
 @Compose()

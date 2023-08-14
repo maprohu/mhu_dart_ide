@@ -64,6 +64,7 @@ abstract class StringParsingBits<T>
 SharingBoxes editScalarAsStringSharingBoxes<T>({
   required SizedShaftBuilderBits sizedBits,
   required StringParsingBits<T> stringParsingBits,
+  SharingBoxes extraBoxes = const Iterable.empty(),
 }) {
   final SizedShaftBuilderBits(
     shaftCalcChain: ShaftCalcChain(
@@ -81,6 +82,7 @@ SharingBoxes editScalarAsStringSharingBoxes<T>({
   } else {
     return unfocusedStringEditSharingBoxes(
       sizedBits: sizedBits,
+      extraBoxes: extraBoxes,
     );
   }
 }
@@ -299,6 +301,7 @@ SharingBox focusedStringEditorSharingBox<T>({
 
 SharingBoxes unfocusedStringEditSharingBoxes({
   required SizedShaftBuilderBits sizedBits,
+  SharingBoxes extraBoxes = const Iterable.empty(),
 }) {
   final SizedShaftBuilderBits(
     themeCalc: ThemeCalc(
@@ -327,14 +330,13 @@ SharingBoxes unfocusedStringEditSharingBoxes({
   );
 
   return [
-    ...sizedBits.menu(
-      items: [
-        MenuItem(
-          label: "Focus",
-          callback: sizedBits.requestFocus,
-        ),
-      ],
-    ),
+    ...sizedBits.menu([
+      MenuItem(
+        label: "Focus",
+        callback: sizedBits.requestFocus,
+      ),
+    ]),
     stringSharingBox,
+    ...extraBoxes,
   ];
 }

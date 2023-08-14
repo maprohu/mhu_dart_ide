@@ -90,9 +90,9 @@ Bx menuItemBx({
 }
 
 extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
-  SharingBoxes menu({
-    required List<MenuItem> items,
-  }) {
+  SharingBoxes menu(
+    List<MenuItem> items,
+  ) {
     return menuSharingBx(
       sizedBits: this,
       itemCount: items.length,

@@ -158,7 +158,7 @@ extension ShaftCalcChainX on ShaftCalcChain {
   MutableValue<ShaftMsg> get shaftUpdateValue => shaftMsgFu.toMutableValue;
 
   Future<T> accessOwnInnerState<T>(
-    Future<T> Function(InnerStateFw innerStateFw) action,
+    FutureOr<T> Function(InnerStateFw innerStateFw) action,
   ) {
     return accessInnerState(shaftIndexFromLeft, action);
   }
@@ -180,7 +180,7 @@ extension HasShaftCalcChainX on HasShaftCalcChain {
   ShaftCalc? get leftSignificantCalc => shaftCalcChain.leftSignificantCalc;
 
   Future<R> accessOwnInnerState<R>(
-    Future<R> Function(InnerStateFw innerStateFw) action,
+    FutureOr<R> Function(InnerStateFw innerStateFw) action,
   ) {
     return shaftCalcChain.accessOwnInnerState(action);
   }
@@ -207,6 +207,9 @@ abstract class ShaftMergeBits
 
 extension ShaftCalcBxX on Bx {
   SharingBox get shaftContentSharing => SharingBox.fixedVertical(this);
+
+  SharingBoxes get toSharingBoxes =>
+      shaftContentSharing.toSingleElementIterable;
 }
 
 extension ShaftCalcBuildBitsX on ShaftCalcBuildBits {
@@ -218,5 +221,16 @@ extension ShaftCalcBuildBitsX on ShaftCalcBuildBits {
     return fieldKey.concreteFieldCalc.protoName.titleCase;
   }
 
+  void requestFocus() {
+    stateFw.rebuild((state) {
+      state.ensureFocusedShaft().indexFromLeft =
+          shaftCalcChain.shaftIndexFromLeft;
+    });
+  }
 
+  void updateShaftMsg(
+    void Function(ShaftMsg shaftMsg) updates,
+  ) {
+    shaftCalcChain.shaftUpdateValue.updateValue(updates);
+  }
 }

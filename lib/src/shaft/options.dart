@@ -37,7 +37,7 @@ abstract class OptionsShaft
         final shaftLeft = sizedBits.shaftMsg.parentOpt;
         final parentOfShaftLeft = shaftLeft?.parentOpt;
         return sizedBits.menu(
-          items: [
+          [
             ...shaftCalcBuildBits.leftCalc!.buildShaftOptions(sizedBits),
             ShaftTypes.mainMenu.opener(sizedBits),
             if (parentOfShaftLeft != null)

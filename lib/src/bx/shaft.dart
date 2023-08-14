@@ -157,7 +157,7 @@ Bx defaultShaftBx({
               sizedShaftBuilderBits: contentBits,
               notificationMsg: notification,
             ),
-          if (options.isNotEmpty) ...contentBits.menu(items: options),
+          if (options.isNotEmpty) ...contentBits.menu(options),
         ],
         dividerThickness: contentBits.themeCalc.shaftSharingDividerThickness,
       );
