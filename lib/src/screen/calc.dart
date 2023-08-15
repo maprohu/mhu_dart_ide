@@ -31,6 +31,9 @@ typedef BuildShaftContent = SharingBoxes Function(
 
 List<MenuItem> emptyShaftOptions(ShaftBuilderBits shaftBuilderBits) => const [];
 
+SharingBoxes emptyContent(SizedShaftBuilderBits sizedShaftBuilderBits) =>
+    const [];
+
 @Has()
 @HasDefault(emptyShaftOptions)
 typedef BuildShaftOptions = List<MenuItem> Function(

@@ -1,5 +1,7 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/proto_customizer.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -18,7 +20,12 @@ part 'proto.g.compose.dart';
 
 @Compose()
 @Has()
-abstract class EditingBits<T> implements ReadWatchValue<T?>, HasDataType<T> {}
+abstract class EditingBits<T>
+    implements
+        ReadWatchValue<T?>,
+        HasDataType<T>,
+        HasProtoCustomizer,
+        HasProtoPath {}
 
 @Compose()
 @Has()
@@ -27,11 +34,15 @@ abstract class ScalarEditingBits<T>
   static ScalarEditingBits<T> create<T>({
     required ScalarDataType<T> scalarDataType,
     required ScalarValue<T> scalarValue,
+    required ProtoCustomizer protoCustomizer,
+    required ProtoPath protoPath,
   }) {
     return ComposedScalarEditingBits.scalarValue(
       scalarValue: scalarValue,
       scalarDataType: scalarDataType,
       dataType: scalarDataType,
+      protoCustomizer: protoCustomizer,
+      protoPath: protoPath,
     );
   }
 }
@@ -70,18 +81,27 @@ extension ScalarEditingBitsX<T> on ScalarEditingBits<T> {
 
 @Compose()
 abstract class MapEditingBits<K, V>
-    implements MapValue<K, V>, HasMapDataType<K, V>, EditingBits<Map<K, V>> {
+    implements
+        MapValue<K, V>,
+        HasMapDataType<K, V>,
+        HasProtoPathField,
+        EditingBits<Map<K, V>> {
   static MapEditingBits<K, V> create<K, V>({
     required MapDataType<K, V> mapDataType,
     required MapValue<K, V> mapValue,
+    required ProtoCustomizer protoCustomizer,
+    required ProtoPathField protoPath,
   }) {
     return ComposedMapEditingBits.editingBits(
       editingBits: ComposedEditingBits.readWatchValue(
         readWatchValue: mapValue,
         dataType: mapDataType,
+        protoCustomizer: protoCustomizer,
+        protoPath: protoPath,
       ),
       mapDataType: mapDataType,
       updateValue: mapValue.updateValue,
+      protoPathField: protoPath,
     );
   }
 }
@@ -109,11 +129,15 @@ abstract class MessageEditingBits<M extends GeneratedMessage>
   static MessageEditingBits<M> create<M extends GeneratedMessage>({
     required MessageDataType<M> messageDataType,
     required ScalarValue<M> scalarValue,
+    required ProtoCustomizer protoCustomizer,
+    required ProtoPath protoPath,
   }) {
     return ComposedMessageEditingBits.scalarEditingBits(
       scalarEditingBits: ScalarEditingBits.create(
         scalarDataType: messageDataType,
         scalarValue: scalarValue,
+        protoCustomizer: protoCustomizer,
+        protoPath: protoPath,
       ),
       messageDataType: messageDataType,
     );

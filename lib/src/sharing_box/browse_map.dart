@@ -6,7 +6,6 @@ import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/model.dart';
 import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
 
 import '../screen/calc.dart';
 import '../sharing_box.dart';
@@ -41,18 +40,20 @@ SharingBoxes browseMapSharingBoxes<K, V>({
 
   final keyAttribute = mapDataType.mapKeyDataType.mapEntryKeyMsgAttribute;
 
-  return sizedShaftBuilderBits.menu(
-    sorted.map(
-      (entry) {
-        final shaftIdentifier = ShaftIdentifier()
-          ..ensureMapEntry().let(
-            (key) => keyAttribute.writeAttribute(key, entry.key),
-          )
-          ..freeze();
-        return sizedShaftBuilderBits.opener(
-          shaftIdentifier,
-        );
-      },
-    ).toList(),
-  );
+  return [
+    ...sizedShaftBuilderBits.menu(
+      sorted.map(
+        (entry) {
+          final shaftIdentifier = ShaftIdentifier()
+            ..ensureMapEntry().let(
+              (key) => keyAttribute.writeAttribute(key, entry.key),
+            )
+            ..freeze();
+          return sizedShaftBuilderBits.opener(
+            shaftIdentifier,
+          );
+        },
+      ).toList(),
+    ),
+  ];
 }

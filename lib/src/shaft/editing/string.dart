@@ -14,7 +14,6 @@ import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/inner_state.dart';
 import 'package:mhu_dart_ide/src/screen/notification.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_ide/src/shaft/editing/editing.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 

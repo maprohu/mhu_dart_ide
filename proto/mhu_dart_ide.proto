@@ -64,8 +64,8 @@ message MdiShaftIdentifierMsg {
     MdiOneofFieldMsg oneof_field = 101;
     MdiMapEntryKeyMsg map_entry = 102;
     MdiEmptyMsg new_map_entry = 103;
-    MdiMapEntryKeyMsg map_entry_key = 104;
-    MdiEmptyMsg map_entry_value = 105;
+//    MdiMapEntryKeyMsg map_entry_key = 104;
+//    MdiEmptyMsg map_entry_value = 105;
     MdiEmptyMsg edit_scalar = 106;
 
     MdiEmptyMsg config = 200;

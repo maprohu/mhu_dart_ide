@@ -1,12 +1,16 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/model.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/content/value_browsing.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
+import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
 part 'map_entry.g.has.dart';
 
@@ -29,6 +33,10 @@ abstract class MapEntryShaft
     final left = shaftCalcBuildBits.leftCalc as HasEditingBits;
     final mapEditingBits = left.editingBits as MapEditingBits;
 
+    final MapEditingBits(
+      :protoCustomizer,
+    ) = mapEditingBits;
+
     return mapEditingBits.mapEditingBitsGeneric(
       <K, V>(mapEditingBits) {
         final key = mapEditingBits
@@ -37,18 +45,50 @@ abstract class MapEntryShaft
           shaftCalcBuildBits.shaftMsg.shaftIdentifier.mapEntry,
         );
 
+        final scalarValue = mapEditingBits.itemValue(key);
+
         final content = ValueBrowsingContent.scalar(
           scalarDataType: mapEditingBits.mapDataType.mapValueDataType,
-          scalarValue: mapEditingBits.itemValue(key),
+          scalarValue: scalarValue,
+          extraContent: (sizedBits) {
+            return sizedBits.menu([
+              MenuItem(
+                label: "Delete Entry",
+                callback: () {
+                  sizedBits.txn(() {
+                    sizedBits.closeShaft();
+                    mapEditingBits.updateValue((map) {
+                      map.remove(key);
+                    });
+                  });
+                },
+              ),
+            ]);
+          },
+          protoCustomizer: mapEditingBits.protoCustomizer,
+          protoPath: ProtoPathMapItem(
+            parent: mapEditingBits.protoPathField,
+            key: key,
+          ),
         );
 
         final shaftRight = ComposedMapEntryShaftRight(
           editingBits: content.editingBits,
         );
 
+        final mapFieldAccess = mapEditingBits.protoPathField.fieldAccess
+            as MapFieldAccess<Msg, K, V>;
+
         return ComposedMapEntryShaft.merge$(
           shaftCalcBuildBits: shaftCalcBuildBits,
-          shaftHeaderLabel: key.toString(),
+          shaftHeaderLabel: protoCustomizer.mapEntryLabel(
+            mapFieldAccess,
+            MapEntry(
+              key,
+              scalarValue.readValue() ??
+                  mapEditingBits.mapDataType.mapValueDataType.defaultValue,
+            ),
+          ),
           shaftContentBits: content,
           mapEntryShaftRight: shaftRight,
         );
@@ -56,46 +96,3 @@ abstract class MapEntryShaft
     );
   }
 }
-
-// part of 'map.dart';
-//
-// @Has()
-// typedef PfeMapKeyFw<K> = Fw<K>;
-// @Has()
-// typedef PfeMapValueFw<V> = Fw<V>;
-//
-// @Compose()
-// abstract class PfeMapEntryBits implements HasPfeMapKeyFw, HasPfeMapValueFw {}
-//
-// abstract class PfeMapShaftBits implements PfeMapFieldBits, PfeMapEntryBits {}
-//
-// abstract class PfeShaftMapFieldEntry implements PfeMapShaftBits, ShaftCalc {
-//   static PfeShaftMapFieldEntry create(ShaftCalcBuildBits shaftCalcBuildBits) {
-//     final pfeShaftMapField = shaftCalcBuildBits.shaftCalcChain.leftSignificantCalc
-//     as PfeShaftMapField;
-//
-//     pfeShaftMapField.mapKeyValueGeneric(<K, V>(pfeShaftMapField) {
-//       final mapFu = pfeShaftMapField.pfeMapFieldFu;
-//
-//       final keyAttribute = pfeShaftMapField.mapDataType.mapKeyDataType
-//           .mapEntryKeyMsgAttribute;
-//
-//       final key = keyAttribute.readAttribute(
-//         shaftCalcBuildBits.shaftMsg.mapEntry.mapEntryKey,);
-//
-//       final valueFw = mapFu.itemFwNullable(key);
-//
-//
-//       final mapValueDataType = pfeShaftMapField.mapDataType.mapValueDataType;
-//
-//
-//
-//       return ComposedPfeShaftMapEntryValue.merge$(
-//         shaftCalcBuildBits: shaftCalcBuildBits,
-//         shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
-//         editingShaftContentBits: contentBits,
-//         editScalarShaftBits: contentBits,
-//       );
-//     });
-//   }
-// }

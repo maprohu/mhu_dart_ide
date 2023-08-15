@@ -5,16 +5,10 @@ import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
 import 'package:mhu_dart_ide/src/shaft/not_implemented.dart';
 import 'package:mhu_dart_ide/src/shaft/options.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/field/map.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/field/map_entry_key.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/field/map_entry_value.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
 import '../../proto.dart';
 import '../screen/calc.dart';
-import 'editing/editing.dart';
-import 'editing/int.dart';
-import 'error.dart';
 import 'proto/field/map_entry.dart';
 import 'proto/field/new_map_entry.dart';
 
@@ -37,8 +31,6 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
     MdiShaftIdentifierMsg_Type$concreteField() => ConcreteFieldShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$mapEntry() => MapEntryShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$newMapEntry() => NewMapEntryShaft.create(shaftCalcBuildBits),
-    MdiShaftIdentifierMsg_Type$mapEntryKey() => MapEntryKeyShaft.create(shaftCalcBuildBits),
-    MdiShaftIdentifierMsg_Type$mapEntryValue() => MapEntryValueShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$editScalar() => EditScalarShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$buildRunner() => BuildRunnerShaft.create(shaftCalcBuildBits),
     _ => NotImplementedShaft.create(shaftCalcBuildBits),

@@ -5,6 +5,8 @@ import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/content/message.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/proto_customizer.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
 import 'package:mhu_dart_ide/src/shaft/string.dart';
 import 'package:mhu_dart_ide/src/sharing_box/browse_map.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
@@ -20,6 +22,8 @@ abstract class ValueBrowsingContent<T>
     required ScalarValue<M> messageValue,
     required FieldCoordinates fieldCoordinates,
     required DataType<T> dataType,
+    required ProtoCustomizer protoCustomizer,
+    required ProtoPathField protoPathField,
   }) {
     final DataType dt = dataType;
     switch (dt) {
@@ -33,6 +37,8 @@ abstract class ValueBrowsingContent<T>
               fieldCoordinates: fieldCoordinates,
             ),
           ),
+          protoCustomizer: protoCustomizer,
+          protoPath: protoPathField,
         );
       case MapDataType():
         return dt.mapKeyValueGeneric<ValueBrowsingContent>(
@@ -46,6 +52,8 @@ abstract class ValueBrowsingContent<T>
                     fieldCoordinates: fieldCoordinates,
                   ),
                 ),
+                protoCustomizer: protoCustomizer,
+                protoPath: protoPathField,
               ),
             );
           },
@@ -58,6 +66,9 @@ abstract class ValueBrowsingContent<T>
   static ValueBrowsingContent<T> scalar<T>({
     required ScalarDataType<T> scalarDataType,
     required ScalarValue<T> scalarValue,
+    BuildShaftContent extraContent = emptyContent,
+    required ProtoCustomizer protoCustomizer,
+    required ProtoPath protoPath,
   }) {
     ValueBrowsingContent<T> build<V>(
       ScalarDataType<V> scalarDataType,
@@ -68,6 +79,8 @@ abstract class ValueBrowsingContent<T>
       final scalarEditingBits = ScalarEditingBits.create(
         scalarDataType: scalarDataType,
         scalarValue: scalarValue as ScalarValue<V>,
+        protoCustomizer: protoCustomizer,
+        protoPath: protoPath,
       );
 
       final result = builder(scalarEditingBits) as ValueBrowsingContent<T>;
@@ -83,6 +96,7 @@ abstract class ValueBrowsingContent<T>
                 callback: () {},
               )
             ]),
+            ...extraContent(sizedBits),
           ];
         },
         editingBits: result.editingBits,
@@ -95,10 +109,13 @@ abstract class ValueBrowsingContent<T>
         return sdt.messageDataTypeGeneric<ValueBrowsingContent>(
           <M extends Msg>(messageDataType) {
             return message<M>(
-              MessageEditingBits.create<M>(
+              messageEditingBits: MessageEditingBits.create<M>(
                 messageDataType: messageDataType,
                 scalarValue: scalarValue as ScalarValue<M>,
+                protoCustomizer: protoCustomizer,
+                protoPath: protoPath,
               ),
+              extraContent: extraContent,
             );
           },
         ) as ValueBrowsingContent<T>;
@@ -146,20 +163,31 @@ abstract class ValueBrowsingContent<T>
         );
       },
       buildShaftOptions: (shaftBuilderBits) {
+        final newEntryOpener = ShaftTypes.newMapEntry.opener(shaftBuilderBits);
         return [
-          ShaftTypes.newMapEntry.opener(shaftBuilderBits),
+          newEntryOpener.copyWith(
+            callback: () {
+              final mapFieldAccess = mapEditingBits.protoPathField.fieldAccess
+                  as MapFieldAccess<Msg, K, V>;
+              shaftBuilderBits.txn(() {
+                mapEditingBits.protoCustomizer.mapDefaultKey(mapFieldAccess);
+              });
+            },
+          )
         ];
       },
       editingBits: mapEditingBits,
     );
   }
 
-  static ValueBrowsingContent<M> message<M extends Msg>(
-    MessageEditingBits<M> messageEditingBits,
-  ) {
+  static ValueBrowsingContent<M> message<M extends Msg>({
+    required MessageEditingBits<M> messageEditingBits,
+    BuildShaftContent extraContent = emptyContent,
+  }) {
     return ComposedValueBrowsingContent.shaftContentBits(
       shaftContentBits: MessageContent.create(
         messageEditingBits: messageEditingBits,
+        extraContent: extraContent,
       ),
       editingBits: messageEditingBits,
     );

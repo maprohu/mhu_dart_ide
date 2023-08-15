@@ -55,10 +55,34 @@ class _OpBuild {
 
   final bool isFocused;
 
+  final _callbackSet = <OpCallback>{};
+
   _OpBuild(
     this.builder, {
     required this.isFocused,
   });
+
+  OpBuildHandle register(OpCallback callback) {
+    if (isFocused) {
+      return OpBuildHandle.empty;
+    }
+
+    assert(
+      _callbackSet.add(callback),
+      "callback already added: $callback",
+    );
+
+    final reg = _BuildReg(callback);
+
+    ops.add(reg);
+
+    return OpBuildHandle(
+      shortcut: () => reg.shortcut,
+      watchState: () {
+        return reg.pressed();
+      },
+    );
+  }
 
   late final node = _OpNode(
     regs: ops,
@@ -229,20 +253,7 @@ class OpBuilder {
   OpBuildHandle register(OpCallback callback) {
     assert(!_built);
 
-    if (_opBuild.isFocused) {
-      return OpBuildHandle.empty;
-    }
-
-    final reg = _BuildReg(callback);
-
-    _opBuild.ops.add(reg);
-
-    return OpBuildHandle(
-      shortcut: () => reg.shortcut,
-      watchState: () {
-        return reg.pressed();
-      },
-    );
+    return _opBuild.register(callback);
   }
 
   var _built = true;

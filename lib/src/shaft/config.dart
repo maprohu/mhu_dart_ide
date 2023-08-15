@@ -7,9 +7,9 @@ import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/content/message.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/proto_customizer.dart';
+import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
-
-import 'editing/editing.dart';
 
 part 'config.g.has.dart';
 
@@ -29,10 +29,21 @@ abstract class ConfigShaft
   static ConfigShaft create(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
+    final protoCustomizer = ProtoCustomizer();
+
+    protoCustomizer.mapEntryLabel.put(
+      MdiConfigMsg$.dartPackages,
+      (mapEntry) => mapEntry.value.path.orIfBlank(
+        () => "(${mapEntry.key})",
+      ),
+    );
+
     final messageEditingBits = MessageEditingBits.create(
       messageDataType:
           shaftCalcBuildBits.configFw.read().pbi.calc.messageDataType,
       scalarValue: shaftCalcBuildBits.configFw.toScalarValue,
+      protoCustomizer: protoCustomizer,
+      protoPath: ProtoPath.root,
     );
 
     final shaftRight = ComposedConfigShaftRight(

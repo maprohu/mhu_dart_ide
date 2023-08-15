@@ -515,10 +515,9 @@ packages:
   mhu_dart_annotation:
     dependency: "direct main"
     description:
-      name: mhu_dart_annotation
-      sha256: "45e9c5a1fb2360154067c36f24174bdad7a54bd9e13994bfd47ddb8b1a8b74cf"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../mhu_dart_annotation"
+      relative: true
+    source: path
     version: "1.0.1"
   mhu_dart_builder:
     dependency: "direct dev"
