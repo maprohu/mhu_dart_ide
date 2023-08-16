@@ -33,7 +33,7 @@ abstract class ConfigShaft
 
     protoCustomizer.mapEntryLabel.put(
       MdiConfigMsg$.workspaces,
-      (mapEntry) => mapEntry.value.path.orIfBlank(
+      (mapEntry) => mapEntry.value.name.orIfBlank(
         () => "(${mapEntry.key})",
       ),
     );
