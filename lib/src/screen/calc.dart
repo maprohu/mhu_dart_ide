@@ -51,11 +51,8 @@ typedef ShaftCalcChainLeft = ShaftCalcChain?;
 typedef ShaftHeaderLabel = String;
 
 @Has()
-typedef ShaftInitState = FutureOr<MdiInnerStateMsg> Function()?;
-
-@Has()
-@HasDefault(false)
-typedef ShaftAutoFocus = bool;
+@HasDefault(noop)
+typedef OnShaftOpen = void Function();
 
 @Has()
 @HasDefault(true)
@@ -99,8 +96,8 @@ abstract base class ShaftCalcChain
   late final ShaftIndexFromLeft shaftIndexFromLeft =
       shaftCalcChainLeft?.shaftIndexFromLeft.let((i) => i + 1) ?? 0;
 
-  late final isFocused =
-      shaftIndexFromLeft == stateMsg.focusedShaft.indexFromLeftOpt;
+// late final isFocused =
+//     shaftIndexFromLeft == stateMsg.focusedShaft.indexFromLeftOpt;
 }
 
 extension HasShaftMsgX on HasShaftMsg {
@@ -121,8 +118,7 @@ abstract class ShaftCalc
         HasBuildShaftContent,
         HasBuildShaftOptions,
         HasShaftSignificant,
-        HasShaftInitState,
-        HasShaftAutoFocus {}
+        HasOnShaftOpen {}
 
 extension ShaftCalcChainX on ShaftCalcChain {
   ShaftCalcBuildBits toBuildBits({
@@ -142,35 +138,21 @@ extension ShaftCalcChainX on ShaftCalcChain {
   ShaftCalc? get leftSignificantCalc =>
       leftCalcs.firstWhereOrNull((e) => e.shaftSignificant);
 
-  Fu<MdiShaftMsg> get shaftMsgFu {
-    return Fu.fromFr(
-      fr: stateFw.map((state) {
-        return state.effectiveTopShaft.getShaftByIndex(shaftIndexFromRight);
-      }),
-      update: (updates) {
-        stateFw.deepRebuild((state) {
-          state.topShaftOpt?.clearNotificationsDeepMutate();
-          state.effectiveTopShaft
-              .getShaftByIndex(shaftIndexFromRight)
-              .let(updates);
-        });
-      },
-    );
-  }
+  Fu<MdiShaftMsg> get shaftMsgFu => shaftMsgFuByIndex(shaftIndexFromLeft);
 
   MutableValue<ShaftMsg> get shaftUpdateValue => shaftMsgFu.toMutableValue;
 
-  Future<T> accessOwnInnerState<T>(
-    FutureOr<T> Function(InnerStateFw innerStateFw) action,
-  ) {
-    return accessInnerState(shaftIndexFromLeft, action);
-  }
+// Future<T> accessOwnInnerState<T>(
+//   FutureOr<T> Function(InnerStateFw innerStateFw) action,
+// ) {
+//   return accessInnerState(shaftIndexFromLeft, action);
+// }
 
-  Future<T> accessInnerStateRight<T>(
-    Future<T> Function(InnerStateFw innerStateFw) action,
-  ) {
-    return accessInnerState(shaftIndexFromLeft + 1, action);
-  }
+// Future<T> accessInnerStateRight<T>(
+//   Future<T> Function(InnerStateFw innerStateFw) action,
+// ) {
+//   return accessInnerState(shaftIndexFromLeft + 1, action);
+// }
 }
 
 extension ShaftCalcX on ShaftCalc {
@@ -182,19 +164,20 @@ extension HasShaftCalcChainX on HasShaftCalcChain {
 
   ShaftCalc? get leftSignificantCalc => shaftCalcChain.leftSignificantCalc;
 
-  Future<R> accessOwnInnerState<R>(
-    FutureOr<R> Function(InnerStateFw innerStateFw) action,
-  ) {
-    return shaftCalcChain.accessOwnInnerState(action);
-  }
+  // Future<R> accessOwnInnerState<R>(
+  //   FutureOr<R> Function(InnerStateFw innerStateFw) action,
+  // ) {
+  //   return shaftCalcChain.accessOwnInnerState(action);
+  // }
 
-  Future<R> accessInnerStateRight<R>(
-    Future<R> Function(InnerStateFw innerStateFw) action,
-  ) {
-    return shaftCalcChain.accessInnerStateRight(action);
-  }
+  // Future<R> accessInnerStateRight<R>(
+  //   Future<R> Function(InnerStateFw innerStateFw) action,
+  // ) {
+  //   return shaftCalcChain.accessInnerStateRight(action);
+  // }
 
-  bool get isFocused => shaftCalcChain.isFocused;
+  ShaftIndexFromLeft get shaftIndexFromLeft =>
+      shaftCalcChain.shaftIndexFromLeft;
 }
 
 @Compose()
@@ -224,12 +207,12 @@ extension ShaftCalcBuildBitsX on ShaftCalcBuildBits {
     return fieldKey.concreteFieldCalc.protoName.titleCase;
   }
 
-  void requestFocus() {
-    stateFw.rebuild((state) {
-      state.ensureFocusedShaft().indexFromLeft =
-          shaftCalcChain.shaftIndexFromLeft;
-    });
-  }
+  // void requestFocus() {
+  //   stateFw.rebuild((state) {
+  //     state.ensureFocusedShaft().indexFromLeft =
+  //         shaftCalcChain.shaftIndexFromLeft;
+  //   });
+  // }
 
   void updateShaftMsg(
     void Function(ShaftMsg shaftMsg) updates,

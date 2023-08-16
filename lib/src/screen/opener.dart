@@ -30,35 +30,6 @@ enum OpenerState {
 @Compose()
 abstract class OpenerBits implements HasOpenerState, HasShortcutCallback {}
 
-// extension ScreenHasShaftBuilderBitsX on HasShaftBuilderBits {
-//   VoidCallback openerCallback(ShaftOpener builder) =>
-//       shaftBits.openerCallback(builder);
-// }
-
-// extension ScreenShaftBuilderBitsX on ShaftBuilderBits {
-//   VoidCallback openerCallback(
-//     ShaftOpener builder, {
-//     void Function(MdiShaftMsg shaftMsg) before = ignore1,
-//     int? focusShaftIndexFromLeft,
-//   }) {
-//     return () {
-//       final newShaft = MdiShaftMsg$.create(
-//         parent: shaftMsg.clearNotificationsDeepRebuild(),
-//       ).also(builder)
-//         ..freeze();
-//
-//       before(newShaft);
-//
-//       stateFw.deepRebuild((message) {
-//         message.topShaft = newShaft;
-//         if (focusShaftIndexFromLeft != null) {
-//           message.ensureFocusedShaft().indexFromLeft = focusShaftIndexFromLeft;
-//         }
-//       });
-//     };
-//   }
-// }
-
 extension OpenerShaftCalcBitsX on HasShaftCalcChain {
   void closeShaft() {
     shaftCalcChain.stateFw.rebuild((message) {
@@ -69,15 +40,6 @@ extension OpenerShaftCalcBitsX on HasShaftCalcChain {
 }
 
 typedef ShaftIdentifier = MdiShaftIdentifierMsg;
-// @freezed
-// class ShaftIdentifier
-//     with _$ShaftIdentifier
-//     implements HasShaftType, HasShaftKey {
-//   const factory ShaftIdentifier(
-//     ShaftType shaftType, {
-//     ShaftKey shaftKey,
-//   }) = _ShaftIdentifier;
-// }
 
 typedef ShaftKey<T> = void Function(T key)?;
 
@@ -107,20 +69,51 @@ extension ShaftIdentifierShaftTypeX<M extends GeneratedMessage>
   MenuItem opener(
     ShaftBuilderBits shaftBuilderBits, {
     ShaftKey<M> shaftKey,
+    MdiInnerStateMsg? innerState,
   }) {
     return shaftBuilderBits.opener(
       shaftIdentifier(shaftKey),
+      innerState: innerState,
+    );
+  }
+
+  OpenerBits openerBits(
+    ShaftBuilderBits shaftBuilderBits, {
+    ShaftKey<M> shaftKey,
+    MdiInnerStateMsg? innerState,
+  }) {
+    return shaftBuilderBits.openerBits(
+      shaftIdentifier(shaftKey),
+      innerState: innerState,
     );
   }
 
   Bx openerShortcut(
     ShaftBuilderBits shaftBuilderBits, {
     ShaftKey<M> shaftKey,
-    FutureOr<MdiInnerStateMsg> Function()? innerState,
+    // FutureOr<MdiInnerStateMsg> Function()? innerState,
   }) {
     return shaftBuilderBits.openerShortcut(
       shaftIdentifier(shaftKey),
-      innerState: innerState,
+      // innerState: innerState,
     );
+  }
+}
+
+class ShaftIdentifiers {
+  ShaftIdentifiers._();
+
+  static ShaftIdentifier mapEntry<K>({
+    required MapKeyDataType<K> mapKeyDataType,
+    required K key,
+  }) {
+    final keyAttribute = mapKeyDataType.mapEntryKeyMsgAttribute;
+
+    final shaftIdentifier = ShaftIdentifier();
+    keyAttribute.writeAttribute(
+      shaftIdentifier.ensureMapEntry(),
+      key,
+    );
+    return shaftIdentifier..freeze();
   }
 }

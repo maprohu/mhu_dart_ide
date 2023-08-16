@@ -32,10 +32,21 @@ abstract class ConfigShaft
     final protoCustomizer = ProtoCustomizer();
 
     protoCustomizer.mapEntryLabel.put(
-      MdiConfigMsg$.dartPackages,
+      MdiConfigMsg$.workspaces,
       (mapEntry) => mapEntry.value.path.orIfBlank(
         () => "(${mapEntry.key})",
       ),
+    );
+
+    final ids = shaftCalcBuildBits.configFw.ids;
+    int nextId() {
+      ids.update((v) => v + 1);
+      return ids.read();
+    }
+
+    protoCustomizer.mapDefaultKey.put(
+      MdiConfigMsg$.workspaces,
+      nextId,
     );
 
     final messageEditingBits = MessageEditingBits.create(

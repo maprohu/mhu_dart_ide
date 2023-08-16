@@ -35,12 +35,12 @@ extension ShaftBuilderBitsX on ShaftBuilderBits {
         Size(width, height),
       );
 
-  void requestFocus() {
-    stateFw.deepRebuild(
-      (state) {
-        state.ensureFocusedShaft().indexFromLeft =
-            shaftCalcChain.shaftIndexFromLeft;
-      },
-    );
-  }
+  // void requestFocus() {
+  //   stateFw.deepRebuild(
+  //     (state) {
+  //       state.ensureFocusedShaft().indexFromLeft =
+  //           shaftCalcChain.shaftIndexFromLeft;
+  //     },
+  //   );
+  // }
 }

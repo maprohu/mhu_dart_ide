@@ -41,10 +41,11 @@ void main() async {
         configBits: configBits,
         screenSizeFr: screenSizeFr,
         opBuilder: OpBuilder(configBits),
-        accessInnerState: createAccessInnerState(
-          isarDatabase: isar,
-          disposers: disposers,
-        ),
+        shaftDataStore: {},
+        // accessInnerState: createAccessInnerState(
+        //   isarDatabase: isar,
+        //   disposers: disposers,
+        // ),
       );
 
       final screenStreamController = StreamController<Bx>();

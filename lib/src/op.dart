@@ -12,6 +12,8 @@ import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/keyboard.dart';
 import 'package:mhu_dart_ide/src/model.dart';
 
+import 'screen/calc.dart';
+
 part 'op.freezed.dart';
 
 part 'op.g.has.dart';
@@ -50,23 +52,21 @@ class _BuildReg {
 class _OpBuild {
   final OpBuilder builder;
   final ops = <_BuildReg>[];
-  final keyListeners = <ShortcutKeyListener>{};
-  final rawKeyListeners = <RawKeyListener>{};
 
-  final bool isFocused;
+  // final rawKeyListeners = <RawKeyListener>{};
+
+  // final bool isFocused;
 
   final _callbackSet = <OpCallback>{};
 
   _OpBuild(
-    this.builder, {
-    required this.isFocused,
-  });
+    this.builder,
+    //     {
+    //   required this.isFocused,
+    // }
+  );
 
   OpBuildHandle register(OpCallback callback) {
-    if (isFocused) {
-      return OpBuildHandle.empty;
-    }
-
     assert(
       _callbackSet.add(callback),
       "callback already added: $callback",
@@ -92,39 +92,14 @@ class _OpBuild {
 
   late _OpNode currentNode = node;
 
-  void invokeKeyListeners(ShortcutKey key) {
-    for (final listener in keyListeners) {
-      listener(key);
-    }
-  }
-
-  void invokeRawKeyListeners(KeyEvent keyEvent) {
-    for (final listener in rawKeyListeners) {
-      listener(keyEvent);
-    }
-  }
+  // void invokeRawKeyListeners(KeyEvent keyEvent) {
+  //   for (final listener in rawKeyListeners) {
+  //     listener(keyEvent);
+  //   }
+  // }
 
   void keyPressed(ShortcutKey key) {
     currentNode.keyPressed(key);
-  }
-
-  void onKeyEvent(KeyEvent keyEvent) {
-    if (keyEvent is KeyDownEvent) {
-      ShortcutKey shortcutKey;
-      final character = keyEvent.character;
-      if (character != null) {
-        shortcutKey = CharacterShortcutKey(character);
-      } else {
-        shortcutKey = LogicalShortcutKey(keyEvent.logicalKey);
-      }
-
-      if (isFocused) {
-        invokeKeyListeners(shortcutKey);
-      } else {
-        keyPressed(shortcutKey);
-      }
-    }
-    invokeRawKeyListeners(keyEvent);
   }
 }
 
@@ -160,9 +135,7 @@ class _OpNode {
     }
     final node = map[key];
 
-    if (node == null) {
-      build.invokeKeyListeners(key);
-    } else {
+    if (node != null) {
       node.click(this, key);
     }
   }
@@ -191,7 +164,7 @@ class _OpNode {
 }
 
 typedef ShortcutKeyListener = void Function(ShortcutKey key);
-typedef RawKeyListener = void Function(KeyEvent keyEvent);
+// typedef RawKeyListener = void Function(KeyEvent keyEvent);
 
 @Has()
 class OpBuilder {
@@ -219,19 +192,19 @@ class OpBuilder {
     }
   }
 
-  void addKeyListener(ShortcutKeyListener listener) {
-    assert(!_built);
-    _opBuild.keyListeners.add(listener);
-  }
+  // void addKeyListener(ShortcutKeyListener listener) {
+  //   assert(!_built);
+  //   _opBuild.keyListeners.add(listener);
+  // }
 
-  void _clearFocusOnEscape(ShortcutKey shortcutKey) {
-    if (shortcutKey == ShortcutKey.escape) {
-      configBits.clearFocusedShaft();
-      // configBits.stateFw.rebuild((message) {
-      //   message.clearFocusedShaft();
-      // });
-    }
-  }
+  // void _clearFocusOnEscape(ShortcutKey shortcutKey) {
+  //   if (shortcutKey == ShortcutKey.escape) {
+  //     configBits.clearFocusedShaft();
+  //     // configBits.stateFw.rebuild((message) {
+  //     //   message.clearFocusedShaft();
+  //     // });
+  //   }
+  // }
 
   // void registerClearFocusOnEscape() {
   //   addKeyListener(_clearFocusOnEscape);
@@ -250,8 +223,18 @@ class OpBuilder {
 
   static const shortuctEq = IterableEquality<ShortcutKey>();
 
+  final _runningAsyncOp = fw<_RunningAsyncOp?>(null);
+
+  late final runningAsyncOpShaftIndex = fr(
+    () => _runningAsyncOp()?.shaftIndexFromLeft,
+  );
+
   OpBuildHandle register(OpCallback callback) {
     assert(!_built);
+
+    if (_runningAsyncOp.watch() != null) {
+      return OpBuildHandle.empty;
+    }
 
     return _opBuild.register(callback);
   }
@@ -297,16 +280,7 @@ class OpBuilder {
     assert(_built);
     _built = false;
 
-    final state = configBits.stateCalcFr().state;
-    final focusedIndex = state.focusedShaft.indexFromLeftOpt;
-
-    final isFocused = focusedIndex != null &&
-        state.effectiveTopShaft.shaftByIndexFromLeft(focusedIndex) != null;
-
-    _opBuild = _OpBuild(
-      this,
-      isFocused: isFocused,
-    );
+    _opBuild = _OpBuild(this);
 
     try {
       return builder();
@@ -316,25 +290,82 @@ class OpBuilder {
   }
 
   void onKeyEvent(KeyEvent keyEvent) {
-    _opBuild.onKeyEvent(keyEvent);
+    final shortcutKey = keyEvent.toShortcutKey;
+    if (shortcutKey == null) {
+      return;
+    }
+
+    final runningAsyncOp = _runningAsyncOp.read();
+
+    if (runningAsyncOp == null) {
+      _opBuild.keyPressed(shortcutKey);
+    } else {
+      runningAsyncOp.invokeKeyListeners(shortcutKey);
+    }
+  }
+
+  bool get isAsyncOpRunning => _runningAsyncOp.read() != null;
+
+  void startAsyncOp({
+    required ShaftIndexFromLeft shaftIndexFromLeft,
+    required Future<void> Function(
+      AddShortcutKeyListener addShortcutKeyListener,
+    ) start,
+  }) async {
+    assert(_runningAsyncOp.read() == null);
+
+    final running = _RunningAsyncOp(
+      shaftIndexFromLeft: shaftIndexFromLeft,
+    );
+    _runningAsyncOp.value = running;
+
+    try {
+      final future = start(
+        running.addShortcutKeyListener,
+      );
+      await future;
+    } finally {
+      _runningAsyncOp.value = null;
+    }
   }
 }
 
-// class OpBuilderShortcutActivator extends ShortcutActivator {
-//   final OpBuilder opBuilder;
-//
-//   OpBuilderShortcutActivator(this.opBuilder);
-//
-//   @override
-//   bool accepts(RawKeyEvent event, RawKeyboard state) {
-//     return opBuilder._opBuild.isFocused;
-//   }
-//
-//   @override
-//   String debugDescribeKeys() {
-//     return runtimeType.toString();
-//   }
-//
-//   @override
-//   Iterable<LogicalKeyboardKey>? get triggers => null;
-// }
+class _RunningAsyncOp {
+  final ShaftIndexFromLeft shaftIndexFromLeft;
+  final keyListeners = <ShortcutKeyListener>{};
+
+  late final AddShortcutKeyListener addShortcutKeyListener = keyListeners.add;
+
+  void invokeKeyListeners(ShortcutKey key) {
+    for (final listener in keyListeners) {
+      listener(key);
+    }
+  }
+
+  _RunningAsyncOp({
+    required this.shaftIndexFromLeft,
+  });
+}
+
+extension KeyEventX on KeyEvent {
+  ShortcutKey? get toShortcutKey {
+    final keyEvent = this;
+    if (keyEvent is KeyDownEvent) {
+      ShortcutKey shortcutKey;
+      final character = keyEvent.character;
+      if (character != null) {
+        shortcutKey = CharacterShortcutKey(character);
+      } else {
+        shortcutKey = LogicalShortcutKey(keyEvent.logicalKey);
+      }
+
+      return shortcutKey;
+    }
+
+    return null;
+  }
+}
+
+typedef AddShortcutKeyListener = void Function(
+  ShortcutKeyListener shortcutKeyListener,
+);

@@ -38,19 +38,15 @@ SharingBoxes browseMapSharingBoxes<K, V>({
     mapDataType.mapKeyDataType.mapKeyComparator,
   );
 
-  final keyAttribute = mapDataType.mapKeyDataType.mapEntryKeyMsgAttribute;
-
   return [
     ...sizedShaftBuilderBits.menu(
       sorted.map(
         (entry) {
-          final shaftIdentifier = ShaftIdentifier()
-            ..ensureMapEntry().let(
-              (key) => keyAttribute.writeAttribute(key, entry.key),
-            )
-            ..freeze();
           return sizedShaftBuilderBits.opener(
-            shaftIdentifier,
+            ShaftIdentifiers.mapEntry(
+              mapKeyDataType: mapDataType.mapKeyDataType,
+              key: entry.key,
+            ),
           );
         },
       ).toList(),

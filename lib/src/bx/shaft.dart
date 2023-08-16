@@ -152,7 +152,12 @@ Bx defaultShaftBx({
         axis: Axis.vertical,
         items: [
           ...content,
-          for (final notification in contentBits.shaftMsg.notifications)
+          for (final notification in contentBits
+                  .notificationsFw()
+                  .byIndexFromLeft[
+                      contentBits.shaftCalcChain.shaftIndexFromLeft]
+                  ?.notifications ??
+              [])
             notificationSharingBx(
               sizedShaftBuilderBits: contentBits,
               notificationMsg: notification,

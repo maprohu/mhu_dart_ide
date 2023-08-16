@@ -36,14 +36,6 @@ abstract class MainMenuShaft
         return sizedBits.menu(
           [
             ShaftTypes.config.opener(sizedBits),
-            MenuItem(
-              label: "theme",
-              callback: (() {}),
-            ),
-            MenuItem(
-              label: "state",
-              callback: (() {}),
-            ),
             ShaftTypes.buildRunner.opener(sizedBits),
             MenuItem(
               label: "Reset View",

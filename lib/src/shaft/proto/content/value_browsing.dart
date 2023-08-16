@@ -1,9 +1,11 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
+import 'package:mhu_dart_ide/src/shaft/editing/edit_scalar.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/content/message.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/proto_customizer.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
@@ -93,7 +95,22 @@ abstract class ValueBrowsingContent<T>
               ShaftTypes.editScalar.opener(sizedBits),
               MenuItem(
                 label: "Paste from Clipboard",
-                callback: () {},
+                callback: () {
+                  EditScalarShaft.stringEditPasteFromClipboard(
+                    appBits: sizedBits,
+                    shaftIndexFromLeft: sizedBits.shaftIndexFromLeft + 1,
+                  );
+                  sizedBits.txn(() {
+                    ShaftTypes.editScalar
+                        .openerBits(
+                          sizedBits,
+                          innerState: MdiInnerStateMsg()
+                            ..ensureStringEdit().pasting = true
+                            ..freeze(),
+                        )
+                        .shortcutCallback();
+                  });
+                },
               )
             ]),
             ...extraContent(sizedBits),
@@ -170,7 +187,29 @@ abstract class ValueBrowsingContent<T>
               final mapFieldAccess = mapEditingBits.protoPathField.fieldAccess
                   as MapFieldAccess<Msg, K, V>;
               shaftBuilderBits.txn(() {
-                mapEditingBits.protoCustomizer.mapDefaultKey(mapFieldAccess);
+                final newKey = mapEditingBits.protoCustomizer
+                    .mapDefaultKey(mapFieldAccess);
+
+                if (newKey == null) {
+                  newEntryOpener.callback();
+                } else {
+                  mapEditingBits.updateValue(
+                    (map) {
+                      map[newKey] = mapEditingBits
+                          .mapDataType.mapValueDataType.defaultValue;
+                    },
+                  );
+
+                  shaftBuilderBits
+                      .opener(
+                        ShaftIdentifiers.mapEntry(
+                          mapKeyDataType:
+                              mapEditingBits.mapDataType.mapKeyDataType,
+                          key: newKey,
+                        ),
+                      )
+                      .callback();
+                }
               });
             },
           )

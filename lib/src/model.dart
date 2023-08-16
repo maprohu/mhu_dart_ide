@@ -14,17 +14,17 @@ extension MdiShaftMsgX on MdiShaftMsg {
     return listTowardsLeft.getOrNull(reverseIndex);
   }
 
-  void clearNotificationsDeepMutate() {
-    for (final msg in iterableTowardsLeft) {
-      msg.notifications.clear();
-    }
-  }
-
-  MdiShaftMsg clearNotificationsDeepRebuild() {
-    return deepRebuild((msg) {
-      msg.clearNotificationsDeepMutate();
-    });
-  }
+  // void clearNotificationsDeepMutate() {
+  //   for (final msg in iterableTowardsLeft) {
+  //     msg.notifications.clear();
+  //   }
+  // }
+  //
+  // MdiShaftMsg clearNotificationsDeepRebuild() {
+  //   return deepRebuild((msg) {
+  //     msg.clearNotificationsDeepMutate();
+  //   });
+  // }
 }
 
 extension PfeMapKeyDataTypeX<K> on MapKeyDataType<K> {

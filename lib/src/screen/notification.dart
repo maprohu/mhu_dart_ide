@@ -1,6 +1,7 @@
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:protobuf/protobuf.dart';
 
 extension NotificationHasShaftCalcChainX on HasShaftCalcChain {
   void showNotification(String message) {
@@ -8,13 +9,20 @@ extension NotificationHasShaftCalcChainX on HasShaftCalcChain {
   }
 
   void showNotifications(Iterable<String> messages) {
-    shaftCalcChain.shaftMsgFu.update((shaftMsg) {
-      final notifications = shaftMsg.notifications;
-      notifications.clear();
+    shaftCalcChain.notificationsFw.rebuild((notifications) {
+      final shaftIndexFromLeft = shaftCalcChain.shaftIndexFromLeft;
 
-      messages
-          .map((message) => MdiNotificationMsg()..text = message)
-          .let(notifications.addAll);
+      final selfNotifications =
+          notifications.byIndexFromLeft[shaftIndexFromLeft] ??
+              MdiShaftNotificationMsg.getDefault();
+
+      notifications.byIndexFromLeft[shaftIndexFromLeft] =
+          selfNotifications.rebuild((selfNotifications) {
+        for (final message in messages) {
+          selfNotifications.notifications
+              .add(MdiNotificationMsg()..text = message);
+        }
+      });
     });
   }
 }

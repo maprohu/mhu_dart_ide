@@ -5,8 +5,10 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/isar.dart';
 import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/bx/screen.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
+import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 
 import '../proto.dart';
@@ -22,6 +24,8 @@ typedef ConfigFw = MdiConfigMsg$Fw;
 typedef StateFw = MdiStateMsg$Fw;
 @Has()
 typedef ThemeFw = MdiThemeMsg$Fw;
+@Has()
+typedef NotificationsFw = MdiShaftNotificationsMsg$Fw;
 
 @Has()
 typedef StateCalcFr = Fr<StateCalc>;
@@ -36,6 +40,7 @@ abstract class ConfigBits
         HasConfigFw,
         HasStateFw,
         HasThemeFw,
+        HasNotificationsFw,
         HasStateCalcFr,
         HasThemeCalcFr,
         HasConfigCalcFr,
@@ -63,6 +68,12 @@ abstract class ConfigBits
       defaultValue: mdiDefaultTheme,
     );
 
+    final notificationsFw = await isar.singletonFwProtoWriteOnly(
+      id: MdiSingleton.notifications.index,
+      create: MdiShaftNotificationsMsg.create,
+      disposers: disposers,
+      defaultValue: MdiShaftNotificationsMsg.getDefault(),
+    );
     return ComposedConfigBits(
       themeFw: MdiThemeMsg$Fw(
         themeFw,
@@ -76,6 +87,10 @@ abstract class ConfigBits
         configFw,
         disposers: disposers,
       ),
+      notificationsFw: MdiShaftNotificationsMsg$Fw(
+        notificationsFw,
+        disposers: disposers,
+      ),
       themeCalcFr: disposers.fr(() => ThemeCalc(themeFw())),
       stateCalcFr: disposers.fr(() => StateCalc(stateFw())),
       configCalcFr: disposers.fr(() => ConfigCalc(configFw())),
@@ -85,18 +100,6 @@ abstract class ConfigBits
   }
 }
 
-// mixin HasConfigBits {
-//   MdiConfigBits get configBits;
-//
-//   late final config = configBits.config;
-//   late final state = configBits.state;
-//   late final theme = configBits.theme;
-//
-//   late final stateCalc = configBits.stateCalc;
-//   late final themeCalc = configBits.themeCalc;
-//
-// }
-
 class ConfigCalc {
   final MdiConfigMsg config;
 
@@ -104,9 +107,26 @@ class ConfigCalc {
 }
 
 extension HasStateFwX on HasStateFw {
-  void clearFocusedShaft() {
-    stateFw.rebuild((state) {
-      state.clearFocusedShaft();
-    });
+  // void clearFocusedShaft() {
+  //   stateFw.rebuild((state) {
+  //     state.clearFocusedShaft();
+  //   });
+  // }
+
+  Fu<MdiShaftMsg> shaftMsgFuByIndex(ShaftIndexFromLeft shaftIndexFromLeft) {
+    return Fu.fromFr(
+      fr: stateFw.map((state) {
+        return state.effectiveTopShaft
+            .getShaftByIndexFromLeft(shaftIndexFromLeft);
+      }),
+      update: (updates) {
+        stateFw.deepRebuild((state) {
+          state
+              .ensureEffectiveTopShaft()
+              .getShaftByIndexFromLeft(shaftIndexFromLeft)
+              .let(updates);
+        });
+      },
+    );
   }
 }

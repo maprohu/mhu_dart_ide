@@ -3,29 +3,23 @@ syntax = "proto3";
 
 message  MdiConfigMsg {
   int32 ids = 1;
+  map<int32, MdiWorkspaceMsg> workspaces = 2;
+}
+
+message  MdiWorkspaceMsg {
+  string path = 1;
   map<int32, MdiDartPackageMsg> dart_packages = 2;
 }
 
 message  MdiDartPackageMsg {
-  string path = 1;
+  string relative_path = 1;
 }
 
 message MdiStateMsg {
   MdiShaftMsg top_shaft = 1;
   double min_shaft_width = 2;
-  MdiFocusedShaftMsg focused_shaft = 3;
 }
 
-message  MdiFocusedShaftMsg {
-  int32  index_from_left = 1;
-}
-
-message  MdiBuildRunnerPackagesMsg {
-}
-
-message  MdiBuildRunnerPackageMsg {
-  int32 package_id = 1;
-}
 
 message MdiThemeMsg {
   MdiDividerThicknessThemeMsg divider_thickness = 1;
@@ -48,10 +42,17 @@ message MdiNotificationMsg {
 message MdiShaftMsg {
   MdiShaftMsg parent = 1;
   int32 width = 9;
-  repeated MdiNotificationMsg notifications = 15;
 
   MdiShaftIdentifierMsg shaft_identifier = 20;
   MdiInnerStateMsg inner_state = 19;
+}
+
+message  MdiShaftNotificationsMsg {
+  map<int32, MdiShaftNotificationMsg> by_index_from_left = 1;
+}
+
+message MdiShaftNotificationMsg {
+  repeated MdiNotificationMsg notifications = 1;
 }
 
 message MdiShaftIdentifierMsg {
@@ -64,8 +65,8 @@ message MdiShaftIdentifierMsg {
     MdiOneofFieldMsg oneof_field = 101;
     MdiMapEntryKeyMsg map_entry = 102;
     MdiEmptyMsg new_map_entry = 103;
-//    MdiMapEntryKeyMsg map_entry_key = 104;
-//    MdiEmptyMsg map_entry_value = 105;
+    //    MdiMapEntryKeyMsg map_entry_key = 104;
+    //    MdiEmptyMsg map_entry_value = 105;
     MdiEmptyMsg edit_scalar = 106;
 
     MdiEmptyMsg config = 200;
@@ -134,4 +135,7 @@ message MdiStringEditStateMsg {
   string text = 1;
   int32  cursor_position = 2;
   bool pasting = 3;
+  bool focused = 4;
 }
+
+// dart

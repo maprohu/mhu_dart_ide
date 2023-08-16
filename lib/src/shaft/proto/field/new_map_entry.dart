@@ -34,8 +34,6 @@ abstract class NewMapEntryShaft
         shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
         shaftCalcBuildBits: shaftCalcBuildBits,
         newMapEntryShaftRight: shaftRight,
-        shaftInitState: MdiInnerStateMsg.getDefault,
-        shaftAutoFocus: true,
         buildShaftContent: (sizedBits) {
           void submitKeyValue(Object key) {}
           final MapKeyDataType mapKeyDataType =
@@ -49,7 +47,7 @@ abstract class NewMapEntryShaft
             final other => throw other,
           } as StringParsingBits<K>;
 
-          if (shaftCalcBuildBits.isFocused) {
+          if (shaftCalcBuildBits.shaftMsg.innerState.stringEdit.focused) {
             return focusedStringEditorSharingBox(
               sizedBits: sizedBits,
               stringParsingBits: stringParsingBits,
@@ -58,6 +56,7 @@ abstract class NewMapEntryShaft
             return [
               ...unfocusedStringEditSharingBoxes(
                 sizedBits: sizedBits,
+                stringParsingBits: stringParsingBits,
               ),
               ...sizedBits.menu([
                 MenuItem(

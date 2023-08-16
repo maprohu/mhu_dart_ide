@@ -148,28 +148,28 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
 
   OpenerBits openerBits(
     ShaftIdentifier shaftIdentifier, {
-    FutureOr<MdiInnerStateMsg> Function()? innerState,
-    bool autoFocus = false,
+    MdiInnerStateMsg? innerState,
+    OnShaftOpen onShaftOpen = noop,
   }) {
-    final newShaftMessage = MdiShaftMsg()
-      ..parent = shaftMsg
-      ..shaftIdentifier = shaftIdentifier
-      ..freeze();
+    final newShaftMessage = MdiShaftMsg$.create(
+      parent: shaftMsg,
+      shaftIdentifier: shaftIdentifier,
+      innerState: innerState,
+    )..freeze();
 
     final callback = () {
-      if (innerState != null) {
-        accessInnerStateRight((innerStateFw) async {
-          innerStateFw.value = await innerState();
+      // if (initInnerState != null) {
+      //   accessInnerStateRight((innerStateFw) async {
+      //     innerStateFw.value = await initInnerState();
+      //   });
+      // }
+
+      txn(() {
+        stateFw.rebuild((message) {
+          message.topShaft = newShaftMessage;
         });
-      }
 
-      stateFw.deepRebuild((message) {
-        message.topShaft = newShaftMessage;
-
-        if (autoFocus) {
-          message.ensureFocusedShaft().indexFromLeft =
-              shaftCalcChain.shaftIndexFromLeft + 1;
-        }
+        onShaftOpen();
       });
     };
 
@@ -184,15 +184,15 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
   }
 
   Bx openerShortcut(
-    ShaftIdentifier shaftIdentifier, {
-    FutureOr<MdiInnerStateMsg> Function()? innerState,
-    bool autoFocus = false,
-  }) {
+    ShaftIdentifier shaftIdentifier,
+    // {
+    //   // FutureOr<MdiInnerStateMsg> Function()? innerState,
+    // }
+  ) {
     return openerShortcutFromBits(
       openerBits(
         shaftIdentifier,
-        innerState: innerState,
-        autoFocus: autoFocus,
+        // initInnerState: innerState,
       ),
     );
   }
@@ -200,11 +200,13 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
   MenuItem opener(
     ShaftIdentifier shaftIdentifier, {
     String? label,
+    MdiInnerStateMsg? innerState,
   }) {
-    final newShaftMessage = MdiShaftMsg()
-      ..parent = shaftMsg
-      ..shaftIdentifier = shaftIdentifier
-      ..freeze();
+    final newShaftMessage = MdiShaftMsg$.create(
+      parent: shaftMsg,
+      shaftIdentifier: shaftIdentifier,
+      innerState: innerState,
+    )..freeze();
 
     final calc = ComposedShaftCalcChain.appBits(
       appBits: this,
@@ -217,8 +219,8 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
 
     final bits = openerBits(
       shaftIdentifier,
-      innerState: calc.shaftInitState,
-      autoFocus: calc.shaftAutoFocus,
+      onShaftOpen: calc.onShaftOpen,
+      // initInnerState: calc.shaftInitState,
     );
 
     return MenuItem(

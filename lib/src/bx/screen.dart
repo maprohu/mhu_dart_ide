@@ -20,8 +20,14 @@ import '../screen/calc.dart';
 import 'divider.dart';
 
 final defaultMainMenuShaft = MdiShaftMsg()
-  ..ensureShaftIdentifier().ensureMainMenu()
+  ..ensureDefaultMainMenu()
   ..freeze();
+
+extension DefaultMainMenuShaftMsgX on ShaftMsg {
+  void ensureDefaultMainMenu() {
+    ensureShaftIdentifier().ensureMainMenu();
+  }
+}
 
 const _defaultMinShaftWidth = 200.0;
 
@@ -116,37 +122,37 @@ Bx mdiBuildScreen({
   });
 }
 
-void mdiStartScreenStream(
-    {required AppBits appBits,
-    required DspReg disposers,
-    required StreamConsumer<Bx> screenStream}) {
-  // final streamController = StreamController<Bx>();
-  // streamController.add(
-  //   Bx.leaf(
-  //     size: Size.zero,
-  //     widget: null,
-  //   ),
-  // );
-
+void mdiStartScreenStream({
+  required AppBits appBits,
+  required DspReg disposers,
+  required StreamConsumer<Bx> screenStream,
+}) {
   disposers
       .fr(() {
         return mdiBuildScreen(appBits: appBits);
       })
       .changes()
       .let(screenStream.addStream);
-  // .forEach((widget) {
-  //   notifier.value = widget;
-  // });
-
-  // return streamController.stream;
 }
 
 extension ScreenMdiStateMsgX on MdiStateMsg {
   MdiShaftMsg get effectiveTopShaft => topShaftOpt ?? defaultMainMenuShaft;
+
+  MdiShaftMsg ensureEffectiveTopShaft() =>
+      topShaftOpt ?? (ensureTopShaft()..ensureDefaultMainMenu());
 }
 
 extension ScreenMdiShaftMsgX on MdiShaftMsg {
+  Iterable<MdiShaftMsg> get toShaftIterable =>
+      finiteIterable((item) => item.parentOpt);
+
   MdiShaftMsg getShaftByIndex(int index) {
-    return infiniteIterable((item) => item.parent).skip(index).first;
+    return toShaftIterable.skip(index).first;
+  }
+
+  MdiShaftMsg getShaftByIndexFromLeft(ShaftIndexFromLeft shaftIndexFromLeft) {
+    final iterable = toShaftIterable;
+    final length = iterable.length;
+    return iterable.skip(length - shaftIndexFromLeft - 1).first;
   }
 }
