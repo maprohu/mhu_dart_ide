@@ -26,6 +26,8 @@ typedef StateFw = MdiStateMsg$Fw;
 typedef ThemeFw = MdiThemeMsg$Fw;
 @Has()
 typedef NotificationsFw = MdiShaftNotificationsMsg$Fw;
+@Has()
+typedef SequencesFw = MdiSequencesMsg$Fw;
 
 @Has()
 typedef StateCalcFr = Fr<StateCalc>;
@@ -41,6 +43,7 @@ abstract class ConfigBits
         HasStateFw,
         HasThemeFw,
         HasNotificationsFw,
+        HasSequencesFw,
         HasStateCalcFr,
         HasThemeCalcFr,
         HasConfigCalcFr,
@@ -74,6 +77,12 @@ abstract class ConfigBits
       disposers: disposers,
       defaultValue: MdiShaftNotificationsMsg.getDefault(),
     );
+    final sequencesFw = await isar.singletonFwProtoWriteOnly(
+      id: MdiSingleton.sequences.index,
+      create: MdiSequencesMsg.create,
+      disposers: disposers,
+      defaultValue: MdiSequencesMsg.getDefault(),
+    );
     return ComposedConfigBits(
       themeFw: MdiThemeMsg$Fw(
         themeFw,
@@ -85,6 +94,10 @@ abstract class ConfigBits
       ),
       configFw: MdiConfigMsg$Fw(
         configFw,
+        disposers: disposers,
+      ),
+      sequencesFw: MdiSequencesMsg$Fw(
+        sequencesFw,
         disposers: disposers,
       ),
       notificationsFw: MdiShaftNotificationsMsg$Fw(

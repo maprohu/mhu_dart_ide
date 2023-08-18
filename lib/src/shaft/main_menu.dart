@@ -8,6 +8,8 @@ import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 
+import '../long_running.dart';
+
 part 'main_menu.g.has.dart';
 
 part 'main_menu.g.compose.dart';
@@ -46,7 +48,7 @@ abstract class MainMenuShaft
               },
             ),
           ],
-        );
+        ).toSingleElementIterable;
       },
     );
 

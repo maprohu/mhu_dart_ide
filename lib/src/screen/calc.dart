@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
@@ -6,19 +5,17 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
-import 'package:mhu_dart_ide/src/bx/screen.dart';
-import 'package:mhu_dart_ide/src/model.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:recase/recase.dart';
 
 import '../builder/sized.dart';
 import '../bx/menu.dart';
+import '../long_running.dart';
 import '../sharing_box.dart';
 import '../config.dart';
 import '../op.dart';
 import '../shaft/switch.dart';
 import '../bx/boxed.dart';
-import 'inner_state.dart';
 
 part 'calc.g.has.dart';
 
@@ -37,7 +34,8 @@ SharingBoxes emptyContent(SizedShaftBuilderBits sizedShaftBuilderBits) =>
 @Has()
 @HasDefault(emptyShaftOptions)
 typedef BuildShaftOptions = List<MenuItem> Function(
-    ShaftBuilderBits shaftBuilderBits);
+  ShaftBuilderBits shaftBuilderBits,
+);
 
 @Has()
 typedef ShaftMsg = MdiShaftMsg;

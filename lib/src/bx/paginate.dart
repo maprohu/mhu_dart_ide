@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/bx/divider.dart';
+import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../builder/sized.dart';

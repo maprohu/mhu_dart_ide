@@ -1,9 +1,9 @@
+
 import 'dart:async';
 
 import 'package:isar/isar.dart';
 import 'package:logger/logger.dart';
 import 'package:mhu_dart_commons/isar.dart';
-import 'package:mhu_dart_ide/proto.dart';
 import 'package:path_provider/path_provider.dart';
 
 // part 'isar.g.dart';
@@ -15,6 +15,7 @@ enum MdiSingleton {
   state,
   theme,
   notifications,
+  sequences,
 }
 
 Future<Isar> mdiCreateIsar() async {

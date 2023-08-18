@@ -1,14 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/builder/static.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 
 import 'package:mhu_dart_ide/src/bx/paginate.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_proto/mhu_dart_proto.dart';
-import 'package:protobuf/protobuf.dart';
-import 'package:recase/recase.dart';
 
 import '../../proto.dart';
 import '../builder/shaft.dart';
@@ -18,6 +15,7 @@ import '../screen/calc.dart';
 import '../theme.dart';
 import 'boxed.dart';
 import '../sharing_box.dart';
+import 'menu_dynamic.dart';
 
 part 'menu.freezed.dart';
 
@@ -90,7 +88,7 @@ Bx menuItemBx({
 }
 
 extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
-  SharingBoxes menu(
+  SharingBox menu(
     List<MenuItem> items,
   ) {
     return menuSharingBx(
@@ -102,7 +100,22 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
           sizedBits: sizedBits,
         );
       },
-    ).toSingleElementIterable;
+    );
+  }
+
+  SharingBox dynamicMenu(
+    List<DynamicMenuItem> items,
+  ) {
+    return menuSharingBx(
+      sizedBits: this,
+      itemCount: items.length,
+      itemBuilder: (index, sizedBits) {
+        return dynamicMenuItemBx(
+          menuItem: items[index],
+          sizedBits: sizedBits,
+        );
+      },
+    );
   }
 }
 

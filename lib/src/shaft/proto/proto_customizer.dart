@@ -1,7 +1,12 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/bx/menu.dart';
+import 'package:mhu_dart_ide/src/proto.dart';
+import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
+
+import '../../builder/shaft.dart';
 
 part 'proto_customizer.g.dart';
 
@@ -18,6 +23,19 @@ typedef MapKeyFeature = K? Function<K, V>(
   MapFieldAccess<Msg, K, V> mapFieldAccess,
 );
 
+@Customizer()
+typedef MessageValueFeature<O> = O Function<M extends Msg>(
+  M instance,
+  MessageEditingBits<M> messageEditingBits,
+);
+
+@Customizer()
+typedef MapFieldOptionsFeature = List<MenuItem>? Function<K, V>(
+  MapFieldAccess<Msg, K, V> mapFieldAccess,
+  MapEditingBits<K, V> mapEditingBits,
+  ShaftBuilderBits shaftBuilderBits,
+);
+
 @Has()
 class ProtoCustomizer {
   late final mapEntryLabel = MapEntryFeatureCustomizer<String>(
@@ -26,6 +44,15 @@ class ProtoCustomizer {
 
   late final mapDefaultKey = MapKeyFeatureCustomizer(
     <K, V>(mapFieldAccess) => null,
+  );
+
+  late final mapFieldOptions = MapFieldOptionsFeatureCustomizer(
+    <K, V>(mapFieldAccess, mapEditingBits, shaftBuilderBits) => null,
+  );
+
+  late final messageEditOptions =
+      MessageValueFeatureCustomizer<BuildShaftOptions?>(
+    <M extends Msg>(instance, messageEditingBits) => null,
   );
 }
 

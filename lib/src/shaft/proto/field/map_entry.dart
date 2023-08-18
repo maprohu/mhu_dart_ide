@@ -12,6 +12,8 @@ import 'package:mhu_dart_ide/src/shaft/proto/content/value_browsing.dart';
 import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
+import '../../../long_running.dart';
+
 part 'map_entry.g.has.dart';
 
 part 'map_entry.g.compose.dart';
@@ -63,7 +65,7 @@ abstract class MapEntryShaft
                   });
                 },
               ),
-            ]);
+            ]).toSingleElementIterable;
           },
           protoCustomizer: mapEditingBits.protoCustomizer,
           protoPath: ProtoPathMapItem(

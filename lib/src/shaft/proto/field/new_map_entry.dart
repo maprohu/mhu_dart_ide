@@ -1,6 +1,5 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/config.dart';
@@ -10,6 +9,8 @@ import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/notification.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/string.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
+
+import '../../../long_running.dart';
 
 // part 'new_map_entry.g.has.dart';
 
@@ -24,7 +25,7 @@ abstract class NewMapEntryShaft
   static NewMapEntryShaft create(
     ShaftCalcBuildBits shaftCalcBuildBits,
   ) {
-    final left = shaftCalcBuildBits.leftCalc as HasEditingBits;
+    final left = shaftCalcBuildBits.leftSignificantCalc as HasEditingBits;
     final mapEditingBits = left.editingBits as MapEditingBits;
 
     return mapEditingBits.mapEditingBitsGeneric(<K, V>(mapEditingBits) {
@@ -58,7 +59,7 @@ abstract class NewMapEntryShaft
                 sizedBits: sizedBits,
                 stringParsingBits: stringParsingBits,
               ),
-              ...sizedBits.menu([
+             sizedBits.menu([
                 MenuItem(
                   label: "Add Entry",
                   callback: () {

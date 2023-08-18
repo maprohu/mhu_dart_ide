@@ -3,7 +3,6 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/model.dart';
 import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 
@@ -39,7 +38,7 @@ SharingBoxes browseMapSharingBoxes<K, V>({
   );
 
   return [
-    ...sizedShaftBuilderBits.menu(
+    sizedShaftBuilderBits.menu(
       sorted.map(
         (entry) {
           return sizedShaftBuilderBits.opener(

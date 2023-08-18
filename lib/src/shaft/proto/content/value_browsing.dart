@@ -91,7 +91,7 @@ abstract class ValueBrowsingContent<T>
         buildShaftContent: (sizedBits) {
           return [
             ...result.buildShaftContent(sizedBits),
-            ...sizedBits.menu([
+            sizedBits.menu([
               ShaftTypes.editScalar.opener(sizedBits),
               MenuItem(
                 label: "Paste from Clipboard",
@@ -174,13 +174,21 @@ abstract class ValueBrowsingContent<T>
   ) {
     return ComposedValueBrowsingContent(
       buildShaftContent: (sizedBits) {
-        return browseMapSharingBoxes(
-          sizedShaftBuilderBits: sizedBits,
-          mapEditingBits: mapEditingBits,
-        );
+        return [
+          ...browseMapSharingBoxes(
+            sizedShaftBuilderBits: sizedBits,
+            mapEditingBits: mapEditingBits,
+          ),
+        ];
       },
       buildShaftOptions: (shaftBuilderBits) {
         final newEntryOpener = ShaftTypes.newMapEntry.opener(shaftBuilderBits);
+        final customItems = mapEditingBits.protoCustomizer.mapFieldOptions(
+          mapEditingBits.protoPathField.fieldAccess
+              as MapFieldAccess<Msg, K, V>,
+          mapEditingBits,
+          shaftBuilderBits,
+        );
         return [
           newEntryOpener.copyWith(
             callback: () {
@@ -212,7 +220,8 @@ abstract class ValueBrowsingContent<T>
                 }
               });
             },
-          )
+          ),
+          if (customItems != null) ...customItems,
         ];
       },
       editingBits: mapEditingBits,
@@ -223,10 +232,22 @@ abstract class ValueBrowsingContent<T>
     required MessageEditingBits<M> messageEditingBits,
     BuildShaftContent extraContent = emptyContent,
   }) {
+    final customItems = messageEditingBits.protoCustomizer.messageEditOptions(
+      messageEditingBits.messageDataType.defaultValue,
+      messageEditingBits,
+    );
     return ComposedValueBrowsingContent.shaftContentBits(
       shaftContentBits: MessageContent.create(
         messageEditingBits: messageEditingBits,
-        extraContent: extraContent,
+        extraContent: (sizedBits) {
+          return [
+            ...extraContent(sizedBits),
+            if (customItems != null)
+              sizedBits.menu(
+                customItems(sizedBits),
+              ),
+          ];
+        },
       ),
       editingBits: messageEditingBits,
     );

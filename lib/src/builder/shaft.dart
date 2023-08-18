@@ -7,6 +7,7 @@ import 'package:mhu_dart_ide/src/theme.dart';
 
 import '../app.dart';
 import '../config.dart';
+import '../long_running.dart';
 import '../op.dart';
 import 'double.dart';
 import 'sized.dart';
@@ -17,7 +18,6 @@ part 'shaft.g.compose.dart';
 abstract class ShaftBuilderBits implements HasShaftDoubleChain, ShaftCalc {}
 
 extension ShaftBuilderBitsX on ShaftBuilderBits {
-  ThemeCalc get themeCalc => themeCalcFr();
 
   StateCalc get stateCalc => stateCalcFr();
 

@@ -8,6 +8,8 @@ import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 
+import '../long_running.dart';
+
 part 'options.g.has.dart';
 
 part 'options.g.compose.dart';
@@ -38,7 +40,7 @@ abstract class OptionsShaft
         final parentOfShaftLeft = shaftLeft?.parentOpt;
         return sizedBits.menu(
           [
-            ...shaftCalcBuildBits.leftCalc!.buildShaftOptions(sizedBits),
+            // ...shaftCalcBuildBits.leftCalc!.buildShaftOptions(sizedBits),
             ShaftTypes.mainMenu.opener(sizedBits),
             if (parentOfShaftLeft != null)
               MenuItem(
@@ -52,7 +54,7 @@ abstract class OptionsShaft
                 },
               ),
           ],
-        );
+        ).toSingleElementIterable;
       },
     );
 

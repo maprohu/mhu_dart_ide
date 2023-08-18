@@ -9,6 +9,7 @@ import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 
+import '../../long_running.dart';
 import '../../proto.dart';
 
 part 'concrete_field.g.has.dart';
@@ -45,12 +46,13 @@ abstract class ConcreteFieldShaft
 
     return fieldKey.concreteFieldCalc.concreteFieldCalcGeneric(
       <M extends GeneratedMessage, F>(concreteFieldCalc) {
+        messageEditingBits as MessageEditingBits<M>;
+
         final protoPathField = ProtoPathField(
           parent: messageProtoPath,
           fieldAccess: concreteFieldCalc.fieldAccess,
         );
 
-        messageEditingBits as MessageEditingBits<M>;
         final browsingContent = ValueBrowsingContent.concreteField(
           dataType: concreteFieldCalc.dataType,
           messageUpdateBits: messageEditingBits.messageDataType.pbiMessageCalc,

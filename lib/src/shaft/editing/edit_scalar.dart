@@ -1,6 +1,4 @@
-import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
@@ -13,11 +11,10 @@ import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/string.dart';
-import 'package:mhu_dart_ide/src/shaft/string.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-import '../../screen/inner_state.dart';
+import '../../long_running.dart';
 
 part 'edit_scalar.g.has.dart';
 
@@ -198,7 +195,7 @@ abstract class EditScalarShaft
                 });
               },
             ),
-          ]),
+          ]).toSingleElementIterable,
         );
       },
       onShaftOpen: onShaftOpen,

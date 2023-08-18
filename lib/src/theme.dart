@@ -2,11 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+
+import 'bx/boxed.dart';
+import 'bx/padding.dart';
 
 final mdiDefaultTheme = MdiThemeMsg$.create(
   dividerThickness: MdiDividerThicknessThemeMsg$.create(
@@ -69,6 +74,9 @@ class ThemeCalc {
 
   late final shaftHeaderTextStyle = defaultTextStyle;
   late final menuItemTextStyle = defaultTextStyle;
+  late final splitMarkerTextStyle = defaultTextStyle.copyWith(
+    color: Colors.red,
+  );
 
   late final shortcutSize = shortcutTextSpan(
     pressed: "",
@@ -89,7 +97,9 @@ class ThemeCalc {
   late final shaftHeaderWithDividerHeight =
       shaftHeaderOuterHeight + shaftHeaderDividerThickness;
 
-  late final menuItemHeight = menuItemPadding.inflateSize(shortcutSize).height;
+  late final menuItemInnerHeight = shortcutSize.height;
+
+  late final menuItemHeight = menuItemPadding.vertical + menuItemInnerHeight;
 
   late final menuItemPadding = const EdgeInsets.all(2);
 
@@ -115,8 +125,36 @@ class ThemeCalc {
   }
 
   late final openItemColor = grayscale(0.5);
+
+  late final Bx Function(double height) defaultSplitMarker = run(() {
+    final textSpan = splitMarkerTextStyle.span("?");
+    final size = textSpan.size;
+    final spanHeight = size.height;
+    final widget = RichText(
+      text: textSpan,
+    );
+    final child = Bx.leaf(
+      size: size,
+      widget: widget,
+    );
+
+    return (height) {
+      return Bx.pad(
+        size: size,
+        padding: Paddings.centerY(
+          outer: height,
+          inner: spanHeight,
+        ),
+        child: child,
+      );
+    };
+  });
 }
 
-mixin HasThemeCalc {
-  ThemeCalc get themeCalc;
+// mixin HasThemeCalc {
+//   ThemeCalc get themeCalc;
+// }
+
+extension HasThemeCalcFrX on HasThemeCalcFr {
+  ThemeCalc get themeCalc => themeCalcFr.watch();
 }

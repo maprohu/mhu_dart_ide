@@ -5,17 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
-import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/screen/inner_state.dart';
 import 'package:mhu_dart_ide/src/screen/notification.dart';
-import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import 'package:protobuf/protobuf.dart';
@@ -287,7 +283,7 @@ SharingBoxes unfocusedStringEditSharingBoxes<T>({
   );
 
   return [
-    ...sizedBits.menu([
+    sizedBits.menu([
       MenuItem(
         label: "Focus",
         callback: () {

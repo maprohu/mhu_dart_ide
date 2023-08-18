@@ -1,16 +1,12 @@
-import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/keyboard.dart';
+import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
-import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-import '../../proto.dart';
 import '../builder/shaft.dart';
 import 'boxed.dart';
 
@@ -85,7 +81,7 @@ Bx shortcutBx({
 
 extension NodeBuildBitxX on ShaftBuilderBits {
   Bx openerShortcutFromBits(
-      OpenerBits openerBits,
+    OpenerBits openerBits,
   ) {
     return shortcut(
       openerBits.shortcutCallback,
@@ -97,8 +93,26 @@ extension NodeBuildBitxX on ShaftBuilderBits {
     VoidCallback callback, {
     Color? backgroundColor,
   }) {
-    final handle = opBuilder.register(callback);
+    return shortcutRegistered(
+      handle: opBuilder.register(callback),
+      backgroundColor: backgroundColor,
+    );
+  }
 
+  Bx shortcutIndirect(
+    OpCallbackIndirect callback, {
+    Color? backgroundColor,
+  }) {
+    return shortcutRegistered(
+      handle: opBuilder.registerIndirect(callback),
+      backgroundColor: backgroundColor,
+    );
+  }
+
+  Bx shortcutRegistered({
+    required OpBuildHandle handle,
+    Color? backgroundColor,
+  }) {
     return Bx.leaf(
       size: themeCalc.shortcutSize,
       widget: flcFrr(() {

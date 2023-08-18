@@ -20,6 +20,7 @@ part 'op.g.has.dart';
 // part 'op.g.compose.dart';
 
 typedef OpCallback = VoidCallback;
+typedef OpCallbackIndirect = OpCallback? Function();
 
 typedef OpState = int?;
 
@@ -42,33 +43,36 @@ class OpBuildHandle with _$OpBuildHandle {
 
 class _BuildReg {
   late final OpShortcut shortcut;
-  final OpCallback action;
+  final OpCallbackIndirect actionIndirect;
 
   final pressed = fw<int?>(0);
 
-  _BuildReg(this.action);
+  _BuildReg(this.actionIndirect);
 }
 
 class _OpBuild {
   final OpBuilder builder;
   final ops = <_BuildReg>[];
 
-  // final rawKeyListeners = <RawKeyListener>{};
-
-  // final bool isFocused;
-
   final _callbackSet = <OpCallback>{};
+  final _callbackIndirectSet = <OpCallbackIndirect>{};
 
   _OpBuild(
     this.builder,
-    //     {
-    //   required this.isFocused,
-    // }
   );
 
   OpBuildHandle register(OpCallback callback) {
     assert(
       _callbackSet.add(callback),
+      "callback already added: $callback",
+    );
+
+    return registerIndirect(() => callback);
+  }
+
+  OpBuildHandle registerIndirect(OpCallbackIndirect callback) {
+    assert(
+      _callbackIndirectSet.add(callback),
       "callback already added: $callback",
     );
 
@@ -156,24 +160,21 @@ class _OpNode {
       }
       build.currentNode = this;
     } else {
-      final action = regs.single.action;
-      build.builder._clearPressed();
-      action();
+      final action = regs.single.actionIndirect();
+      if (action != null) {
+        build.builder._clearPressed();
+        action();
+      }
     }
   }
 }
 
 typedef ShortcutKeyListener = void Function(ShortcutKey key);
-// typedef RawKeyListener = void Function(KeyEvent keyEvent);
 
 @Has()
 class OpBuilder {
   final ConfigBits configBits;
   late _OpBuild _opBuild;
-
-  // final _pressed = fw(emptyShortcut);
-
-  // final allShortcutKeys = OpShortcuts.allShortcutKeys;
 
   final _exclude = <OpShortcut>{};
 
@@ -186,7 +187,6 @@ class OpBuilder {
   OpBuilder(this.configBits);
 
   void _clearPressed() {
-    // _node = _opBuild.node;
     for (final reg in _opBuild.ops) {
       reg.pressed.value = 0;
     }
@@ -212,6 +212,16 @@ class OpBuilder {
     }
 
     return _opBuild.register(callback);
+  }
+
+  OpBuildHandle registerIndirect(OpCallbackIndirect callback) {
+    assert(!_built);
+
+    if (_runningAsyncOp.watch() != null) {
+      return OpBuildHandle.empty;
+    }
+
+    return _opBuild.registerIndirect(callback);
   }
 
   var _built = true;

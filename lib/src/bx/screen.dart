@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/bx/long_running.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../proto.dart';
@@ -88,7 +87,7 @@ Bx mdiBuildScreen({
         actualShaftUnitCount;
 
     final visibleShafts = visibleShaftsWithWidths
-        .map((sw) {
+        .mapIndexed((index, sw) {
           final (:shaft, :width) = sw;
           final shaftBits = ComposedShaftBuilderBits.shaftCalc(
             shaftCalc: shaft.shaftCalcChain.calc,
@@ -102,8 +101,15 @@ Bx mdiBuildScreen({
             ),
           );
 
+          final extraContent = index == 0
+              ? longRunningTasksShaftContent(
+                  appBits: sizedBits,
+                )
+              : null;
+
           return defaultShaftBx(
             sizedBits: sizedBits,
+            extraContent: extraContent,
           );
         })
         .toList()

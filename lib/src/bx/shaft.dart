@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/notification.dart';
@@ -8,7 +7,6 @@ import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_ide/src/bx/shortcut.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_ide/src/screen/options.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
@@ -140,6 +138,7 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
 
 Bx defaultShaftBx({
   required SizedShaftBuilderBits sizedBits,
+  BuildShaftContent? extraContent,
 }) {
   return shaftBx(
     sizedBits: sizedBits,
@@ -162,7 +161,8 @@ Bx defaultShaftBx({
               sizedShaftBuilderBits: contentBits,
               notificationMsg: notification,
             ),
-          if (options.isNotEmpty) ...contentBits.menu(options),
+          if (options.isNotEmpty) contentBits.menu(options),
+          if (extraContent != null) ...extraContent(contentBits),
         ],
         dividerThickness: contentBits.themeCalc.shaftSharingDividerThickness,
       );

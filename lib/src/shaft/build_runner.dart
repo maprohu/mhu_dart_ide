@@ -6,6 +6,8 @@ import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 
+import '../long_running.dart';
+
 part 'build_runner.g.has.dart';
 part 'build_runner.g.compose.dart';
 

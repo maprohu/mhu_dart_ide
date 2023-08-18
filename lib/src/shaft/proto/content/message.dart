@@ -1,7 +1,6 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 import '../../../builder/sized.dart';
@@ -24,7 +23,7 @@ abstract class MessageContent implements ShaftContentBits {
     return ComposedMessageContent(
       buildShaftContent: (SizedShaftBuilderBits sizedBits) {
         return [
-          ...sizedBits.menu(
+          sizedBits.menu(
             messageCalc.topFieldKeys.map((fieldKey) {
               switch (fieldKey) {
                 case ConcreteFieldKey():
