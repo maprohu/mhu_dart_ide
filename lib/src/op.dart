@@ -192,33 +192,8 @@ class OpBuilder {
     }
   }
 
-  // void addKeyListener(ShortcutKeyListener listener) {
-  //   assert(!_built);
-  //   _opBuild.keyListeners.add(listener);
-  // }
-
-  // void _clearFocusOnEscape(ShortcutKey shortcutKey) {
-  //   if (shortcutKey == ShortcutKey.escape) {
-  //     configBits.clearFocusedShaft();
-  //     // configBits.stateFw.rebuild((message) {
-  //     //   message.clearFocusedShaft();
-  //     // });
-  //   }
-  // }
-
-  // void registerClearFocusOnEscape() {
-  //   addKeyListener(_clearFocusOnEscape);
-  // }
-
   void keyPressed(ShortcutKey key) {
     _opBuild.keyPressed(key);
-
-    // if (key == ShortcutKey.escape) {
-    //   _clearPressed();
-    //   return;
-    // }
-
-    // _node.keyPressed(key);
   }
 
   static const shortuctEq = IterableEquality<ShortcutKey>();
@@ -358,7 +333,6 @@ extension KeyEventX on KeyEvent {
       } else {
         shortcutKey = LogicalShortcutKey(keyEvent.logicalKey);
       }
-
       return shortcutKey;
     }
 
