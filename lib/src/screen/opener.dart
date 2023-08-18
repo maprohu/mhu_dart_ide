@@ -54,14 +54,14 @@ extension ShaftIdentifierShaftTypeX<M extends GeneratedMessage>
     return msg..freeze();
   }
 
-  OpenerBits openerCallback(
-    ShaftBuilderBits shaftBuilderBits, {
-    ShaftKey shaftKey,
-  }) {
-    return shaftBuilderBits.openerBits(
-      shaftIdentifier(shaftKey),
-    );
-  }
+  // OpenerBits openerCallback(
+  //   ShaftBuilderBits shaftBuilderBits, {
+  //   ShaftKey shaftKey,
+  // }) {
+  //   return shaftBuilderBits.openerBits(
+  //     shaftIdentifier(shaftKey),
+  //   );
+  // }
 
   MenuItem opener(
     ShaftBuilderBits shaftBuilderBits, {

@@ -35,24 +35,51 @@ ProtoCustomizer configProtoCustomizer({
               label: "Scan for Dart Packages",
               callback: () {
                 shaftBuilderBits.longRunningTasksController.addLongRunningTask(
-                  (identifier) {
-                    return ComposedLongRunningTaskBuildBits(
-                      longRunningTaskMenuItem: (shaftCalcBuildBits) {
-                        return DynamicMenuItem(
-                          labelBuilder: (size) {
-                            final sizedBits =
-                                ComposedSizedShaftBuilderBits.shaftBuilderBits(
-                              shaftBuilderBits: shaftBuilderBits,
-                              size: size,
-                            );
-                            return sizedBits.itemText.centerLeft(
-                              "Scanning for Dart Packages: ${message.name}",
-                            );
-                          },
-                          opCallbackIndirect: () => null,
-                        );
-                      },
+                  (taskIdentifier) {
+                    return LongRunningTaskBuildBits.create<int>(
+                      taskIdentifier: taskIdentifier,
+                      future: Future.delayed(
+                        const Duration(
+                          seconds: 3,
+                        ),
+                      ).then((_) => 0),
+                      longTermBusy: ComposedLongTermBusy(
+                        buildShaftContent: (sizedBits) => [],
+                        watchLabel: () {
+                          final name = messageEditingBits.watchValue()?.name ??
+                              "<missing>";
+                          return "Scanning for Dart Packages: $name";
+                        },
+                      ),
+                      longTermComplete: ComposedLongTermComplete(
+                        buildLongTermCompleteView:
+                            (sizedShaftBuilderBits, value) {
+                          return [];
+                        },
+                        watchLongTermCompleteLabel: (value) {
+                          final name = messageEditingBits.watchValue()?.name ??
+                              "<missing>";
+                          return "Finished Scanning for Dart Packages: $name";
+                        },
+                      ),
                     );
+                    // return ComposedLongRunningTaskBuildBits(
+                    //   longRunningTaskMenuItem: (shaftCalcBuildBits) {
+                    //     return DynamicMenuItem(
+                    //       labelBuilder: (size) {
+                    //         final sizedBits =
+                    //             ComposedSizedShaftBuilderBits.shaftBuilderBits(
+                    //           shaftBuilderBits: shaftBuilderBits,
+                    //           size: size,
+                    //         );
+                    //         return sizedBits.itemText.centerLeft(
+                    //           "Scanning for Dart Packages: ${message.name}",
+                    //         );
+                    //       },
+                    //       opCallbackIndirect: () => null,
+                    //     );
+                    //   },
+                    // );
                   },
                 );
               },

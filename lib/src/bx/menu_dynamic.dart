@@ -19,7 +19,6 @@ part 'menu_dynamic.freezed.dart';
 part 'menu_dynamic.g.has.dart';
 // part 'menu_dynamic.g.compose.dart';
 
-
 @Has()
 @freezedStruct
 class DynamicMenuItem with _$DynamicMenuItem {
@@ -30,6 +29,17 @@ class DynamicMenuItem with _$DynamicMenuItem {
     required OpCallbackIndirect opCallbackIndirect,
     @Default(OpenerState.closed) OpenerState openerState,
   }) = _DynamicMenuItem;
+
+  static DynamicMenuItem direct({
+    required LabelBuilder labelBuilder,
+    required OpCallback opCallback,
+    OpenerState openerState = OpenerState.closed,
+  }) =>
+      DynamicMenuItem(
+        labelBuilder: labelBuilder,
+        opCallbackIndirect: () => opCallback,
+        openerState: openerState,
+      );
 }
 
 Bx dynamicMenuItemBx({

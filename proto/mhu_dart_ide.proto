@@ -69,9 +69,8 @@ message MdiShaftIdentifierMsg {
     MdiOneofFieldMsg oneof_field = 101;
     MdiMapEntryKeyMsg map_entry = 102;
     MdiEmptyMsg new_map_entry = 103;
-    //    MdiMapEntryKeyMsg map_entry_key = 104;
-    //    MdiEmptyMsg map_entry_value = 105;
     MdiEmptyMsg edit_scalar = 106;
+    MdiViewTaskMsg view_task = 107;
 
     MdiEmptyMsg config = 200;
     MdiEmptyMsg build_runner = 201;
@@ -95,6 +94,10 @@ message  MdiMapEntryKeyMsg {
     string string_key = 1;
     int32 int_key = 2;
   }
+}
+
+message MdiViewTaskMsg {
+  int32 task_identifier = 1;
 }
 
 // inner state

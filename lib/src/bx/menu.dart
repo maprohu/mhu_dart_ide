@@ -119,6 +119,7 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
   }
 }
 
+
 extension MenuShaftBuilderBitsX on ShaftBuilderBits {
   Color? openerBackgroundColor(OpenerState openerState) {
     if (openerState == OpenerState.open) {
@@ -127,37 +128,6 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
 
     return null;
   }
-
-  // Color? openerFieldBackgroundColor(
-  //   ScalarFieldAccess<MdiShaftMsg, dynamic> access,
-  // ) {
-  //   return openerBackgroundColor(
-  //     isOpen: access.has,
-  //   );
-  // }
-
-  // MenuItem openerField<T extends GeneratedMessage>(
-  //   MessageFieldAccess<MdiShaftMsg, T> access, {
-  //   void Function(T shaftTypeMsg) updateShaft = ignore1,
-  //   void Function(MdiShaftMsg shaftMsg) before = ignore1,
-  //   bool autoFocus = false,
-  //   String? label,
-  //   bool Function(MdiShaftMsg rightShaft)? isOpen,
-  // }) {
-  //   final shaftType = access.defaultSingleValue.rebuild(updateShaft);
-  //   return opener(
-  //     (shaft) {
-  //       access.set(
-  //         shaft,
-  //         shaftType,
-  //       );
-  //     },
-  //     before: before,
-  //     label: label ?? access.name.titleCase,
-  //     autoFocus: autoFocus,
-  //     isOpen: isOpen ?? (shaftMsg) => access.getOpt(shaftMsg) == shaftType,
-  //   );
-  // }
 
   OpenerBits openerBits(
     ShaftIdentifier shaftIdentifier, {
@@ -171,12 +141,6 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
     )..freeze();
 
     final callback = () {
-      // if (initInnerState != null) {
-      //   accessInnerStateRight((innerStateFw) async {
-      //     innerStateFw.value = await initInnerState();
-      //   });
-      // }
-
       txn(() {
         stateFw.rebuild((message) {
           message.topShaft = newShaftMessage;
