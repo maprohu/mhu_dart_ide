@@ -113,8 +113,11 @@ extension SizedNodeBuildBitsX on SizedShaftBuilderBits {
 
   Bx fillLeft({
     required SizedBuilder left,
-    required Bx right,
+    required Bx? right,
   }) {
+    if (right == null) {
+      return left(this);
+    }
     return Bx.row(
       columns: [
         left(

@@ -173,6 +173,7 @@ sealed class Bx with _$Bx implements HasSize, HasBackgroundColor {
         ),
     };
   }
+
 }
 
 typedef WidgetWithSize = ({

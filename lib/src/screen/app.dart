@@ -9,7 +9,6 @@ import '../app.dart';
 import '../bx/divider.dart';
 import '../bx/screen.dart';
 
-
 part 'app.freezed.dart';
 
 class MdiApp extends StatelessWidget {
@@ -46,8 +45,8 @@ class MdiApp extends StatelessWidget {
 
   Widget watchWidget() {
     final (
-        :before,
-        :after,
+      :before,
+      :after,
     ) = shaftsLayout();
 
     if (after.shafts.isEmpty) {
@@ -80,8 +79,8 @@ class MdiApp extends StatelessWidget {
 
     final movedWidgets = animations.moved.map((e) {
       return (
-      before: e.before.shaftBx.sizedLayout(),
-      after: e.after.shaftBx.sizedLayout(),
+        before: e.before.shaftBx.sizedLayout(),
+        after: e.after.shaftBx.sizedLayout(),
       );
     }).toList();
 
@@ -138,7 +137,7 @@ class MdiApp extends StatelessWidget {
         final dividerThicknessHalf = dividerThickness / 2;
 
         final currentDividerPositions =
-        dividerAnimations.map((e) => e.lerp(animation)).toList();
+            dividerAnimations.map((e) => e.lerp(animation)).toList();
 
         final shaftWidths = <double>[];
         final firstDividerPosition = currentDividerPositions.first;
@@ -146,7 +145,7 @@ class MdiApp extends StatelessWidget {
 
         for (final dividerPosition in currentDividerPositions.skip(1)) {
           shaftWidths.add(
-            dividerPosition - previousDividerPosition - dividerThicknessHalf,
+            dividerPosition - previousDividerPosition - dividerThickness,
           );
           previousDividerPosition = dividerPosition;
         }
@@ -181,7 +180,7 @@ class MdiApp extends StatelessWidget {
             ],
           );
         }).expand(
-              (element) => [
+          (element) => [
             element,
             divider,
           ],
@@ -268,7 +267,7 @@ class MdiApp extends StatelessWidget {
             .length;
 
         final movedInFromLeftList =
-        afterShafts.sublist(0, movedInFromLeftCount);
+            afterShafts.sublist(0, movedInFromLeftCount);
 
         positionDelta = movedInFromLeftList.sumBy((e) => e.shaftWidth);
         leftInOrOut(
@@ -284,7 +283,7 @@ class MdiApp extends StatelessWidget {
     final beforeAfterZipped = zip2Iterables(beforeShafts, afterShafts).toList();
 
     final movedWithinScreenList = beforeAfterZipped.takeWhileNotNull(
-          (value) {
+      (value) {
         switch (value) {
           case Zip2Both(:final left, :final right):
             if (left.shaftSeq == right.shaftSeq) {
@@ -346,13 +345,13 @@ class ShaftAnimations with _$ShaftAnimations {
   BeforeAfter<int> get positionBeforeAfter {
     if (positionDelta < 0) {
       return (
-      before: 0,
-      after: positionDelta,
+        before: 0,
+        after: positionDelta,
       );
     } else {
       return (
-      before: -positionDelta,
-      after: 0,
+        before: -positionDelta,
+        after: 0,
       );
     }
   }
@@ -368,7 +367,6 @@ class ShaftAnimationMove with _$ShaftAnimationMove {
   }) = _ShaftAnimationMove;
 }
 
-
 class AnimationsMoveCalc {
   final int startPositionDelta;
   final double dividerThickness;
@@ -376,22 +374,20 @@ class AnimationsMoveCalc {
   final double screenWidth;
   final int totalShaftWidth;
 
-  late final dividerCount = totalShaftWidth - 1;
-  late final totalDividerThickness = dividerCount * dividerThickness;
-  late final availableWidth = screenWidth - totalDividerThickness;
-  late final shaftUnitWidth = availableWidth / totalShaftWidth;
+  late final availableWidthPlusDivider = screenWidth + dividerThickness;
+
+  late final shaftUnitWidthPlusDivider =
+      availableWidthPlusDivider / totalShaftWidth;
 
   late final dividerHalfThickness = dividerThickness / 2;
 
-  late final shaftUnitAndDividerWidth = shaftUnitWidth + dividerThickness;
-
   late final dividerPositions = run(() {
     var actualPosition =
-        startPositionDelta * shaftUnitAndDividerWidth - dividerHalfThickness;
+        startPositionDelta * shaftUnitWidthPlusDivider - dividerHalfThickness;
     final positions = [actualPosition];
 
     for (final shaft in shafts) {
-      final shaftWidth = shaftUnitAndDividerWidth * shaft.shaftWidth;
+      final shaftWidth = shaftUnitWidthPlusDivider * shaft.shaftWidth;
       actualPosition += shaftWidth;
       positions.add(actualPosition);
     }
@@ -407,4 +403,3 @@ class AnimationsMoveCalc {
     required this.totalShaftWidth,
   });
 }
-

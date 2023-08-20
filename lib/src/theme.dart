@@ -128,6 +128,9 @@ class ThemeCalc {
 
   late final openItemColor = grayscale(0.5);
 
+  late final longRunningTaskCompleteNotificationColor = Colors.green;
+  late final longRunningTaskCompleteIconData = Icons.notification_important;
+
   late final Bx Function(double height) defaultSplitMarker = run(() {
     final textSpan = splitMarkerTextStyle.span("?");
     final size = textSpan.size;

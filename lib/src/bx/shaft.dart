@@ -139,7 +139,7 @@ extension ShaftSizedBitsX on SizedShaftBuilderBits {
 
 Bx defaultShaftBx({
   required SizedShaftBuilderBits sizedBits,
-  BuildShaftContent? extraContent,
+  Bx? headerExtra,
 }) {
   return shaftBx(
     sizedBits: sizedBits,
@@ -163,15 +163,20 @@ Bx defaultShaftBx({
               notificationMsg: notification,
             ),
           if (options.isNotEmpty) contentBits.menu(options),
-          if (extraContent != null) ...extraContent(contentBits),
         ],
         dividerThickness: contentBits.themeCalc.shaftSharingDividerThickness,
       );
+
       return ShaftParts(
         header: headerBits.fillLeft(
-          left: (sizedBits) => sizedBits.headerText.centerLeft(
-            sizedBits.shaftHeaderLabel,
-          ),
+          left: (sizedBits) {
+            return sizedBits.fillLeft(
+              left: (sizedBits) => sizedBits.headerText.centerLeft(
+                sizedBits.shaftHeaderLabel,
+              ),
+              right: headerExtra,
+            );
+          },
           right: headerBits.centerHeight(
             ShaftTypes.options.openerShortcut(headerBits),
           ),

@@ -1,7 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/bx/boxed.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
+import 'package:mhu_dart_ide/src/long_running.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/theme.dart';
+import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 BuildShaftContent? longRunningTasksShaftContent({
   required AppBits appBits,
@@ -23,4 +28,42 @@ BuildShaftContent? longRunningTasksShaftContent({
       ),
     ]).toSingleElementIterable;
   };
+}
+
+Bx longRunningTaskIndicatorIcon({
+  required AppBits appBits,
+}) {
+  final AppBits(
+    :longRunningTasksController,
+  ) = appBits;
+  final dimension = appBits.themeCalc.shaftHeaderContentHeight;
+
+  final size = Size.square(dimension);
+
+  return Bx.leaf(
+    size: size,
+    widget: flcFrr(() {
+      final runningTasks =
+          longRunningTasksController.longRunningTasks.watchValue();
+      Widget child = nullWidget;
+
+      if (runningTasks.isNotEmpty) {
+        if (runningTasks.any((e) =>
+            e.readWatchLongRunningState.watchValue() is LongRunningComplete)) {
+          child = Icon(
+            appBits.themeCalc.longRunningTaskCompleteIconData,
+            size: dimension,
+            color: appBits.themeCalc.longRunningTaskCompleteNotificationColor,
+          );
+        } else {
+          child = const CircularProgressIndicator();
+        }
+      }
+
+      return SizedBox.fromSize(
+        size: size,
+        child: child,
+      );
+    }),
+  );
 }

@@ -19,14 +19,8 @@ part 'long_running.g.has.dart';
 
 part 'long_running.g.compose.dart';
 
-// @Has()
-// typedef ShowLongRunningResult = VoidCallback;
-
 @Has()
 typedef LongRunningTaskIdentifier = int;
-
-// @Has()
-// typedef LongRunningValue = ReadWatchValue<LongRunningState>;
 
 @Has()
 typedef LongRunningTasks = ReadWatchValue<IList<LongRunningTask>>;
@@ -48,14 +42,13 @@ typedef RemoveLongRunningTask = void Function(
   LongRunningTaskIdentifier identifier,
 );
 
-// sealed class LongRunningState {}
-//
-// @Compose()
-// abstract class LongRunningBusy implements LongRunningState, HasLabelBuilder {}
-//
-// @Compose()
-// abstract class LongRunningComplete
-//     implements LongRunningState, HasLabelBuilder, HasShowLongRunningResult {}
+sealed class LongRunningState {}
+
+@Compose()
+abstract class LongRunningBusy implements LongRunningState {}
+
+@Compose()
+abstract class LongRunningComplete implements LongRunningState {}
 
 @Has()
 typedef BuildLongTermCompleteView<T> = SharingBoxes Function(
@@ -69,6 +62,9 @@ abstract class LongTermBusy implements HasBuildShaftContent, HasWatchLabel {}
 @Has()
 typedef WatchLongTermCompleteLabel<T> = Label Function(T value);
 
+@Has()
+typedef ReadWatchLongRunningState = ReadWatchValue<LongRunningState>;
+
 @Compose()
 abstract class LongTermComplete<T>
     implements
@@ -76,16 +72,20 @@ abstract class LongTermComplete<T>
         HasWatchLongTermCompleteLabel<T> {}
 
 @Compose()
-abstract class LongRunningTaskBuildBits implements HasLongRunningTaskMenuItem {
+abstract class LongRunningTaskBuildBits
+    implements HasLongRunningTaskMenuItem, HasReadWatchLongRunningState {
   static LongRunningTaskBuildBits create<T extends Object>({
-    required LongRunningTaskIdentifier taskIdentifier,
     required Future<T> future,
+    required LongRunningTaskIdentifier taskIdentifier,
     required LongTermBusy longTermBusy,
     required LongTermComplete<T> longTermComplete,
   }) {
     final futureFw = fw<T?>(null);
     future.then(futureFw.set);
     return ComposedLongRunningTaskBuildBits(
+      readWatchLongRunningState: fr(() => futureFw() == null
+          ? ComposedLongRunningBusy()
+          : ComposedLongRunningComplete()).toReadWatchValue,
       longRunningTaskMenuItem: (shaftBuilderBits) {
         final themeCalc = shaftBuilderBits.themeCalc;
         final openerBits = ShaftTypes.viewTask.openerBits(
@@ -142,9 +142,12 @@ abstract class LongRunningTaskBuildBits implements HasLongRunningTaskMenuItem {
                       return widget(
                         watchLabel: () => longTermComplete
                             .watchLongTermCompleteLabel(futureValue),
-                        statusIcon: const Icon(
-                          Icons.check,
-                          color: Colors.green,
+                        statusIcon: Icon(
+                          shaftBuilderBits
+                              .themeCalc.longRunningTaskCompleteIconData,
+                          color: shaftBuilderBits.themeCalc
+                              .longRunningTaskCompleteNotificationColor,
+                          size: size.height,
                         ),
                       );
                     }
@@ -163,7 +166,9 @@ abstract class LongRunningTaskBuildBits implements HasLongRunningTaskMenuItem {
 
 @Compose()
 abstract class LongRunningTask
-    implements LongRunningTaskBuildBits, HasLongRunningTaskIdentifier {}
+    implements LongRunningTaskBuildBits, HasLongRunningTaskIdentifier {
+  static const completeIconData = Icons.notification_important;
+}
 
 @Compose()
 @Has()

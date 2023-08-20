@@ -6,6 +6,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/bx/long_running.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
@@ -105,15 +106,15 @@ ShaftsLayout mdiBuildScreen({
             ),
           );
 
-          // final extraContent = index == 0
-          //     ? longRunningTasksShaftContent(
-          //         appBits: sizedBits,
-          //       )
-          //     : null;
+          final headerExtra = index == 0
+              ? longRunningTaskIndicatorIcon(
+                  appBits: sizedBits,
+                )
+              : null;
 
           final bx = defaultShaftBx(
             sizedBits: sizedBits,
-            // extraContent: extraContent,
+            headerExtra: headerExtra,
           );
           final shaftMsg = shaft.shaftCalcChain.shaftMsg;
           return ShaftLayout(
