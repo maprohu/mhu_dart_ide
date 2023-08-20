@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:fixnum/fixnum.dart';
+import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/bx/long_running.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../proto.dart';
@@ -16,7 +18,8 @@ import '../theme.dart';
 import 'boxed.dart';
 import 'paginate.dart';
 import '../screen/calc.dart';
-import 'divider.dart';
+
+part 'screen.freezed.dart';
 
 final defaultMainMenuShaft = MdiShaftMsg()
   ..ensureDefaultMainMenu()
@@ -30,7 +33,7 @@ extension DefaultMainMenuShaftMsgX on ShaftMsg {
 
 const _defaultMinShaftWidth = 200.0;
 
-Bx mdiBuildScreen({
+ShaftsLayout mdiBuildScreen({
   required AppBits appBits,
 }) {
   final screenSize = appBits.screenSizeFr();
@@ -86,7 +89,7 @@ Bx mdiBuildScreen({
             ((actualShaftUnitCount - 1) * shaftsVerticalDividerThickness)) /
         actualShaftUnitCount;
 
-    final visibleShafts = visibleShaftsWithWidths
+    final visibleShaftsLayout = visibleShaftsWithWidths
         .mapIndexed((index, sw) {
           final (:shaft, :width) = sw;
           final shaftBits = ComposedShaftBuilderBits.shaftCalc(
@@ -101,44 +104,88 @@ Bx mdiBuildScreen({
             ),
           );
 
-          final extraContent = index == 0
-              ? longRunningTasksShaftContent(
-                  appBits: sizedBits,
-                )
-              : null;
+          // final extraContent = index == 0
+          //     ? longRunningTasksShaftContent(
+          //         appBits: sizedBits,
+          //       )
+          //     : null;
 
-          return defaultShaftBx(
+          final bx = defaultShaftBx(
             sizedBits: sizedBits,
-            extraContent: extraContent,
+            // extraContent: extraContent,
+          );
+          final shaftMsg = shaft.shaftCalcChain.shaftMsg;
+          return ShaftLayout(
+            shaftSeq: shaftMsg.shaftSeq,
+            shaftWidth: shaftMsg.widthOpt ?? 1,
+            shaftBx: bx,
           );
         })
         .toList()
-        .reversed
-        .separatedBy(
-          verticalDividerBx(
-            thickness: shaftsVerticalDividerThickness,
-            height: screenSize.height,
-          ),
-        );
+        .reversed;
 
-    return Bx.row(
-      columns: visibleShafts.toList(),
-      size: screenSize,
+    return ShaftsLayout(
+      shafts: visibleShaftsLayout.toIList(),
+      screenSize: screenSize,
+      dividerThickness: shaftsVerticalDividerThickness,
     );
+
+    // return Bx.row(
+    //   columns: visibleShafts.toList(),
+    //   size: screenSize,
+    // );
   });
 }
+
+@freezedStruct
+class ShaftLayout with _$ShaftLayout {
+  ShaftLayout._();
+
+  factory ShaftLayout({
+    required Int64 shaftSeq,
+    required int shaftWidth,
+    required Bx shaftBx,
+  }) = _ShaftLayout;
+}
+
+@freezedStruct
+class ShaftsLayout with _$ShaftsLayout {
+  ShaftsLayout._();
+
+  factory ShaftsLayout({
+    required IList<ShaftLayout> shafts,
+    required Size screenSize,
+    required double dividerThickness,
+  }) = _ShaftsLayout;
+
+  static final initial = ShaftsLayout(
+    shafts: IList(),
+    screenSize: Size.zero,
+    dividerThickness: 0,
+  );
+
+  int get totalShaftWidth {
+    if (shafts.isEmpty) {
+      return 1;
+    }
+
+    return shafts.sumBy((element) => element.shaftWidth);
+  }
+}
+
+// typedef ShaftsLayout = IList<ShaftLayout>;
 
 void mdiStartScreenStream({
   required AppBits appBits,
   required DspReg disposers,
-  required StreamConsumer<Bx> screenStream,
+  required WriteValue<ShaftsLayout> shaftsLayout,
 }) {
   disposers
       .fr(() {
         return mdiBuildScreen(appBits: appBits);
       })
       .changes()
-      .let(screenStream.addStream);
+      .forEach(shaftsLayout);
 }
 
 extension ScreenMdiStateMsgX on MdiStateMsg {

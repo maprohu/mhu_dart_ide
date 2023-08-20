@@ -74,6 +74,7 @@ Bx shaftBx({
       ),
       parts.content,
     ],
+    backgroundColor: themeCalc.shaftBackgroundColor,
   );
 }
 

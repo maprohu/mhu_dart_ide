@@ -83,6 +83,8 @@ abstract class LongRunningTaskBuildBits implements HasLongRunningTaskMenuItem {
     required LongTermBusy longTermBusy,
     required LongTermComplete<T> longTermComplete,
   }) {
+    final futureFw = fw<T?>(null);
+    future.then(futureFw.set);
     return ComposedLongRunningTaskBuildBits(
       longRunningTaskMenuItem: (shaftBuilderBits) {
         final themeCalc = shaftBuilderBits.themeCalc;
@@ -127,23 +129,25 @@ abstract class LongRunningTaskBuildBits implements HasLongRunningTaskMenuItem {
                 constraints: BoxConstraints(
                   maxWidth: size.width,
                 ),
-                child: futureBuilder(
-                  future: future,
-                  busy: (context) {
-                    return widget(
-                      watchLabel: longTermBusy.watchLabel,
-                      statusIcon: const CircularProgressIndicator(),
-                    );
-                  },
-                  builder: (context, value) {
-                    return widget(
-                      watchLabel: () =>
-                          longTermComplete.watchLongTermCompleteLabel(value),
-                      statusIcon: const Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    ).withKey(value);
+                child: flcFrr(
+                  () {
+                    final futureValue = futureFw();
+
+                    if (futureValue == null) {
+                      return widget(
+                        watchLabel: longTermBusy.watchLabel,
+                        statusIcon: const CircularProgressIndicator(),
+                      );
+                    } else {
+                      return widget(
+                        watchLabel: () => longTermComplete
+                            .watchLongTermCompleteLabel(futureValue),
+                        statusIcon: const Icon(
+                          Icons.check,
+                          color: Colors.green,
+                        ),
+                      );
+                    }
                   },
                 ),
               ),

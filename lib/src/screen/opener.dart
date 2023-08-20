@@ -1,4 +1,3 @@
-
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
@@ -30,8 +29,9 @@ abstract class OpenerBits implements HasOpenerState, HasShortcutCallback {}
 extension OpenerShaftCalcBitsX on HasShaftCalcChain {
   void closeShaft() {
     shaftCalcChain.stateFw.rebuild((message) {
-      message.topShaft = message.topShaft
-          .shaftByIndexFromLeft(shaftCalcChain.shaftIndexFromLeft - 1)!;
+      message.topShaft = message.topShaft.shaftByIndexFromLeft(
+        shaftCalcChain.shaftIndexFromLeft - 1,
+      )!;
     });
   }
 }

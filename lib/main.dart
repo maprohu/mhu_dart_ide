@@ -1,5 +1,7 @@
-import 'dart:async';
+import 'dart:math';
+import 'dart:ui';
 
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_commons/commons.dart';
@@ -10,11 +12,13 @@ import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/long_running.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
-import 'package:mhu_dart_ide/src/widgets/busy.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
+import 'src/bx/divider.dart';
 import 'src/bx/screen.dart';
 import 'src/bx/boxed.dart';
+
+part 'main.freezed.dart';
 
 void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
@@ -50,17 +54,27 @@ void main() async {
         shaftDataStore: {},
       );
 
-      final screenStreamController = StreamController<Bx>();
+      final Fw<BeforeAfter<ShaftsLayout>> shaftsLayoutFw = fw(
+        (
+          before: ShaftsLayout.initial,
+          after: ShaftsLayout.initial,
+        ),
+      );
 
       final app = MdiApp(
         appBits: appBits,
-        listenable: screenStreamController.stream,
+        shaftsLayout: shaftsLayoutFw.watch,
       );
 
       mdiStartScreenStream(
         appBits: appBits,
         disposers: disposers,
-        screenStream: screenStreamController,
+        shaftsLayout: (value) {
+          shaftsLayoutFw.value = (
+            before: shaftsLayoutFw.read().after,
+            after: value,
+          );
+        },
       );
 
       return app;
@@ -73,14 +87,13 @@ void main() async {
 class MdiApp extends StatelessWidget {
   final AppBits appBits;
 
-  final Stream<Bx> listenable;
+  final WatchValue<BeforeAfter<ShaftsLayout>> shaftsLayout;
 
   MdiApp({
     super.key,
     required this.appBits,
-    required this.listenable,
+    required this.shaftsLayout,
   });
-
 
   final _focusNode = FocusNode();
 
@@ -95,17 +108,448 @@ class MdiApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.dark,
         darkTheme: ThemeData.dark(),
-        home: Scaffold(
-          body: streamBuilder(
-            stream: listenable,
-            busy: (context) => mdiBusyWidget,
-            builder: (context, value) {
-              return value.layout().let((e) => e.withKey(e));
-            },
-          ),
-        ),
         shortcuts: const {},
+        home: Scaffold(
+          body: flcFrr(watchWidget),
+        ),
       ),
     );
   }
+
+  Widget watchWidget() {
+    final (
+      :before,
+      :after,
+    ) = shaftsLayout();
+
+    if (after.shafts.isEmpty) {
+      return busyWidget;
+    }
+
+    final animations = shaftAnimations(
+      before: before,
+      after: after,
+    );
+
+    // Widget? Function(double animation) moveCalc = (_) {
+    //   return null;
+    // };
+
+    double calcDividerThickness(double animation) {
+      return lerpDouble(
+        before.dividerThickness,
+        after.dividerThickness,
+        animation,
+      )!;
+    }
+
+    Widget calcDividerWidget(double dividerThickness) {
+      return verticalDividerBx(
+        thickness: dividerThickness,
+        height: after.screenSize.height,
+      ).layout();
+    }
+
+    final movedWidgets = animations.moved.map((e) {
+      return (
+        before: e.before.shaftBx.sizedLayout(),
+        after: e.after.shaftBx.sizedLayout(),
+      );
+    }).toList();
+
+    final screenWidth = after.screenSize.width;
+    final screenHeight = after.screenSize.height;
+
+    final positionBeforeAfter = animations.positionBeforeAfter;
+
+    final beforeCalc = AnimationsMoveCalc(
+      startPositionDelta: positionBeforeAfter.before,
+      dividerThickness: before.dividerThickness,
+      shafts: animations.moved.map((e) => e.before).toList(),
+      screenWidth: screenWidth,
+      totalShaftWidth: before.totalShaftWidth,
+    );
+    final afterCalc = AnimationsMoveCalc(
+      startPositionDelta: positionBeforeAfter.after,
+      dividerThickness: after.dividerThickness,
+      shafts: animations.moved.map((e) => e.after).toList(),
+      screenWidth: screenWidth,
+      totalShaftWidth: after.totalShaftWidth,
+    );
+
+    final dividerAnimations = zip2IterablesRecords(
+      beforeCalc.dividerPositions,
+      afterCalc.dividerPositions,
+    ).map((e) {
+      final (before, after) = e;
+      return DoubleAnimation(before: before, after: after);
+    }).toIList();
+
+    final addedWidgets = animations.added.map((e) => e.shaftBx.layout());
+    final removedWidgets = animations.removed.map((e) => e.shaftBx.layout());
+
+    Widget rightWidgets({
+      required double opacity,
+      required Widget divider,
+      required Iterable<Widget> children,
+    }) {
+      return Opacity(
+        opacity: opacity,
+        child: Row(
+          // mainAxisAlignment: MainAxisAlignment.end,
+          children: children.separatedBy(divider).toList(),
+        ),
+      );
+    }
+
+    return _Animate(
+      builder: (animation) {
+        final dividerThickness = calcDividerThickness(animation);
+        final divider = calcDividerWidget(dividerThickness);
+
+        final dividerThicknessHalf = dividerThickness / 2;
+
+        final currentDividerPositions =
+            dividerAnimations.map((e) => e.lerp(animation)).toList();
+
+        final shaftWidths = <double>[];
+        final firstDividerPosition = currentDividerPositions.first;
+        var previousDividerPosition = firstDividerPosition;
+
+        for (final dividerPosition in currentDividerPositions.skip(1)) {
+          shaftWidths.add(
+            dividerPosition - previousDividerPosition - dividerThicknessHalf,
+          );
+          previousDividerPosition = dividerPosition;
+        }
+
+        final currentMovedWidgets = zip2IterablesRecords(
+          movedWidgets,
+          shaftWidths,
+        ).map<Widget>((e) {
+          final (widgets, width) = e;
+
+          return Stack(
+            children: [
+              SizedBox(
+                width: width,
+                height: screenHeight,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: widgets.before,
+                ),
+              ),
+              Opacity(
+                opacity: animation,
+                child: SizedBox(
+                  width: width,
+                  height: screenHeight,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: widgets.after,
+                  ),
+                ),
+              ),
+            ],
+          );
+        }).expand(
+          (element) => [
+            element,
+            divider,
+          ],
+        );
+
+        return Stack(
+          clipBehavior: Clip.hardEdge,
+          children: [
+            Positioned(
+              left: firstDividerPosition + dividerThicknessHalf,
+              child: Row(
+                children: [
+                  ...currentMovedWidgets,
+                  Stack(
+                    children: [
+                      rightWidgets(
+                        opacity: 1 - animation,
+                        divider: divider,
+                        children: removedWidgets,
+                      ),
+                      rightWidgets(
+                        opacity: animation,
+                        divider: divider,
+                        children: addedWidgets,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  ShaftAnimations shaftAnimations({
+    required ShaftsLayout before,
+    required ShaftsLayout after,
+  }) {
+    late int positionDelta;
+    final moved = <ShaftAnimationMove>[];
+
+    void leftInOrOut({
+      required List<ShaftLayout> shafts,
+    }) {
+      for (final shaft in shafts) {
+        moved.add(
+          ShaftAnimationMove(
+            before: shaft,
+            after: shaft,
+          ),
+        );
+      }
+    }
+
+    var beforeShafts = before.shafts.toList();
+    var afterShafts = after.shafts.toList();
+
+    if (beforeShafts.isNotEmpty) {
+      final beforeFirstSeq = beforeShafts.first.shaftSeq;
+      final afterFirstSeq = afterShafts.first.shaftSeq;
+
+      if (beforeFirstSeq < afterFirstSeq) {
+        // moved left
+
+        final movedOutLeftCount = beforeShafts
+            .takeWhile((value) => value.shaftSeq < afterFirstSeq)
+            .length;
+
+        final movedOutLeftList = beforeShafts.sublist(0, movedOutLeftCount);
+
+        positionDelta = -movedOutLeftList.sumBy((e) => e.shaftWidth);
+        leftInOrOut(
+          shafts: movedOutLeftList,
+        );
+
+        beforeShafts = beforeShafts.sublist(movedOutLeftCount);
+      } else {
+        // moved right
+
+        final movedInFromLeftCount = afterShafts
+            .takeWhile((value) => value.shaftSeq < beforeFirstSeq)
+            .length;
+
+        final movedInFromLeftList =
+            afterShafts.sublist(0, movedInFromLeftCount);
+
+        positionDelta = movedInFromLeftList.sumBy((e) => e.shaftWidth);
+        leftInOrOut(
+          shafts: movedInFromLeftList,
+        );
+
+        afterShafts = afterShafts.sublist(movedInFromLeftCount);
+      }
+    } else {
+      positionDelta = 0;
+    }
+
+    final beforeAfterZipped = zip2Iterables(beforeShafts, afterShafts).toList();
+
+    final movedWithinScreenList = beforeAfterZipped.takeWhileNotNull(
+      (value) {
+        switch (value) {
+          case Zip2Both(:final left, :final right):
+            if (left.shaftSeq == right.shaftSeq) {
+              return value;
+            }
+          default:
+        }
+        return null;
+      },
+    ).toList();
+
+    for (final zip in movedWithinScreenList) {
+      moved.add(
+        ShaftAnimationMove(
+          before: zip.left,
+          after: zip.right,
+        ),
+      );
+    }
+
+    final removedOrAdded = beforeAfterZipped.sublist(
+      movedWithinScreenList.length,
+    );
+
+    return ShaftAnimations(
+      positionDelta: positionDelta,
+      moved: moved,
+      removed: removedOrAdded.takeWhileNotNull((e) => e.leftOrNull).toList(),
+      added: removedOrAdded.takeWhileNotNull((e) => e.rightOrNull).toList(),
+    );
+  }
 }
+
+@freezedStruct
+class DoubleAnimation with _$DoubleAnimation {
+  DoubleAnimation._();
+
+  factory DoubleAnimation({
+    required double before,
+    required double after,
+  }) = _DoubleAnimation;
+}
+
+extension DoubleAnimationX on DoubleAnimation {
+  double lerp(double t) => lerpDouble(before, after, t)!;
+}
+
+@freezedStruct
+class ShaftAnimations with _$ShaftAnimations {
+  ShaftAnimations._();
+
+  factory ShaftAnimations({
+    required int positionDelta,
+    required List<ShaftAnimationMove> moved,
+    required List<ShaftLayout> added,
+    required List<ShaftLayout> removed,
+  }) = _ShaftAnimations;
+
+  BeforeAfter<int> get positionBeforeAfter {
+    if (positionDelta < 0) {
+      return (
+        before: 0,
+        after: positionDelta,
+      );
+    } else {
+      return (
+        before: -positionDelta,
+        after: 0,
+      );
+    }
+  }
+}
+
+@freezedStruct
+class ShaftAnimationMove with _$ShaftAnimationMove {
+  ShaftAnimationMove._();
+
+  factory ShaftAnimationMove({
+    required ShaftLayout before,
+    required ShaftLayout after,
+  }) = _ShaftAnimationMove;
+}
+
+class _Animate extends StatefulWidget {
+  const _Animate({required this.builder});
+
+  static const curve = Curves.easeOut;
+  static const duration = Duration(
+    milliseconds: 200,
+  );
+
+  final Widget Function(double animation) builder;
+
+  @override
+  State<_Animate> createState() => _AnimateState();
+}
+
+class _AnimateState extends State<_Animate>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: _Animate.curve,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this, // the SingleTickerProviderStateMixin
+      duration: _Animate.duration,
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, child) {
+        return widget.builder(_animation.value);
+      },
+    );
+  }
+}
+
+class AnimationsMoveCalc {
+  final int startPositionDelta;
+  final double dividerThickness;
+  final List<ShaftLayout> shafts;
+  final double screenWidth;
+  final int totalShaftWidth;
+
+  late final dividerCount = totalShaftWidth - 1;
+  late final totalDividerThickness = dividerCount * dividerThickness;
+  late final availableWidth = screenWidth - totalDividerThickness;
+  late final shaftUnitWidth = availableWidth / totalShaftWidth;
+
+  late final dividerHalfThickness = dividerThickness / 2;
+
+  late final shaftUnitAndDividerWidth = shaftUnitWidth + dividerThickness;
+
+  late final dividerPositions = run(() {
+    var actualPosition =
+        startPositionDelta * shaftUnitAndDividerWidth - dividerHalfThickness;
+    final positions = [actualPosition];
+
+    for (final shaft in shafts) {
+      final shaftWidth = shaftUnitAndDividerWidth * shaft.shaftWidth;
+      actualPosition += shaftWidth;
+      positions.add(actualPosition);
+    }
+
+    return positions.toIList();
+  });
+
+  AnimationsMoveCalc({
+    required this.startPositionDelta,
+    required this.dividerThickness,
+    required this.shafts,
+    required this.screenWidth,
+    required this.totalShaftWidth,
+  });
+}
+
+// class AnimationsFirstDividerCalc {
+//   final int startPositionDelta;
+//   final double dividerThickness;
+//   final double screenWidth;
+//   final int totalShaftWidth;
+//
+//   late final dividerCount = totalShaftWidth - 1;
+//   late final totalDividerThickness = dividerCount * dividerThickness;
+//   late final availableWidth = screenWidth - totalDividerThickness;
+//   late final shaftUnitWidth = availableWidth / totalShaftWidth;
+//
+//   late final dividerHalfThickness = dividerThickness / 2;
+//
+//   late final shaftUnitAndDividerWidth = shaftUnitWidth + dividerThickness;
+//
+//   late final firstDividerPosition =
+//       startPositionDelta * shaftUnitAndDividerWidth - dividerHalfThickness;
+//
+//   AnimationsFirstDividerCalc({
+//     required this.startPositionDelta,
+//     required this.dividerThickness,
+//     required this.screenWidth,
+//     required this.totalShaftWidth,
+//   });
+// }

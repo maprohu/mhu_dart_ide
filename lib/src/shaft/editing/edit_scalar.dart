@@ -54,7 +54,8 @@ abstract class EditScalarShaft
         CoreIntDataType() => ComposedEditScalarShaftMerge(
             shaftHeaderLabel: "Edit Int",
             buildShaftContent: (sizedBits) {
-              throw "todo";
+              logger.w("TODO: edit int");
+              return [];
             },
           ),
         final other => throw other,

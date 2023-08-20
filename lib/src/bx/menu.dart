@@ -119,7 +119,6 @@ extension MenuShaftSizedBitsX on SizedShaftBuilderBits {
   }
 }
 
-
 extension MenuShaftBuilderBitsX on ShaftBuilderBits {
   Color? openerBackgroundColor(OpenerState openerState) {
     if (openerState == OpenerState.open) {
@@ -138,6 +137,7 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
       parent: shaftMsg,
       shaftIdentifier: shaftIdentifier,
       innerState: innerState,
+      shaftSeq: sequencesFw.shaftSeq.incrementAndRead(),
     )..freeze();
 
     final callback = () {

@@ -11,6 +11,7 @@ import '../../proto.dart';
 import '../screen/calc.dart';
 import 'proto/field/map_entry.dart';
 import 'proto/field/new_map_entry.dart';
+import 'view_task.dart';
 
 typedef ShaftCalcBuilder = ShaftCalc Function(ShaftCalcBuildBits buildBits);
 
@@ -33,6 +34,7 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
     MdiShaftIdentifierMsg_Type$newMapEntry() => NewMapEntryShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$editScalar() => EditScalarShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$buildRunner() => BuildRunnerShaft.create(shaftCalcBuildBits),
+    MdiShaftIdentifierMsg_Type$viewTask() => ViewTaskShaft.create(shaftCalcBuildBits),
     _ => NotImplementedShaft.create(shaftCalcBuildBits),
   };
 }

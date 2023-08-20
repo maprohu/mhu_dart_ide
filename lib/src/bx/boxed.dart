@@ -150,6 +150,13 @@ sealed class Bx with _$Bx implements HasSize, HasBackgroundColor {
     }
   }
 
+  Widget sizedLayout() {
+    return SizedBox.fromSize(
+      size: size,
+      child: layout(),
+    );
+  }
+
   static Bx linear({
     required Axis axis,
     required List<Bx> items,
@@ -167,3 +174,8 @@ sealed class Bx with _$Bx implements HasSize, HasBackgroundColor {
     };
   }
 }
+
+typedef WidgetWithSize = ({
+  Widget widget,
+  Size size,
+});

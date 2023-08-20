@@ -2,6 +2,7 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_dart_ide/src/bx/long_running.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
@@ -38,23 +39,27 @@ abstract class OptionsShaft
       buildShaftContent: (sizedBits) {
         final shaftLeft = sizedBits.shaftMsg.parentOpt;
         final parentOfShaftLeft = shaftLeft?.parentOpt;
-        return sizedBits.menu(
-          [
-            // ...shaftCalcBuildBits.leftCalc!.buildShaftOptions(sizedBits),
-            ShaftTypes.mainMenu.opener(sizedBits),
-            if (parentOfShaftLeft != null)
-              MenuItem(
-                label: "Close Shaft",
-                callback: () {
-                  sizedBits.stateFw.rebuild(
-                    (message) {
-                      message.topShaft = parentOfShaftLeft;
-                    },
-                  );
-                },
-              ),
-          ],
-        ).toSingleElementIterable;
+        final tasksContent = longRunningTasksShaftContent(appBits: sizedBits);
+        return [
+          sizedBits.menu(
+            [
+              // ...shaftCalcBuildBits.leftCalc!.buildShaftOptions(sizedBits),
+              ShaftTypes.mainMenu.opener(sizedBits),
+              if (parentOfShaftLeft != null)
+                MenuItem(
+                  label: "Close Shaft",
+                  callback: () {
+                    sizedBits.stateFw.rebuild(
+                      (message) {
+                        message.topShaft = parentOfShaftLeft;
+                      },
+                    );
+                  },
+                ),
+            ],
+          ),
+          if (tasksContent != null) ...tasksContent(sizedBits),
+        ];
       },
     );
 

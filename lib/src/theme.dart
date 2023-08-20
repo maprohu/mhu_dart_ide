@@ -49,6 +49,8 @@ class ThemeCalc {
   late final shaftSharingDividerThickness =
       theme.dividerThicknessOpt?.shaftSharingOpt ?? 2;
 
+  late final shaftBackgroundColor = grayscale(3 / 16);
+
   static final robotoMonoTextStyle = _fontAssets.robotoMono.copyWith(
     fontSize: 14,
     color: Colors.white,
