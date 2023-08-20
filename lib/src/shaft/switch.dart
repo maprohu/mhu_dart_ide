@@ -1,5 +1,6 @@
 import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
 import 'package:mhu_dart_ide/src/shaft/config.dart';
+import 'package:mhu_dart_ide/src/shaft/confirm.dart';
 import 'package:mhu_dart_ide/src/shaft/editing/edit_scalar.dart';
 import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
 import 'package:mhu_dart_ide/src/shaft/not_implemented.dart';
@@ -35,6 +36,7 @@ ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
     MdiShaftIdentifierMsg_Type$editScalar() => EditScalarShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$buildRunner() => BuildRunnerShaft.create(shaftCalcBuildBits),
     MdiShaftIdentifierMsg_Type$viewTask() => ViewTaskShaft.create(shaftCalcBuildBits),
+    MdiShaftIdentifierMsg_Type$confirm() => ConfirmShaft.create(shaftCalcBuildBits),
     _ => NotImplementedShaft.create(shaftCalcBuildBits),
   };
 }

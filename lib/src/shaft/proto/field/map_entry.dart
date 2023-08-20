@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
@@ -19,8 +20,11 @@ part 'map_entry.g.has.dart';
 part 'map_entry.g.compose.dart';
 
 @Has()
+typedef DeleteEntry = VoidCallback;
+
+@Has()
 @Compose()
-abstract class MapEntryShaftRight implements HasEditingBits {}
+abstract class MapEntryShaftRight implements HasEditingBits, HasDeleteEntry {}
 
 @Compose()
 abstract class MapEntryShaft
@@ -54,15 +58,10 @@ abstract class MapEntryShaft
           scalarValue: scalarValue,
           extraContent: (sizedBits) {
             return sizedBits.menu([
-              MenuItem(
-                label: "Delete Entry",
-                callback: () {
-                  sizedBits.txn(() {
-                    sizedBits.closeShaft();
-                    mapEditingBits.updateValue((map) {
-                      map.remove(key);
-                    });
-                  });
+              ShaftTypes.confirm.opener(
+                sizedBits,
+                shaftKey: (key) {
+                  key.ensureDeleteEntry();
                 },
               ),
             ]).toSingleElementIterable;
@@ -76,6 +75,14 @@ abstract class MapEntryShaft
 
         final shaftRight = ComposedMapEntryShaftRight(
           editingBits: content.editingBits,
+          deleteEntry: () {
+            shaftCalcBuildBits.txn(() {
+              shaftCalcBuildBits.closeShaft();
+              mapEditingBits.updateValue((map) {
+                map.remove(key);
+              });
+            });
+          }
         );
 
         final mapFieldAccess = mapEditingBits.protoPathField.fieldAccess

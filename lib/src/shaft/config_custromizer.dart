@@ -26,11 +26,12 @@ ProtoCustomizer configProtoCustomizer({
   protoCustomizer.messageEditOptions.put(
     MdiWorkspaceMsg.getDefault(),
     (messageEditingBits) {
-      final message = messageEditingBits.watchValue();
-      if (message == null) {
-        return null;
-      }
-      return (shaftBuilderBits) => [
+      return (shaftBuilderBits) {
+        final message = messageEditingBits.watchValue();
+        if (message == null) {
+          return [];
+        }
+        return [
             MenuItem(
               label: "Scan for Dart Packages",
               callback: () {
@@ -85,6 +86,7 @@ ProtoCustomizer configProtoCustomizer({
               },
             ),
           ];
+      };
     },
   );
 

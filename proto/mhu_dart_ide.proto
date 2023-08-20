@@ -66,6 +66,7 @@ message MdiShaftIdentifierMsg {
     MdiEmptyMsg not_implemented = 1;
     MdiEmptyMsg main_menu = 2;
     MdiEmptyMsg options = 3;
+    MdiConfirmMsg confirm = 4;
 
     MdiConcreteFieldMsg concrete_field = 100;
     MdiOneofFieldMsg oneof_field = 101;
@@ -100,6 +101,13 @@ message  MdiMapEntryKeyMsg {
 
 message MdiViewTaskMsg {
   int32 task_identifier = 1;
+}
+
+message MdiConfirmMsg {
+  oneof type {
+    MdiGenericMsg generic = 1;
+    MdiEmptyMsg delete_entry = 2;
+  }
 }
 
 // inner state
