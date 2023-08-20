@@ -31,9 +31,14 @@ void main() async {
 
       final isar = await mdiCreateIsar();
 
+      late final UpdateView updateView;
+
       final configBits = await ConfigBits.create(
         isar: isar,
         disposers: disposers,
+        updateView: (update) {
+          updateView(update);
+        },
       );
 
       final screenSizeFr =
@@ -65,7 +70,7 @@ void main() async {
         shaftsLayout: shaftsLayoutFw.watch,
       );
 
-      mdiStartScreenStream(
+      updateView = mdiStartScreenStream(
         appBits: appBits,
         disposers: disposers,
         shaftsLayout: (value) {

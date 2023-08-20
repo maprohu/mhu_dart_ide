@@ -76,7 +76,7 @@ abstract class MapEntryShaft
         final shaftRight = ComposedMapEntryShaftRight(
           editingBits: content.editingBits,
           deleteEntry: () {
-            shaftCalcBuildBits.txn(() {
+            shaftCalcBuildBits.updateView(() {
               shaftCalcBuildBits.closeShaft();
               mapEditingBits.updateValue((map) {
                 map.remove(key);

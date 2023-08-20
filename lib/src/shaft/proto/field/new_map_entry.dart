@@ -84,7 +84,7 @@ abstract class NewMapEntryShaft
                         if (messages.isNotEmpty) {
                           sizedBits.showNotifications(messages);
                         } else {
-                          shaftCalcBuildBits.fwUpdateGroup.run(() {
+                          shaftCalcBuildBits.updateView(() {
                             mapEditingBits.updateValue((items) {
                               items[keyValue] = mapEditingBits
                                   .mapDataType.mapValueDataType.defaultValue;

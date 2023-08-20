@@ -92,7 +92,7 @@ abstract class EditScalarShaft
     //     innerStateFw.value = innerState;
     //   },
     // );
-    appBits.txn(() {
+    appBits.updateView(() {
       appBits.shaftMsgFuByIndex(shaftIndexFromLeft).update((shaftMsg) {
         shaftMsg.innerState = innerState;
       });
@@ -160,7 +160,7 @@ abstract class EditScalarShaft
                 MenuItem(
                   label: "Save and Close",
                   callback: () {
-                    shaftCalcBuildBits.txn(() {
+                    shaftCalcBuildBits.updateView(() {
                       bits.writeValue(parsedValue);
                       shaftCalcBuildBits.closeShaft();
                     });
@@ -187,7 +187,7 @@ abstract class EditScalarShaft
               label: "Paste from Clipboard",
               callback: () {
                 stringEditPasteFromClipboardSelf(shaftCalcBuildBits);
-                shaftCalcBuildBits.txn(() {
+                shaftCalcBuildBits.updateView(() {
                   shaftCalcBuildBits.updateShaftMsg((shaftMsg) {
                     shaftMsg.ensureInnerState().ensureStringEdit().pasting =
                         true;

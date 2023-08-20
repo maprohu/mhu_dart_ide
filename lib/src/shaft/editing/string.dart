@@ -8,6 +8,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
@@ -308,7 +309,7 @@ void focusStringEditor<T>({
     :submitValue,
   ) = stringParsingBits;
 
-  shaftCalcBuildBits.txn(() {
+  shaftCalcBuildBits.updateView(() {
     shaftCalcBuildBits.opBuilder.startAsyncOp(
       shaftIndexFromLeft: shaftCalcBuildBits.shaftIndexFromLeft,
       start: (addShortcutKeyListener) async {
@@ -347,7 +348,7 @@ void focusStringEditor<T>({
 
               switch (parseResult) {
                 case ValidationSuccess<T>(:final value):
-                  shaftCalcBuildBits.txn(() {
+                  shaftCalcBuildBits.updateView(() {
                     defocus(stringEdit);
                     submitValue(value);
                   });
@@ -358,7 +359,7 @@ void focusStringEditor<T>({
               }
             },
             onEscape: () {
-              shaftCalcBuildBits.txn(() {
+              shaftCalcBuildBits.updateView(() {
                 defocus(controller.readValue()!);
               });
             },

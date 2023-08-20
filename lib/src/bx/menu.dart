@@ -4,6 +4,7 @@ import 'package:mhu_dart_ide/src/builder/static.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 
 import 'package:mhu_dart_ide/src/bx/paginate.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 
@@ -141,7 +142,7 @@ extension MenuShaftBuilderBitsX on ShaftBuilderBits {
     )..freeze();
 
     final callback = () {
-      txn(() {
+      updateView(() {
         stateFw.rebuild((message) {
           message.topShaft = newShaftMessage;
         });

@@ -2,6 +2,7 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_dart_ide/src/proto.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
@@ -100,7 +101,7 @@ abstract class ValueBrowsingContent<T>
                     appBits: sizedBits,
                     shaftIndexFromLeft: sizedBits.shaftIndexFromLeft + 1,
                   );
-                  sizedBits.txn(() {
+                  sizedBits.updateView(() {
                     ShaftTypes.editScalar
                         .openerBits(
                           sizedBits,
@@ -194,7 +195,7 @@ abstract class ValueBrowsingContent<T>
             callback: () {
               final mapFieldAccess = mapEditingBits.protoPathField.fieldAccess
                   as MapFieldAccess<Msg, K, V>;
-              shaftBuilderBits.txn(() {
+              shaftBuilderBits.updateView(() {
                 final newKey = mapEditingBits.protoCustomizer
                     .mapDefaultKey(mapFieldAccess);
 

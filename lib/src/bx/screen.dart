@@ -6,6 +6,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/config.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../proto.dart';
@@ -175,17 +176,34 @@ class ShaftsLayout with _$ShaftsLayout {
 
 // typedef ShaftsLayout = IList<ShaftLayout>;
 
-void mdiStartScreenStream({
+UpdateView mdiStartScreenStream({
   required AppBits appBits,
   required DspReg disposers,
   required WriteValue<ShaftsLayout> shaftsLayout,
 }) {
-  disposers
-      .fr(() {
-        return mdiBuildScreen(appBits: appBits);
-      })
-      .changes()
-      .forEach(shaftsLayout);
+  final viewFr = disposers.fr(() {
+    return mdiBuildScreen(appBits: appBits);
+  });
+
+  viewFr.changes().forEach(shaftsLayout);
+
+  bool paused = false;
+  return (update) {
+    if (paused) {
+      update();
+      return;
+    }
+
+    viewFr.pause();
+    paused = true;
+
+    try {
+      update();
+    } finally {
+      paused = false;
+      viewFr.resume();
+    }
+  };
 }
 
 extension ScreenMdiStateMsgX on MdiStateMsg {

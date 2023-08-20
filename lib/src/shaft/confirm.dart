@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
@@ -49,23 +50,25 @@ abstract class ConfirmShaft
             opBuilder.startAsyncOp(
               shaftIndexFromLeft: shaftCalcBuildBits.shaftIndexFromLeft,
               start: (addShortcutKeyListener) async {
-                final completer = Completer();
+                final completer = Completer<VoidCallback>();
 
                 addShortcutKeyListener(
                   (key) {
                     switch (key) {
                       case ShortcutKey.escape:
-                        shaftCalcBuildBits.closeShaft();
-                        completer.complete();
+                        completer.complete(() {
+                          shaftCalcBuildBits.closeShaft();
+                        });
                       case ShortcutKey.enter:
-                        hasDeleteEntry.deleteEntry();
-                        completer.complete();
+                        completer.complete(() {
+                          hasDeleteEntry.deleteEntry();
+                        });
                       default:
                     }
                   },
                 );
 
-                await completer.future;
+                return await completer.future;
               },
             );
           },

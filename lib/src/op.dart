@@ -293,7 +293,7 @@ class OpBuilder {
 
   void startAsyncOp({
     required ShaftIndexFromLeft shaftIndexFromLeft,
-    required Future<void> Function(
+    required Future<VoidCallback> Function(
       AddShortcutKeyListener addShortcutKeyListener,
     ) start,
   }) async {
@@ -304,13 +304,20 @@ class OpBuilder {
     );
     _runningAsyncOp.value = running;
 
+    VoidCallback? result;
     try {
       final future = start(
         running.addShortcutKeyListener,
       );
-      await future;
+      result = await future;
     } finally {
-      _runningAsyncOp.value = null;
+      configBits.updateView(() {
+        if (result != null) {
+          result();
+        }
+
+        _runningAsyncOp.value = null;
+      });
     }
   }
 }

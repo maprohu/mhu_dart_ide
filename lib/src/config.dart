@@ -36,6 +36,11 @@ typedef ThemeCalcFr = Fr<ThemeCalc>;
 @Has()
 typedef ConfigCalcFr = Fr<ConfigCalc>;
 
+@Has()
+typedef UpdateView = void Function(
+  void Function() update,
+);
+
 @Compose()
 abstract class ConfigBits
     implements
@@ -48,10 +53,12 @@ abstract class ConfigBits
         HasThemeCalcFr,
         HasConfigCalcFr,
         HasIsarDatabase,
-        HasFwUpdateGroup {
+        HasUpdateView // ,HasFwUpdateGroup
+{
   static Future<ConfigBits> create({
     required Isar isar,
     required DspReg disposers,
+    required UpdateView updateView,
   }) async {
     final configFw = await isar.singletonFwProtoWriteOnly(
       id: MdiSingleton.config.index,
@@ -108,7 +115,8 @@ abstract class ConfigBits
       stateCalcFr: disposers.fr(() => StateCalc(stateFw())),
       configCalcFr: disposers.fr(() => ConfigCalc(configFw())),
       isarDatabase: isar,
-      fwUpdateGroup: FwUpdateGroup.global,
+      updateView: updateView,
+// fwUpdateGroup: FwUpdateGroup.global,
     );
   }
 }
@@ -120,11 +128,11 @@ class ConfigCalc {
 }
 
 extension HasStateFwX on HasStateFw {
-  // void clearFocusedShaft() {
-  //   stateFw.rebuild((state) {
-  //     state.clearFocusedShaft();
-  //   });
-  // }
+// void clearFocusedShaft() {
+//   stateFw.rebuild((state) {
+//     state.clearFocusedShaft();
+//   });
+// }
 
   Fu<MdiShaftMsg> shaftMsgFuByIndex(ShaftIndexFromLeft shaftIndexFromLeft) {
     return Fu.fromFr(
@@ -143,3 +151,9 @@ extension HasStateFwX on HasStateFw {
     );
   }
 }
+
+// extension ShaftBuilderBitsTxnX on ConfigBits {
+//   T updateView<T>(T Function() action) {
+//     return action();
+//   }
+// }
