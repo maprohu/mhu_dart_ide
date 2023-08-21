@@ -53,18 +53,31 @@ abstract class MapEntryShaft
 
         final scalarValue = mapEditingBits.itemValue(key);
 
+        final mapFieldAccess = mapEditingBits.protoPathField.fieldAccess
+            as MapFieldAccess<Msg, K, V>;
+
+        final mapEntry = MapEntry(
+          key,
+          scalarValue.readValue() ??
+              mapEditingBits.mapDataType.mapValueDataType.defaultValue,
+        );
         final content = ValueBrowsingContent.scalar(
           scalarDataType: mapEditingBits.mapDataType.mapValueDataType,
           scalarValue: scalarValue,
           extraContent: (sizedBits) {
-            return sizedBits.menu([
-              ShaftTypes.confirm.opener(
-                sizedBits,
-                shaftKey: (key) {
-                  key.ensureDeleteEntry();
-                },
-              ),
-            ]).toSingleElementIterable;
+            return [
+              sizedBits.menu([
+                ShaftTypes.confirm.opener(
+                  sizedBits,
+                  shaftKey: (key) {
+                    key.ensureDeleteEntry();
+                  },
+                ),
+              ]),
+              ...mapEditingBits.protoCustomizer
+                  .mapEntryExtraContent(mapFieldAccess, mapEntry)
+                  .call(sizedBits),
+            ];
           },
           protoCustomizer: mapEditingBits.protoCustomizer,
           protoPath: ProtoPathMapItem(
@@ -74,29 +87,21 @@ abstract class MapEntryShaft
         );
 
         final shaftRight = ComposedMapEntryShaftRight(
-          editingBits: content.editingBits,
-          deleteEntry: () {
-            shaftCalcBuildBits.updateView(() {
-              shaftCalcBuildBits.closeShaft();
-              mapEditingBits.updateValue((map) {
-                map.remove(key);
+            editingBits: content.editingBits,
+            deleteEntry: () {
+              shaftCalcBuildBits.updateView(() {
+                shaftCalcBuildBits.closeShaft();
+                mapEditingBits.updateValue((map) {
+                  map.remove(key);
+                });
               });
             });
-          }
-        );
-
-        final mapFieldAccess = mapEditingBits.protoPathField.fieldAccess
-            as MapFieldAccess<Msg, K, V>;
 
         return ComposedMapEntryShaft.merge$(
           shaftCalcBuildBits: shaftCalcBuildBits,
           shaftHeaderLabel: protoCustomizer.mapEntryLabel(
             mapFieldAccess,
-            MapEntry(
-              key,
-              scalarValue.readValue() ??
-                  mapEditingBits.mapDataType.mapValueDataType.defaultValue,
-            ),
+            mapEntry,
           ),
           shaftContentBits: content,
           mapEntryShaftRight: shaftRight,

@@ -50,6 +50,11 @@ class ProtoCustomizer {
     <K, V>(mapFieldAccess, mapEditingBits, shaftBuilderBits) => null,
   );
 
+  late final mapEntryExtraContent =
+      MapEntryFeatureCustomizer<BuildShaftContent>(
+    <K, V>(mapFieldAccess, mapEntry) => empty1,
+  );
+
   late final messageEditOptions =
       MessageValueFeatureCustomizer<BuildShaftOptions?>(
     <M extends Msg>(instance, messageEditingBits) => null,

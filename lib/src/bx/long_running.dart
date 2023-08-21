@@ -15,7 +15,8 @@ BuildShaftContent? longRunningTasksShaftContent({
     :longRunningTasksController,
   ) = appBits;
 
-  final runningTasks = longRunningTasksController.longRunningTasks.watchValue();
+  final runningTasks =
+      longRunningTasksController.readWatchLongRunningTasks.watchValue();
 
   if (runningTasks.isEmpty) {
     return null;
@@ -44,7 +45,7 @@ Bx longRunningTaskIndicatorIcon({
     size: size,
     widget: flcFrr(() {
       final runningTasks =
-          longRunningTasksController.longRunningTasks.watchValue();
+          longRunningTasksController.readWatchLongRunningTasks.watchValue();
       Widget child = nullWidget;
 
       if (runningTasks.isNotEmpty) {

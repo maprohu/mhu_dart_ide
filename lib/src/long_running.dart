@@ -2,6 +2,7 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu_dynamic.dart';
@@ -15,6 +16,9 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import 'bx/boxed.dart';
 
+import 'long_running.dart' as $lib;
+part 'long_running.g.dart';
+
 part 'long_running.g.has.dart';
 
 part 'long_running.g.compose.dart';
@@ -23,7 +27,7 @@ part 'long_running.g.compose.dart';
 typedef LongRunningTaskIdentifier = int;
 
 @Has()
-typedef LongRunningTasks = ReadWatchValue<IList<LongRunningTask>>;
+typedef ReadWatchLongRunningTasks = ReadWatchValue<IList<LongRunningTask>>;
 
 @Has()
 typedef LongRunningTaskMenuItem = DynamicMenuItem Function(
@@ -31,7 +35,7 @@ typedef LongRunningTaskMenuItem = DynamicMenuItem Function(
 );
 
 @Has()
-typedef AddLongRunningTask = void Function(
+typedef AddLongRunningTask = LongRunningTask Function(
   LongRunningTaskBuildBits Function(
     LongRunningTaskIdentifier taskIdentifier,
   ) builder,
@@ -170,11 +174,14 @@ abstract class LongRunningTask
   static const completeIconData = Icons.notification_important;
 }
 
+abstract class LongRunningTasks
+    implements HasUpdateView, HasStateFw, HasLongRunningTasksController {}
+
 @Compose()
 @Has()
 abstract class LongRunningTasksController
     implements
-        HasLongRunningTasks,
+        HasReadWatchLongRunningTasks,
         HasAddLongRunningTask,
         HasRemoveLongRunningTask {
   static LongRunningTasksController create({
@@ -185,7 +192,7 @@ abstract class LongRunningTasksController
     final identifierSequence = configBits.sequencesFw.longRunningTaskId;
 
     return ComposedLongRunningTasksController(
-      longRunningTasks: tasksValue.toReadWatchValue,
+      readWatchLongRunningTasks: tasksValue.toReadWatchValue,
       addLongRunningTask: (builder) {
         final taskId = identifierSequence.value;
         identifierSequence.update((v) => v + 1);
@@ -200,6 +207,8 @@ abstract class LongRunningTasksController
         tasksValue.update(
           (v) => v.add(task),
         );
+
+        return task;
       },
       removeLongRunningTask: (identifier) {
         tasksValue.update(
@@ -210,4 +219,33 @@ abstract class LongRunningTasksController
       },
     );
   }
+}
+
+void openLongRunningTaskShaft({
+  @Ext() required LongRunningTasks longRunningTasks,
+  required HasShaftCalcChain shaftCalc,
+  required LongRunningTaskIdentifier taskIdentifier,
+}) {
+  longRunningTasks.updateView(
+    () {
+      longRunningTasks.stateFw.rebuild(
+        (state) {
+          final shaftMsg = shaftCalc.shaftCalcChain.shaftMsgFu.read();
+          state.topShaft = MdiShaftMsg$.create(
+            shaftIdentifier: MdiShaftIdentifierMsg$.create(
+              viewTask: MdiViewTaskMsg$.create(
+                taskIdentifier: taskIdentifier,
+              ),
+            ),
+            parent: MdiShaftMsg$.create(
+              shaftIdentifier: MdiShaftIdentifierMsg$.create(
+                options: MdiEmptyMsg.getDefault(),
+              ),
+              parent: shaftMsg,
+            ),
+          );
+        },
+      );
+    },
+  );
 }

@@ -17,6 +17,7 @@ import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import 'src/bx/divider.dart';
 import 'src/bx/screen.dart';
 import 'src/bx/boxed.dart';
+import 'src/dart/dart_package.dart';
 import 'src/screen/app.dart';
 
 void main() async {
@@ -49,9 +50,11 @@ void main() async {
       final longRunningTasksController = LongRunningTasksController.create(
         configBits: configBits,
       );
+      
 
-      final appBits = ComposedAppBits.configBits(
+      final appBits = ComposedAppBits.merge$(
         configBits: configBits,
+        dartPackagesBits: DartPackagesBits.create(),
         screenSizeFr: screenSizeFr,
         opBuilder: opBuilder,
         longRunningTasksController: longRunningTasksController,
