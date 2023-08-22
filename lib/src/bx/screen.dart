@@ -1,13 +1,14 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/long_running.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
+import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../proto.dart';
@@ -21,16 +22,24 @@ import 'boxed.dart';
 import 'paginate.dart';
 import '../screen/calc.dart';
 
+import 'screen.dart' as $lib;
+
+part 'screen.g.dart';
+
 part 'screen.freezed.dart';
 
-final defaultMainMenuShaft = MdiShaftMsg()
-  ..ensureDefaultMainMenu()
-  ..freeze();
+ShaftMsg createDefaultShaftMsg() {
+  return MdiShaftMsg()
+    ..ensureShaftMsgMainMenu()
+    ..freeze();
+}
 
-extension DefaultMainMenuShaftMsgX on ShaftMsg {
-  void ensureDefaultMainMenu() {
-    ensureShaftIdentifier().ensureMainMenu();
-  }
+void ensureShaftMsgMainMenu({
+  @Ext() required ShaftMsg shaftMsg,
+}) {
+  shaftMsg.ensureShaftIdentifier().shaftFactoryKey = shaftFactories
+      .lookupSingletonByType<MainMenuShaftFactory>()
+      .getShaftFactoryKey();
 }
 
 const _defaultMinShaftWidth = 200.0;
@@ -62,7 +71,7 @@ ShaftsLayout mdiBuildScreen({
 
     final topCalcChain = ComposedShaftCalcChain.appBits(
       appBits: appBits,
-      shaftMsg: state.effectiveTopShaft,
+      shaftMsg: state.getEffectiveTopShaft(hasShaftFactories: appBits),
       shaftIndexFromRight: 0,
       stateMsg: state,
     );
@@ -207,11 +216,17 @@ UpdateView mdiStartScreenStream({
   };
 }
 
-extension ScreenMdiStateMsgX on MdiStateMsg {
-  MdiShaftMsg get effectiveTopShaft => topShaftOpt ?? defaultMainMenuShaft;
+ShaftMsg getEffectiveTopShaft({
+  @Ext() required MdiStateMsg stateMsg,
+}) {
+  return stateMsg.topShaftOpt ?? createDefaultShaftMsg();
+}
 
-  MdiShaftMsg ensureEffectiveTopShaft() =>
-      topShaftOpt ?? (ensureTopShaft()..ensureDefaultMainMenu());
+ShaftMsg ensureEffectiveTopShaft({
+  required MdiStateMsg stateMsg,
+}) {
+  return stateMsg.topShaftOpt ??
+      (stateMsg.ensureTopShaft()..ensureShaftMsgMainMenu());
 }
 
 extension ScreenMdiShaftMsgX on MdiShaftMsg {

@@ -8,7 +8,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
 import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';

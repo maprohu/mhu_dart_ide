@@ -7,7 +7,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/app.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
+import 'package:mhu_dart_ide/src/context/render.dart';
 import 'package:mhu_dart_ide/src/isar.dart';
 import 'package:mhu_dart_ide/src/long_running.dart';
 import 'package:mhu_dart_ide/src/op.dart';
@@ -30,38 +32,40 @@ void main() async {
     builder: (disposers) async {
       await ThemeCalc.init();
 
-      final isar = await mdiCreateIsar();
+      // final isar = await mdiCreateIsar();
 
-      late final UpdateView updateView;
+      final persistCtx = await createPersistCtx(disposers: disposers);
 
-      final configBits = await ConfigBits.create(
-        isar: isar,
-        disposers: disposers,
-        updateView: (update) {
-          updateView(update);
-        },
-      );
+      final configCtx = await persistCtx.createConfigCtx();
 
-      final screenSizeFr =
-          await ScreenSizeObserver.stream(disposers).fr(disposers);
+      final windowCtx =
+          configCtx.createAppCtx().createWindowCtx(disposers: disposers);
 
-      final opBuilder = OpBuilder(configBits);
+      // final configBits = await ConfigCtx.create(
+      //   isar: isar,
+      //   disposers: disposers,
+      //   updateView: (update) {
+      //     updateView(update);
+      //   },
+      // );
 
-      final longRunningTasksController = LongRunningTasksController.create(
-        configBits: configBits,
-      );
-      
+      // final opBuilder = OpBuilder(configBits);
+      //
+      // final longRunningTasksController = LongRunningTasksController.create(
+      //   configBits: configBits,
+      // );
 
-      final appBits = ComposedAppBits.merge$(
-        configBits: configBits,
-        dartPackagesBits: DartPackagesBits.create(),
-        screenSizeFr: screenSizeFr,
-        opBuilder: opBuilder,
-        longRunningTasksController: longRunningTasksController,
-        shaftDataStore: {},
-      );
+      // final appBits = ComposedAppBits.merge$(
+      //   configBits: configBits,
+      //   dartPackagesBits: DartPackagesBits.create(),
+      //   screenSizeFr: screenSizeFr,
+      //   opBuilder: opBuilder,
+      //   longRunningTasksController: longRunningTasksController,
+      //   shaftDataStore: {},
+      //   shaftFactories: defaultShaftFactories,
+      // );
 
-      final Fw<BeforeAfter<ShaftsLayout>> shaftsLayoutFw = fw(
+      final Fw<BeforeAfter<RenderedView>> shaftsLayoutFw = fw(
         (
           before: ShaftsLayout.initial,
           after: ShaftsLayout.initial,

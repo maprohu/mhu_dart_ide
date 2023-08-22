@@ -12,7 +12,7 @@ import '../builder/sized.dart';
 import '../bx/menu.dart';
 import '../long_running.dart';
 import '../sharing_box.dart';
-import '../config.dart';
+import '../context/config.dart';
 import '../op.dart';
 import '../shaft/switch.dart';
 import '../bx/boxed.dart';

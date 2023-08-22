@@ -6,7 +6,7 @@ import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/builder/text.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/bx/menu_dynamic.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
 import 'package:mhu_dart_ide/src/dart/dart_package.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/proto.dart';

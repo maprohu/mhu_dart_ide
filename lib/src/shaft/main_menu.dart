@@ -3,7 +3,7 @@ import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
 import 'package:mhu_dart_ide/src/bx/screen.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
@@ -56,6 +56,15 @@ abstract class MainMenuShaft
       shaftCalcBuildBits: shaftCalcBuildBits,
       mainMenuShaftMerge: shaftMerge,
       mainMenuShaftLeft: shaftLeft,
+    );
+  }
+}
+
+@Compose()
+abstract class MainMenuShaftFactory implements ShaftFactory {
+  static MainMenuShaftFactory create() {
+    return ComposedMainMenuShaftFactory.shaftFactory(
+      shaftFactory: ShaftFactory(),
     );
   }
 }

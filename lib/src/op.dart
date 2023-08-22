@@ -8,7 +8,7 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/bx/screen.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
 import 'package:mhu_dart_ide/src/keyboard.dart';
 import 'package:mhu_dart_ide/src/model.dart';
 
@@ -173,7 +173,7 @@ typedef ShortcutKeyListener = void Function(ShortcutKey key);
 
 @Has()
 class OpBuilder {
-  final ConfigBits configBits;
+  final ConfigCtx configBits;
   late _OpBuild _opBuild;
 
   final _exclude = <OpShortcut>{};

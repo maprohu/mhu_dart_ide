@@ -6,7 +6,7 @@ import 'package:mhu_dart_ide/src/state.dart';
 import 'package:mhu_dart_ide/src/theme.dart';
 
 import '../app.dart';
-import '../config.dart';
+import '../context/config.dart';
 import '../long_running.dart';
 import '../op.dart';
 import 'double.dart';

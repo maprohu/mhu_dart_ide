@@ -1,6 +1,12 @@
+import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/screen/shaft_factory.dart';
 import 'package:mhu_dart_ide/src/shaft/string.dart';
+import 'package:mhu_dart_ide/src/shaft/switch.dart';
+
+// part 'error.g.has.dart';
+part 'error.g.compose.dart';
 
 ShaftCalc notImplementedShaftCalc({
   required ShaftCalcBuildBits shaftCalcBuildBits,
@@ -26,4 +32,13 @@ ShaftCalc notImplementedShaftCalc({
     shaftHeaderLabel: "<not implemented>",
     buildShaftContent: stringBuildShaftContent(message),
   );
+}
+
+@Compose()
+abstract class InvalidShaftFactory implements ShaftFactory {
+  static InvalidShaftFactory create() {
+    return ComposedInvalidShaftFactory.shaftFactory(
+      shaftFactory: ShaftFactory(),
+    );
+  }
 }

@@ -7,7 +7,7 @@ import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu_dynamic.dart';
 import 'package:mhu_dart_ide/src/bx/text.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
 import 'package:mhu_dart_ide/src/sharing_box.dart';
@@ -185,7 +185,7 @@ abstract class LongRunningTasksController
         HasAddLongRunningTask,
         HasRemoveLongRunningTask {
   static LongRunningTasksController create({
-    required ConfigBits configBits,
+    required ConfigCtx configBits,
   }) {
     final tasksValue = fw(IList<LongRunningTask>());
 
@@ -226,26 +226,26 @@ void openLongRunningTaskShaft({
   required HasShaftCalcChain shaftCalc,
   required LongRunningTaskIdentifier taskIdentifier,
 }) {
-  longRunningTasks.updateView(
-    () {
-      longRunningTasks.stateFw.rebuild(
-        (state) {
-          final shaftMsg = shaftCalc.shaftCalcChain.shaftMsgFu.read();
-          state.topShaft = MdiShaftMsg$.create(
-            shaftIdentifier: MdiShaftIdentifierMsg$.create(
-              viewTask: MdiViewTaskMsg$.create(
-                taskIdentifier: taskIdentifier,
-              ),
-            ),
-            parent: MdiShaftMsg$.create(
-              shaftIdentifier: MdiShaftIdentifierMsg$.create(
-                options: MdiEmptyMsg.getDefault(),
-              ),
-              parent: shaftMsg,
-            ),
-          );
-        },
-      );
-    },
-  );
+  // longRunningTasks.updateView(
+  //   () {
+  //     longRunningTasks.stateFw.rebuild(
+  //       (state) {
+  //         final shaftMsg = shaftCalc.shaftCalcChain.shaftMsgFu.read();
+  //         state.topShaft = MdiShaftMsg$.create(
+  //           shaftIdentifier: MdiShaftIdentifierMsg$.create(
+  //             viewTask: MdiViewTaskMsg$.create(
+  //               taskIdentifier: taskIdentifier,
+  //             ),
+  //           ),
+  //           parent: MdiShaftMsg$.create(
+  //             shaftIdentifier: MdiShaftIdentifierMsg$.create(
+  //               options: MdiEmptyMsg.getDefault(),
+  //             ),
+  //             parent: shaftMsg,
+  //           ),
+  //         );
+  //       },
+  //     );
+  //   },
+  // );
 }

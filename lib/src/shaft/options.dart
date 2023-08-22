@@ -4,7 +4,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/app.dart';
 import 'package:mhu_dart_ide/src/bx/long_running.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/config.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
 import 'package:mhu_dart_ide/src/op.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 import 'package:mhu_dart_ide/src/screen/opener.dart';
@@ -70,3 +70,14 @@ abstract class OptionsShaft
     );
   }
 }
+
+@Compose()
+abstract class OptionsShaftFactory implements ShaftFactory {
+  static OptionsShaftFactory create() {
+    return ComposedOptionsShaftFactory.shaftFactory(
+      shaftFactory: ShaftFactory(),
+    );
+  }
+}
+
+

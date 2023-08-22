@@ -62,21 +62,24 @@ message MdiShaftNotificationMsg {
 }
 
 message MdiShaftIdentifierMsg {
+  int32 shaft_factory_key = 1;
   oneof type {
-    MdiEmptyMsg not_implemented = 1;
-    MdiEmptyMsg main_menu = 2;
-    MdiEmptyMsg options = 3;
-    MdiConfirmMsg confirm = 4;
+    MdiViewTaskMsg view_task = 5;
+//    MdiEmptyMsg not_implemented = 1;
+//    MdiEmptyMsg main_menu = 2;
+//    MdiEmptyMsg options = 3;
+//    MdiConfirmMsg confirm = 4;
 
     MdiConcreteFieldMsg concrete_field = 100;
     MdiOneofFieldMsg oneof_field = 101;
     MdiMapEntryKeyMsg map_entry = 102;
-    MdiEmptyMsg new_map_entry = 103;
-    MdiEmptyMsg edit_scalar = 106;
-    MdiViewTaskMsg view_task = 107;
+//    MdiEmptyMsg new_map_entry = 103;
+//    MdiEmptyMsg edit_scalar = 106;
 
-    MdiEmptyMsg config = 200;
-    MdiEmptyMsg build_runner = 201;
+//    MdiEmptyMsg config = 200;
+//    MdiEmptyMsg build_runner = 201;
+//    MdiEmptyMsg dart_workspace_scan_packages = 202;
+
   }
 }
 
@@ -103,12 +106,12 @@ message MdiViewTaskMsg {
   int32 task_identifier = 1;
 }
 
-message MdiConfirmMsg {
-  oneof type {
-    MdiGenericMsg generic = 1;
-    MdiEmptyMsg delete_entry = 2;
-  }
-}
+//message MdiConfirmMsg {
+//  oneof type {
+//    MdiGenericMsg generic = 1;
+//    MdiEmptyMsg delete_entry = 2;
+//  }
+//}
 
 // inner state
 
