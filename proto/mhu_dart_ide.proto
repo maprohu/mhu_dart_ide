@@ -20,14 +20,14 @@ message  MdiDartPackageMsg {
   string relative_path = 1;
 }
 
-message MdiStateMsg {
+message MdiWindowStateMsg {
   MdiShaftMsg top_shaft = 1;
-  double min_shaft_width = 2;
 }
 
 
 message MdiThemeMsg {
   MdiDividerThicknessThemeMsg divider_thickness = 1;
+  double min_shaft_width = 2;
 }
 
 message MdiDividerThicknessThemeMsg {
@@ -47,7 +47,7 @@ message MdiNotificationMsg {
 message MdiShaftMsg {
   MdiShaftMsg parent = 1;
   uint64 shaft_seq = 2;
-  int32 width = 9;
+  int32 width_units = 9;
 
   MdiShaftIdentifierMsg shaft_identifier = 20;
   MdiInnerStateMsg inner_state = 19;

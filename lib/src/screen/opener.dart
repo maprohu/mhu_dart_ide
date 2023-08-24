@@ -28,7 +28,7 @@ abstract class OpenerBits implements HasOpenerState, HasShortcutCallback {}
 
 extension OpenerShaftCalcBitsX on HasShaftCalcChain {
   void closeShaft() {
-    shaftCalcChain.stateFw.rebuild((message) {
+    shaftCalcChain.windowStateFw.rebuild((message) {
       message.topShaft = message.topShaft.shaftByIndexFromLeft(
         shaftCalcChain.shaftIndexFromLeft - 1,
       )!;

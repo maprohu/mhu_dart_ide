@@ -3,23 +3,18 @@ import 'dart:ui';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/context/rect.dart';
+import 'package:mhu_dart_ide/src/wx/wx.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
-
-import '../app.dart';
-import '../bx/divider.dart';
-import '../bx/screen.dart';
 
 part 'app.freezed.dart';
 
 class MdiApp extends StatelessWidget {
-  final AppBits appBits;
-
-  final WatchValue<BeforeAfter<ShaftsLayout>> shaftsLayout;
+  final WindowObj windowObj;
 
   MdiApp({
     super.key,
-    required this.appBits,
-    required this.shaftsLayout,
+    required this.windowObj,
   });
 
   final _focusNode = FocusNode();
@@ -29,7 +24,7 @@ class MdiApp extends StatelessWidget {
     return KeyboardListener(
       focusNode: _focusNode,
       autofocus: true,
-      onKeyEvent: appBits.opBuilder.onKeyEvent,
+      onKeyEvent: windowObj.onKeyEvent,
       child: MaterialApp(
         title: "MHU Dart IDE",
         debugShowCheckedModeBanner: false,
@@ -47,7 +42,7 @@ class MdiApp extends StatelessWidget {
     final (
       :before,
       :after,
-    ) = shaftsLayout();
+    ) = windowObj.shaftsLayoutBeforeAfterFw.watch();
 
     if (after.shafts.isEmpty) {
       return busyWidget;
@@ -64,44 +59,49 @@ class MdiApp extends StatelessWidget {
 
     double calcDividerThickness(double animation) {
       return lerpDouble(
-        before.dividerThickness,
-        after.dividerThickness,
+        before.renderObj.shaftsDividerThickness,
+        after.renderObj.shaftsDividerThickness,
         animation,
       )!;
     }
 
+    final screenWidth = after.renderObj.screenSize.width;
+    final screenHeight = after.renderObj.screenSize.height;
+
     Widget calcDividerWidget(double dividerThickness) {
-      return verticalDividerBx(
-        thickness: dividerThickness,
-        height: after.screenSize.height,
-      ).layout();
+      return SizedBox(
+        width: dividerThickness,
+        height: screenHeight,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: after.renderObj.themeWrap.dividerColor,
+          ),
+        ),
+      );
     }
 
     final movedWidgets = animations.moved.map((e) {
       return (
-        before: e.before.shaftBx.sizedLayout(),
-        after: e.after.shaftBx.sizedLayout(),
+        before: e.before.wx.wxWidgetSizedBox(),
+        after: e.after.wx.wxWidgetSizedBox(),
       );
     }).toList();
-
-    final screenWidth = after.screenSize.width;
-    final screenHeight = after.screenSize.height;
 
     final positionBeforeAfter = animations.positionBeforeAfter;
 
     final beforeCalc = AnimationsMoveCalc(
       startPositionDelta: positionBeforeAfter.before,
-      dividerThickness: before.dividerThickness,
+      dividerThickness: before.renderObj.themeWrap.shaftsDividerThickness,
       shafts: animations.moved.map((e) => e.before).toList(),
       screenWidth: screenWidth,
-      totalShaftWidth: before.totalShaftWidth,
+      totalShaftWidth: before.shaftLayoutTotalWidthUnits(),
     );
     final afterCalc = AnimationsMoveCalc(
       startPositionDelta: positionBeforeAfter.after,
-      dividerThickness: after.dividerThickness,
+      dividerThickness: after.renderObj.themeWrap.shaftsDividerThickness,
       shafts: animations.moved.map((e) => e.after).toList(),
       screenWidth: screenWidth,
-      totalShaftWidth: after.totalShaftWidth,
+      totalShaftWidth: after.shaftLayoutTotalWidthUnits(),
     );
 
     final dividerAnimations = zip2IterablesRecords(
@@ -112,8 +112,8 @@ class MdiApp extends StatelessWidget {
       return DoubleAnimation(before: before, after: after);
     }).toIList();
 
-    final addedWidgets = animations.added.map((e) => e.shaftBx.layout());
-    final removedWidgets = animations.removed.map((e) => e.shaftBx.layout());
+    final addedWidgets = animations.added.map((e) => e.wx.widget);
+    final removedWidgets = animations.removed.map((e) => e.wx.widget);
 
     Widget rightWidgets({
       required double opacity,
@@ -253,7 +253,7 @@ class MdiApp extends StatelessWidget {
 
         final movedOutLeftList = beforeShafts.sublist(0, movedOutLeftCount);
 
-        positionDelta = -movedOutLeftList.sumBy((e) => e.shaftWidth);
+        positionDelta = -movedOutLeftList.sumBy((e) => e.shaftWidthUnits);
         leftInOrOut(
           shafts: movedOutLeftList,
         );
@@ -269,7 +269,7 @@ class MdiApp extends StatelessWidget {
         final movedInFromLeftList =
             afterShafts.sublist(0, movedInFromLeftCount);
 
-        positionDelta = movedInFromLeftList.sumBy((e) => e.shaftWidth);
+        positionDelta = movedInFromLeftList.sumBy((e) => e.shaftWidthUnits);
         leftInOrOut(
           shafts: movedInFromLeftList,
         );
@@ -387,7 +387,7 @@ class AnimationsMoveCalc {
     final positions = [actualPosition];
 
     for (final shaft in shafts) {
-      final shaftWidth = shaftUnitWidthPlusDivider * shaft.shaftWidth;
+      final shaftWidth = shaftUnitWidthPlusDivider * shaft.shaftWidthUnits;
       actualPosition += shaftWidth;
       positions.add(actualPosition);
     }

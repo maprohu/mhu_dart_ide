@@ -1,27 +1,75 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/screen.dart';
-import 'package:mhu_dart_ide/src/context/render.dart';
+import 'package:mhu_dart_ide/src/context/rect.dart';
+import 'package:mhu_dart_ide/src/context/text.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/shaft_factory.dart';
+import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 export 'package:mhu_dart_ide/src/context/render.dart';
 
 import '../../proto.dart';
+import '../bx/boxed.dart';
+import '../model.dart';
+import '../wx/wx.dart';
 import 'shaft.dart' as $lib;
 
 part 'shaft.g.dart';
 
 part 'shaft.g.has.dart';
 
-part 'shaft.g.compose.dart';
+part 'shaft/render.dart';
+
+part 'shaft/header.dart';
 
 @Has()
 class ShaftObj with MixShaftCtx, MixShaftMsg {
-  late final ShaftCtx? left;
-  late final ShaftCtx? right;
-  late final int indexFromLeft;
-  late final int indexFromRight;
+  late final ShaftObj? shaftOnRight;
+
+  late final int indexFromRight = shaftOnRight?.indexFromRight.plus(1) ?? 0;
+
+  late final ShaftObj? shaftOnLeft = shaftMsg.parentOpt?.let(
+    (parentShaftMsg) => shaftCtx
+        .createShaftCtx(
+          shaftMsg: parentShaftMsg,
+          shaftOnRight: this,
+        )
+        .shaftObj,
+  );
+
+  late final int indexFromLeft =
+      shaftCtx.renderObj.maxShaftIndex - indexFromRight;
+
+  late final shaftWidthUnits = shaftMsg.getShaftEffectiveWidthUnits();
+
+  late final int totalWidthUnitsFromRightEndInclusive =
+      shaftWidthUnits + totalWidthUnitsOnRight;
+  late final int totalWidthUnitsOnRight =
+      shaftOnRight?.totalWidthUnitsFromRightEndInclusive ?? 0;
+
+  late final screenWidthUnitsAvailableForShaft =
+      shaftCtx.renderObj.shaftWidthUnitsFitCount - totalWidthUnitsOnRight;
+
+  late final visibleWidthUnits = min(
+    shaftWidthUnits,
+    screenWidthUnitsAvailableForShaft,
+  );
+
+  late final isVisible = screenWidthUnitsAvailableForShaft > 0;
+
+  late final shaftIdentifier = shaftMsg.shaftIdentifier;
+  late final shaftFactoryKey = shaftIdentifier.shaftFactoryKey;
+
+  late final shaftFactory = lookupShaftFactory(
+    shaftFactoryKey: shaftFactoryKey,
+  );
+
+  late final shaftData = shaftFactory.createShaftData(shaftCtx);
 }
 
 @Compose()
@@ -31,8 +79,10 @@ abstract class ShaftCtx implements RenderCtx, HasShaftObj {}
 ShaftCtx createShaftCtx({
   @Ext() required RenderCtx renderCtx,
   required ShaftMsg shaftMsg,
+  required ShaftObj? shaftOnRight,
 }) {
-  final shaftObj = ShaftObj().also(shaftMsg.initMixShaftMsg);
+  final shaftObj = ShaftObj().also(shaftMsg.initMixShaftMsg)
+    ..shaftOnRight = shaftOnRight;
 
   return ComposedShaftCtx.renderCtx(
     renderCtx: renderCtx,
@@ -40,35 +90,14 @@ ShaftCtx createShaftCtx({
   )..initMixShaftCtx(shaftObj);
 }
 
-typedef ShaftList = IList<ShaftCtx>;
-
-ShaftList createShaftList({
-  @Ext() required RenderCtx renderCtx,
+Iterable<ShaftCtx> shaftCtxLeftIterable({
+  @extHas required ShaftCtx shaftCtx,
 }) {
-  final shaftChainList = renderCtx
-      .getRenderStateMsg()
-      .getEffectiveTopShaft()
-      .finiteIterable((item) => item.parentOpt)
-      .toList()
-      .reversed
-      .map(
-        (shaftMsg) => renderCtx.createShaftCtx(shaftMsg: shaftMsg),
-      )
-      .toIList();
-
-  final length = shaftChainList.length;
-  final maxIndex = length - 1;
-
-  shaftChainList.forEachIndexed((index, item) {
-    final calc = item.shaftObj;
-    calc.indexFromLeft = index;
-    calc.indexFromRight = maxIndex - index;
-    calc.left = index > 0 ? shaftChainList[index - 1] : null;
-    calc.right = index < maxIndex ? shaftChainList[index + 1] : null;
-  });
-
-  return shaftChainList;
+  return shaftCtx.finiteIterable(
+    (item) => item.shaftObj.shaftOnLeft?.shaftCtx,
+  );
 }
+
 // Fu<MdiShaftMsg> shaftMsgFuByIndex({
 //   required ConfigCtx configCtx,
 //   required ShaftIndexFromLeft shaftIndexFromLeft,

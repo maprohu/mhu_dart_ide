@@ -13,7 +13,6 @@ part 'persist.g.dart';
 
 part 'persist.g.has.dart';
 
-part 'persist.g.compose.dart';
 
 @Has()
 class PersistObj with MixIsar {
@@ -58,12 +57,12 @@ abstract class MdiConfigIsarSingletonFwFactory
 }
 
 @Compose()
-abstract class MdiStateIsarSingletonFwFactory
-    implements IsarSingletonFwFactory<MdiStateMsg> {
+abstract class MdiWindowStateIsarSingletonFwFactory
+    implements IsarSingletonFwFactory<MdiWindowStateMsg> {
   static final instance =
-      ComposedMdiStateIsarSingletonFwFactory.isarSingletonFwFactory(
+      ComposedMdiWindowStateIsarSingletonFwFactory.isarSingletonFwFactory(
     isarSingletonFwFactory:
-        MdiStateMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
+        MdiWindowStateMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
   );
 }
 
@@ -99,7 +98,7 @@ abstract class MdiSequencesIsarSingletonFwFactory
 
 final isarSingletonFwFactories = createIsarSingletonFwFactories<Msg>({
   0: MdiConfigIsarSingletonFwFactory.instance,
-  1: MdiStateIsarSingletonFwFactory.instance,
+  1: MdiWindowStateIsarSingletonFwFactory.instance,
   2: MdiThemeIsarSingletonFwFactory.instance,
   3: MdiShaftNotificationsIsarSingletonFwFactory.instance,
   4: MdiSequencesIsarSingletonFwFactory.instance,

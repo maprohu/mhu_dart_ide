@@ -1,38 +1,48 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_ide/src/context/config.dart';
-import 'package:mhu_dart_ide/src/context/tasks.dart';
+import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/context/rect.dart';
 export 'package:mhu_dart_ide/src/context/tasks.dart';
-import 'package:mhu_dart_ide/src/context/theme.dart';
 export 'package:mhu_dart_ide/src/context/theme.dart';
-export 'package:mhu_dart_ide/src/context/config.dart';
+export 'package:mhu_dart_ide/src/context/data.dart';
 import 'app.dart' as $lib;
 
 part 'app.g.dart';
 
 part 'app.g.has.dart';
 
-part 'app.g.compose.dart';
-
 @Has()
-class AppObj {}
+class AppObj with MixAppCtx {
+  late final WindowCtx windowCtx;
+}
 
 @Compose()
-abstract class AppCtx
-    implements ConfigCtx, HasAppObj, HasThemeObj, HasTasksObj {}
+@Has()
+abstract class AppCtx implements DataCtx, HasAppObj, HasTasksObj {}
 
-AppCtx createAppCtx({
-  @Ext() required ConfigCtx configCtx,
-}) {
+Future<AppCtx> createAppCtx({
+  @Ext() required DataCtx dataCtx,
+  required Disposers disposers,
+}) async {
   final appObj = AppObj();
 
-  final themeObj = configCtx.createThemeObj();
+  final tasksObj = dataCtx.createTasksObj();
 
-  final tasksObj = configCtx.createTasksObj();
-
-  return ComposedAppCtx.configCtx(
-    configCtx: configCtx,
+  final appCtx = ComposedAppCtx.dataCtx(
+    dataCtx: dataCtx,
     appObj: appObj,
-    themeObj: themeObj,
     tasksObj: tasksObj,
+  )..initMixAppCtx(appObj);
+
+  appObj.windowCtx = await appCtx.createWindowCtx(
+    disposers: disposers,
   );
+
+  return appCtx;
+}
+
+R updateView<R>(
+  @extHas AppObj appObj,
+  R Function() action,
+) {
+  return appObj.windowCtx.windowObj.updateViewExecutor(action);
 }

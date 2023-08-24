@@ -4,11 +4,15 @@ import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/bx/padding.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+import 'boxed.dart' as $lib;
 
 part 'boxed.freezed.dart';
 
 part 'boxed.g.has.dart';
-// part 'boxed.g.compose.dart';
+
+part 'boxed.g.dart';
+
+part 'boxed_layout.dart';
 
 extension _Assert on Iterable<double> {
   bool _assertEqual() {
@@ -173,7 +177,6 @@ sealed class Bx with _$Bx implements HasSize, HasBackgroundColor {
         ),
     };
   }
-
 }
 
 typedef WidgetWithSize = ({

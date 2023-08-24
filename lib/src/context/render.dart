@@ -1,23 +1,73 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/bx/screen.dart';
-import 'package:mhu_dart_ide/src/context/shaft.dart';
-import 'package:mhu_dart_ide/src/context/window.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/context/rect.dart';
+import 'package:mhu_dart_ide/src/model.dart';
 export 'package:mhu_dart_ide/src/context/window.dart';
 import '../../proto.dart';
+import '../layout.dart';
+import '../wx/wx.dart';
 import 'render.dart' as $lib;
-
-part 'render.g.dart';
 
 part 'render.g.has.dart';
 
-part 'render.g.compose.dart';
+part 'render.g.dart';
+
+part 'render.freezed.dart';
+
+part 'render/shortcut.dart';
 
 @Has()
-class RenderObj with MixRenderCtx, MixStateMsg {
-  late final shaftList = renderCtx.createShaftList();
+class RenderObj with MixRenderCtx {
+  late final windowStateMsg = renderCtx.dataObj.windowStateFw.watch();
+
+  late final themeWrap = renderCtx.dataObj.themeWrapFr.watch();
+  late final themeMsg = themeWrap.themeMsg;
+
+  late final screenSize = renderCtx.windowObj.screenSizeFr.watch();
+  late final screenHeight = screenSize.height;
+  late final screenWidthPixels = screenSize.width;
+
+  late final topShaft = windowStateMsg.getEffectiveTopShaft();
+  late final shaftIterableLeft =
+      topShaft.finiteIterable((item) => item.parentOpt);
+  late final shaftCount = shaftIterableLeft.length;
+  late final maxShaftIndex = shaftCount - 1;
+
+  late final shaftOnRightEnd = renderCtx.createShaftCtx(
+    shaftMsg: topShaft,
+    shaftOnRight: null,
+  );
+
+  late final shaftsDividerThickness = themeWrap.shaftsDividerThickness;
+  late final availableScreenWidthPixels =
+      screenWidthPixels + themeWrap.shaftsDividerThickness;
+
+  late final shaftWidthUnitsFitCount = itemFitCount(
+    available: availableScreenWidthPixels,
+    itemSize: themeWrap.minShaftWidthPixels + themeWrap.shaftsDividerThickness,
+    dividerThickness: themeWrap.shaftsDividerThickness,
+  );
+
+  late final visibleShafts = shaftOnRightEnd
+      .shaftCtxLeftIterable()
+      .takeWhile((e) => e.shaftObj.isVisible)
+      .toList()
+      .reversed
+      .toIList();
+
+  late final totalVisibleShaftWidthUnits = visibleShafts.sumBy(
+    (e) => e.shaftObj.visibleWidthUnits,
+  );
+
+  late final visibleShaftUnitInPixels =
+      availableScreenWidthPixels / totalVisibleShaftWidthUnits;
+
+  late final ShaftCtx? focusedShaft;
+
+  late final shortcuts = Shortcuts.fromRenderObj(this);
 }
 
 @Compose()
@@ -26,9 +76,8 @@ abstract class RenderCtx implements WindowCtx, HasRenderObj {}
 
 RenderCtx createRenderCtx({
   @Ext() required WindowCtx windowCtx,
-  required StateMsg stateMsg,
 }) {
-  final renderObj = RenderObj().also(stateMsg.initMixStateMsg);
+  final renderObj = RenderObj();
 
   return ComposedRenderCtx.windowCtx(
     windowCtx: windowCtx,
@@ -37,16 +86,101 @@ RenderCtx createRenderCtx({
 }
 
 RenderedView watchRenderRenderedView({
-  @Ext() required RenderCtx windowCtx,
+  @extHas required RenderObj renderObj,
 }) {
+  final visibleShafts = renderObj.visibleShafts;
+
+  final shaftsThatNeedFocus = visibleShafts.where((shaftCtx) {
+    final shaftObj = shaftCtx.shaftObj;
+    return shaftObj.shaftFactory.shaftNeedsFocus(
+      shaftObj.shaftData,
+    );
+  }).toList();
+
+  switch (shaftsThatNeedFocus) {
+    case []:
+      renderObj.focusedShaft = null;
+    case [final focusedShaft]:
+      renderObj.focusedShaft = focusedShaft;
+    case [..., final focusedShaft]:
+      logger.w("multiple focused shafts: $shaftsThatNeedFocus");
+      renderObj.focusedShaft = focusedShaft;
+  }
+
+  final shafts = visibleShafts.reversedIListIterable().map((shaftCtx) {
+    final shaftObj = shaftCtx.shaftObj;
+    final shaftWidthPixels = renderObj.visibleShaftWidthPixels(
+      units: shaftObj.visibleWidthUnits,
+    );
+
+    final rectCtx = shaftCtx.createRectCtx(
+      size: Size(
+        shaftWidthPixels,
+        renderObj.screenHeight,
+      ),
+    );
+
+    return rectCtx.renderShaft();
+  }).toIList();
+
   return RenderedView(
-    shaftsLayout: shaftsLayout,
-    onKeyEvent: onKeyEvent,
+    shaftsLayout: ShaftsLayout(
+      shafts: shafts,
+      renderObj: renderObj,
+    ),
+    onKeyEvent: (keyEvent) {},
   );
 }
 
-StateMsg getRenderStateMsg({
+WindowStateMsg getRenderStateMsg({
   @extHas required RenderObj renderObj,
 }) {
-  return renderObj.stateMsg;
+  return renderObj.windowStateMsg;
+}
+
+double visibleShaftWidthPixels({
+  @extHas required RenderObj renderObj,
+  required ShaftWidthUnit units,
+}) {
+  return renderObj.visibleShaftUnitInPixels * units -
+      renderObj.shaftsDividerThickness;
+}
+
+@freezedStruct
+class ShaftLayout with _$ShaftLayout {
+  const ShaftLayout._();
+
+  const factory ShaftLayout({
+    required Int64 shaftSeq,
+    required ShaftWidthUnit shaftWidthUnits,
+    required Wx wx,
+  }) = _ShaftLayout;
+}
+
+@freezedStruct
+class ShaftsLayout with _$ShaftsLayout {
+  const ShaftsLayout._();
+
+  const factory ShaftsLayout({
+    required IList<ShaftLayout> shafts,
+    required RenderObj renderObj,
+  }) = _ShaftsLayout;
+}
+
+int shaftLayoutTotalWidthUnits({
+  @ext required ShaftsLayout shaftsLayout,
+}) {
+  if (shaftsLayout.shafts.isEmpty) {
+    return 1;
+  }
+
+  return shaftsLayout.shafts.sumBy(
+    (element) => element.shaftWidthUnits,
+  );
+}
+
+ThemeWrap themeWrapRender({
+  @extHas required RenderObj renderObj,
+}) {
+  return renderObj.themeWrap;
 }

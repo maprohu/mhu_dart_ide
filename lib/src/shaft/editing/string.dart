@@ -8,7 +8,7 @@ import 'package:mhu_dart_ide/proto.dart';
 import 'package:mhu_dart_ide/src/builder/shaft.dart';
 import 'package:mhu_dart_ide/src/builder/sized.dart';
 import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/context/config.dart';
+import 'package:mhu_dart_ide/src/context/data.dart';
 import 'package:mhu_dart_ide/src/sharing_box.dart';
 import 'package:mhu_dart_ide/src/bx/string.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
@@ -90,14 +90,14 @@ SharingBoxes editScalarAsStringSharingBoxes<T>({
 Widget stringWidgetWithCursor({
   required String text,
   required GridSize gridSize,
-  required ThemeCalc themeCalc,
+  required ThemeWrap themeCalc,
   required bool isFocused,
 }) {
   final GridSize(
     :cellCount,
   ) = gridSize;
 
-  final ThemeCalc(
+  final ThemeWrap(
     :textCursorThickness,
     :stringTextStyle,
   ) = themeCalc;
@@ -212,7 +212,7 @@ SharingBox focusedStringEditorSharingBox<T>({
   required StringParsingBits<T> stringParsingBits,
 }) {
   final SizedShaftBuilderBits(
-    themeCalc: ThemeCalc(
+    themeCalc: ThemeWrap(
       :textCursorThickness,
       :stringTextStyle,
     ),
@@ -257,7 +257,7 @@ SharingBoxes unfocusedStringEditSharingBoxes<T>({
   SharingBoxes extraBoxes = const Iterable.empty(),
 }) {
   final SizedShaftBuilderBits(
-    themeCalc: ThemeCalc(
+    themeCalc: ThemeWrap(
       :textCursorThickness,
       :stringTextStyle,
     ),

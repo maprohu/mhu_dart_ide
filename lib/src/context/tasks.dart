@@ -11,7 +11,7 @@ part 'tasks.g.has.dart';
 class TasksObj {}
 
 TasksObj createTasksObj({
-  @Ext() required ConfigCtx configCtx,
+  @Ext() required DataCtx configCtx,
 }) {
   final tasksObj = TasksObj();
 

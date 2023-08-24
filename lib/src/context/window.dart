@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/bx/screen.dart';
-import 'package:mhu_dart_ide/src/context/app.dart';
 import 'package:mhu_dart_ide/src/context/shaft.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 export 'package:mhu_dart_ide/src/context/app.dart';
@@ -13,16 +11,31 @@ part 'window.g.dart';
 
 part 'window.g.has.dart';
 
-part 'window.g.compose.dart';
-
 part 'window.freezed.dart';
 
 @Has()
-class WindowObj {
+class WindowObj with MixDisposers, MixWindowCtx {
   late final Fr<Size> screenSizeFr;
+
+  late final renderedViewFr = disposers.fr(
+    () => windowCtx.watchWindowRenderedView(),
+  );
+
+  late final updateViewExecutor = renderedViewFr.createFrPausedExecutor();
+
+  late final Fw<BeforeAfter<ShaftsLayout>> shaftsLayoutBeforeAfterFw =
+      disposers.fw(
+    (
+      before: renderedViewFr.read().shaftsLayout,
+      after: renderedViewFr.read().shaftsLayout,
+    ),
+  );
+
+  late final onKeyEvent = this.windowOnKeyEvent();
 }
 
 @Compose()
+@Has()
 abstract class WindowCtx implements AppCtx, HasWindowObj {}
 
 Future<WindowCtx> createWindowCtx({
@@ -30,32 +43,59 @@ Future<WindowCtx> createWindowCtx({
   required Disposers disposers,
 }) async {
   final windowObj = WindowObj()
+    ..disposers = disposers
     ..screenSizeFr = await ScreenSizeObserver.stream(disposers).fr(disposers);
 
-  return ComposedWindowCtx.appCtx(
+  final windowCtx = ComposedWindowCtx.appCtx(
     appCtx: appCtx,
     windowObj: windowObj,
-  );
+  )..initMixWindowCtx(windowObj);
+
+  windowObj.startWindowRenderStream();
+
+  return windowCtx;
 }
 
 typedef OnKeyEvent = void Function(KeyEvent keyEvent);
 
 @freezedStruct
 class RenderedView with _$RenderedView {
-  RenderedView._();
+  const RenderedView._();
 
-  factory RenderedView({
+  const factory RenderedView({
     required ShaftsLayout shaftsLayout,
     required OnKeyEvent onKeyEvent,
   }) = _RenderedView;
+
+  // static final initial = RenderedView(
+  //   shaftsLayout: ShaftsLayout.initial,
+  //   onKeyEvent: ignore1,
+  // );
 }
 
 RenderedView watchWindowRenderedView({
   @Ext() required WindowCtx windowCtx,
 }) {
-  return windowCtx
-      .createRenderCtx(
-        stateMsg: windowCtx.watchStateMsg(),
-      )
-      .watchRenderRenderedView();
+  return windowCtx.createRenderCtx().watchRenderRenderedView();
+}
+
+void startWindowRenderStream({
+  @extHas required WindowObj windowObj,
+}) {
+  windowObj.renderedViewFr.changes().forEach(
+    (renderedView) {
+      windowObj.shaftsLayoutBeforeAfterFw.value = (
+        before: windowObj.shaftsLayoutBeforeAfterFw.read().after,
+        after: renderedView.shaftsLayout,
+      );
+    },
+  );
+}
+
+OnKeyEvent windowOnKeyEvent({
+  @extHas required WindowObj windowObj,
+}) {
+  return (keyEvent) {
+    windowObj.renderedViewFr.read().onKeyEvent(keyEvent);
+  };
 }

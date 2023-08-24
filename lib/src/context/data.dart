@@ -1,46 +1,57 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/context/asset.dart';
+export 'package:mhu_dart_ide/src/context/asset.dart';
 import 'package:mhu_dart_ide/src/context/persist.dart';
+import 'package:mhu_dart_ide/src/context/theme.dart';
 export 'package:mhu_dart_ide/src/context/persist.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
 
 import '../../proto.dart';
-import 'config.dart' as $lib;
+import '../model.dart';
+import 'data.dart' as $lib;
 
-part 'config.g.dart';
+part 'data.g.dart';
 
-part 'config.g.has.dart';
+part 'data.g.has.dart';
 
-part 'config.g.compose.dart';
 
 @Has()
-class ConfigObj with MixDisposers {
+class DataObj with MixDataCtx, MixDisposers {
   late final MdiConfigMsg$Fw configFw;
-  late final MdiStateMsg$Fw stateFw;
+  late final MdiWindowStateMsg$Fw windowStateFw;
   late final MdiThemeMsg$Fw themeFw;
   late final MdiShaftNotificationsMsg$Fw notificationsFw;
   late final MdiSequencesMsg$Fw sequencesFw;
+
+  late final themeWrapFr = disposers.fr(
+    () => dataCtx.createThemeWrap(
+      themeMsg: themeFw(),
+    ),
+  );
 }
 
 @Compose()
-abstract class ConfigCtx implements PersistCtx, HasConfigObj {}
+@Has()
+abstract class DataCtx implements PersistCtx, AssetCtx, HasDataObj {}
 
-Future<ConfigCtx> createConfigCtx({
+Future<DataCtx> createConfigCtx({
   @Ext() required PersistCtx persistCtx,
+  required AssetCtx assetCtx,
 }) async {
   final PersistCtx(
     :persistObj,
   ) = persistCtx;
-  final configObj = ConfigObj()
+  final dataObj = DataObj()
     ..disposers = DspImpl()
     ..configFw = MdiConfigMsg$Fw(
       await isarSingletonFwFactories
           .lookupSingletonByType<MdiConfigIsarSingletonFwFactory>()
           .producePersistObjSingletonFw(persistObj: persistObj),
     )
-    ..stateFw = MdiStateMsg$Fw(
+    ..windowStateFw = MdiWindowStateMsg$Fw(
       await isarSingletonFwFactories
-          .lookupSingletonByType<MdiStateIsarSingletonFwFactory>()
+          .lookupSingletonByType<MdiWindowStateIsarSingletonFwFactory>()
           .producePersistObjSingletonFw(persistObj: persistObj),
     )
     ..themeFw = MdiThemeMsg$Fw(
@@ -59,14 +70,15 @@ Future<ConfigCtx> createConfigCtx({
           .producePersistObjSingletonFw(persistObj: persistObj),
     );
 
-  return ComposedConfigCtx.persistCtx(
+  return ComposedDataCtx.merge$(
     persistCtx: persistCtx,
-    configObj: configObj,
-  );
+    assetCtx: assetCtx,
+    dataObj: dataObj,
+  )..initMixDataCtx(dataObj);
 }
 
-StateMsg watchStateMsg({
-  @extHas required ConfigObj configObj,
+WindowStateMsg watchWindowStateMsg({
+  @extHas required DataObj dataObj,
 }) {
-  return configObj.stateFw.watch();
+  return dataObj.windowStateFw.watch();
 }

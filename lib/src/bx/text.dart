@@ -58,7 +58,7 @@ Bx textBx({
   );
 }
 
-Bx flexibleTextBx({
+Bx bxFlexibleText({
   required double maxWidth,
   required String text,
   required TextStyle style,

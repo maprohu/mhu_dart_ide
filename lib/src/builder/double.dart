@@ -5,7 +5,7 @@ import '../screen/calc.dart';
 
 part 'double.g.has.dart';
 
-part 'double.g.compose.dart';
+part 'double.g.dart';
 
 @Has()
 typedef ShaftDoubleChainRight = ShaftDoubleChain?;
