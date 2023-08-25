@@ -1,4 +1,3 @@
-
 import '../shaft_factory.dart';
 
 // // part 'error.g.has.dart';
@@ -34,6 +33,6 @@ class InvalidShaftFactory extends ShaftFactoryHolder {
   final factory = ComposedShaftFactory(
     createShaftData: voidShaftData,
     createShaftHeaderLabel: staticShaftHeaderLabel("Invalid"),
-    shaftNeedsFocus: shaftWithoutFocus,
+    requestShaftFocus: shaftWithoutFocus,
   );
 }

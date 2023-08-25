@@ -14,6 +14,7 @@ part 'shaft_factory.g.dart';
 part 'shaft_factory/label.dart';
 
 part 'shaft_factory/data.dart';
+
 part 'shaft_factory/focus.dart';
 
 typedef ShaftFactoryKey = int;
@@ -25,14 +26,14 @@ typedef CreateShaftData<D> = D Function(ShaftCtx shaftCtx);
 typedef CreateShaftHeaderLabel<D> = WxRectBuilder Function(D shaftData);
 
 @Has()
-typedef ShaftNeedsFocus<D> = bool Function(D shaftData);
+typedef RequestShaftFocus<D> = HandlePressedKey? Function(D shaftData);
 
 @Compose()
 abstract class ShaftFactory<D>
     implements
         HasCreateShaftData<D>,
         HasCreateShaftHeaderLabel<D>,
-        HasShaftNeedsFocus<D> {}
+        HasRequestShaftFocus<D> {}
 
 abstract class ShaftFactoryHolder with MixSingletonKey<ShaftFactoryKey> {
   ShaftFactory get factory;
@@ -55,4 +56,12 @@ ShaftFactory lookupShaftFactory({
 }) {
   return shaftFactories.singletonsByKey[shaftFactoryKey]?.factory ??
       shaftFactories.lookupSingletonByType<InvalidShaftFactory>().factory;
+}
+
+F shaftFactoryOf<F extends ShaftFactoryHolder>() {
+  return shaftFactories.lookupSingletonByType<F>();
+}
+
+ShaftFactoryKey shaftFactoryKeyOf<F extends ShaftFactoryHolder>() {
+  return shaftFactoryOf<F>().singletonKey;
 }

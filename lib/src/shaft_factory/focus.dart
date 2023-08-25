@@ -1,4 +1,3 @@
 part of '../shaft_factory.dart';
 
-
-bool shaftWithoutFocus<D>(D shaftData) => false;
+HandlePressedKey? shaftWithoutFocus<D>(D shaftData) => null;

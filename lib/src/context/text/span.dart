@@ -9,3 +9,14 @@ TextSpan createTextSpan(
     style: textStyle,
   );
 }
+
+RichText createRichText({
+  @ext required TextSpan textSpan,
+}) {
+  return RichText(
+    text: textSpan,
+    softWrap: false,
+    overflow: TextOverflow.visible,
+    maxLines: 1,
+  );
+}

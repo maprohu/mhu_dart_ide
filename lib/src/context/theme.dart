@@ -33,6 +33,7 @@ final mdiDefaultTheme = MdiThemeMsg$.create(
 )..freeze();
 
 @Compose()
+@Has()
 abstract base class ThemeWrap implements HasDataCtx, HasThemeMsg {
   static const _sizerKeys = 'MMM';
 
@@ -70,10 +71,10 @@ abstract base class ThemeWrap implements HasDataCtx, HasThemeMsg {
 
   late final defaultTextStyle = robotoMonoTextStyle;
 
-  late final shortcutTextStyle = defaultTextStyle.copyWith(
+  late final aimTextStyle = defaultTextStyle.copyWith(
     color: Colors.yellow,
   );
-  late final shortcutPressedTextStyle = defaultTextStyle.copyWith(
+  late final aimPressedTextStyle = defaultTextStyle.copyWith(
     color: Colors.red,
   );
 
@@ -83,17 +84,19 @@ abstract base class ThemeWrap implements HasDataCtx, HasThemeMsg {
     color: Colors.red,
   );
 
-  late final shortcutSize = shortcutTextSpan(
-    pressed: "",
-    notPressed: _sizerKeys,
-    themeCalc: this,
+  late final aimWxSize = aimTextSpan(
+    aimState: const AimState(
+      pressed: "",
+      notPressed: _sizerKeys,
+    ),
+    themeWrap: this,
   ).size;
 
   late final shaftHeaderTextHeight =
       mdiTextSize("M", shaftHeaderTextStyle).height;
 
   late final shaftHeaderContentHeight =
-      max(shaftHeaderTextHeight, shortcutSize.height);
+      max(shaftHeaderTextHeight, aimWxSize.height);
 
   late final shaftHeaderPadding = const EdgeInsets.all(2);
 
@@ -102,7 +105,7 @@ abstract base class ThemeWrap implements HasDataCtx, HasThemeMsg {
   late final shaftHeaderWithDividerHeight =
       shaftHeaderOuterHeight + shaftHeaderDividerThickness;
 
-  late final menuItemInnerHeight = shortcutSize.height;
+  late final menuItemInnerHeight = aimWxSize.height;
 
   late final menuItemHeight = menuItemPadding.vertical + menuItemInnerHeight;
 
@@ -129,7 +132,7 @@ abstract base class ThemeWrap implements HasDataCtx, HasThemeMsg {
     return Color.fromARGB(255, rgb, rgb, rgb);
   }
 
-  late final openItemColor = grayscale(0.5);
+  late final openerIsOpenBackgroundColor = grayscale(0.5);
 
   late final longRunningTaskCompleteNotificationColor = Colors.green;
   late final longRunningTaskCompleteIconData = Icons.notification_important;

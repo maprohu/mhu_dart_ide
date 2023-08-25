@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
@@ -9,8 +10,10 @@ import 'package:mhu_dart_ide/src/bx/screen.dart';
 import 'package:mhu_dart_ide/src/context/rect.dart';
 import 'package:mhu_dart_ide/src/context/text.dart';
 import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_dart_ide/src/shaft/options.dart';
 import 'package:mhu_dart_ide/src/shaft_factory.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
+import 'package:protobuf/protobuf.dart';
 export 'package:mhu_dart_ide/src/context/render.dart';
 
 import '../../proto.dart';
@@ -26,6 +29,8 @@ part 'shaft.g.has.dart';
 part 'shaft/render.dart';
 
 part 'shaft/header.dart';
+
+part 'shaft/open.dart';
 
 @Has()
 class ShaftObj with MixShaftCtx, MixShaftMsg {
@@ -96,6 +101,15 @@ Iterable<ShaftCtx> shaftCtxLeftIterable({
   return shaftCtx.finiteIterable(
     (item) => item.shaftObj.shaftOnLeft?.shaftCtx,
   );
+}
+
+ShaftMsg? readShaftMsg({
+  @extHas required ShaftObj shaftObj,
+}) {
+  return shaftObj.shaftCtx.windowObj.windowStateFw
+      .read()
+      .getEffectiveTopShaft()
+      .shaftByIndexFromLeft(shaftObj.indexFromLeft);
 }
 
 // Fu<MdiShaftMsg> shaftMsgFuByIndex({

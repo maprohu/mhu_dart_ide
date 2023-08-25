@@ -1,13 +1,18 @@
+import 'package:collection/collection.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_dart_ide/src/context/control.dart';
 import 'package:mhu_dart_ide/src/context/rect.dart';
+import 'package:mhu_dart_ide/src/keyboard.dart';
 import 'package:mhu_dart_ide/src/model.dart';
 export 'package:mhu_dart_ide/src/context/window.dart';
 import '../../proto.dart';
 import '../layout.dart';
+import '../op.dart';
 import '../wx/wx.dart';
 import 'render.dart' as $lib;
 
@@ -17,7 +22,7 @@ part 'render.g.dart';
 
 part 'render.freezed.dart';
 
-part 'render/shortcut.dart';
+part 'render/aim.dart';
 
 @Has()
 class RenderObj with MixRenderCtx {
@@ -25,6 +30,11 @@ class RenderObj with MixRenderCtx {
 
   late final themeWrap = renderCtx.dataObj.themeWrapFr.watch();
   late final themeMsg = themeWrap.themeMsg;
+
+  late final configWrap = renderCtx.dataObj.configWrapFr.watch();
+  late final configMsg = configWrap.configMsg;
+
+  late final controlWrap = renderCtx.dataObj.controlWrapFr.watch();
 
   late final screenSize = renderCtx.windowObj.screenSizeFr.watch();
   late final screenHeight = screenSize.height;
@@ -65,9 +75,19 @@ class RenderObj with MixRenderCtx {
   late final visibleShaftUnitInPixels =
       availableScreenWidthPixels / totalVisibleShaftWidthUnits;
 
-  late final ShaftCtx? focusedShaft;
+  late final HandlePressedKey? focusedHandler;
 
-  late final shortcuts = Shortcuts.fromRenderObj(this);
+  late final aimsBuilder = createAimsBuilder(
+    focusedHandler: focusedHandler,
+  );
+
+  late final aimsRegistry = aimsBuilder.aimRegistry;
+
+  late final handlePressedKey = aimsBuilder.buildAims(
+    controlAimKeysCollectionProvider(
+      controlWrap: controlWrap,
+    ),
+  );
 }
 
 @Compose()
@@ -90,45 +110,61 @@ RenderedView watchRenderRenderedView({
 }) {
   final visibleShafts = renderObj.visibleShafts;
 
-  final shaftsThatNeedFocus = visibleShafts.where((shaftCtx) {
-    final shaftObj = shaftCtx.shaftObj;
-    return shaftObj.shaftFactory.shaftNeedsFocus(
-      shaftObj.shaftData,
-    );
-  }).toList();
+  final shaftsThatNeedFocus = visibleShafts
+      .map((shaftCtx) {
+        final shaftObj = shaftCtx.shaftObj;
+        return shaftObj.shaftFactory.requestShaftFocus(
+          shaftObj.shaftData,
+        );
+      })
+      .whereNotNull()
+      .toList();
 
   switch (shaftsThatNeedFocus) {
     case []:
-      renderObj.focusedShaft = null;
+      renderObj.focusedHandler = null;
     case [final focusedShaft]:
-      renderObj.focusedShaft = focusedShaft;
+      renderObj.focusedHandler = focusedShaft;
     case [..., final focusedShaft]:
       logger.w("multiple focused shafts: $shaftsThatNeedFocus");
-      renderObj.focusedShaft = focusedShaft;
+      renderObj.focusedHandler = focusedShaft;
   }
 
-  final shafts = visibleShafts.reversedIListIterable().map((shaftCtx) {
-    final shaftObj = shaftCtx.shaftObj;
-    final shaftWidthPixels = renderObj.visibleShaftWidthPixels(
-      units: shaftObj.visibleWidthUnits,
-    );
+  final shafts = visibleShafts
+      .reversedIListIterable()
+      .map((shaftCtx) {
+        final shaftObj = shaftCtx.shaftObj;
+        final shaftWidthPixels = renderObj.visibleShaftWidthPixels(
+          units: shaftObj.visibleWidthUnits,
+        );
 
-    final rectCtx = shaftCtx.createRectCtx(
-      size: Size(
-        shaftWidthPixels,
-        renderObj.screenHeight,
-      ),
-    );
+        final rectCtx = shaftCtx.createRectCtx(
+          size: Size(
+            shaftWidthPixels,
+            renderObj.screenHeight,
+          ),
+        );
 
-    return rectCtx.renderShaft();
-  }).toIList();
+        return rectCtx.renderShaft();
+      })
+      .toIList()
+      .reversed
+      .toIList();
+
+  final handlePressedKey = renderObj.handlePressedKey;
 
   return RenderedView(
     shaftsLayout: ShaftsLayout(
       shafts: shafts,
       renderObj: renderObj,
     ),
-    onKeyEvent: (keyEvent) {},
+    onKeyEvent: (keyEvent) {
+      final pressedKey = keyEvent.keyEventToPressedKey();
+
+      if (pressedKey != null) {
+        handlePressedKey(pressedKey);
+      }
+    },
   );
 }
 

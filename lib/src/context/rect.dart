@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
+import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/context/shaft.dart';
+import 'package:mhu_dart_ide/src/context/text.dart';
 import 'package:mhu_dart_ide/src/wx/wx.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 export 'package:mhu_dart_ide/src/context/shaft.dart';
@@ -16,6 +18,8 @@ part 'rect/fill.dart';
 part 'rect/padding.dart';
 
 part 'rect/divider.dart';
+
+part 'rect/aim.dart';
 
 typedef WxRectBuilder = Wx Function(RectCtx rectCtx);
 

@@ -12,6 +12,8 @@ ShaftLayout renderShaft({
 
   final themeWrap = rectCtx.renderObj.themeWrap;
 
+  final optionsOpener = shaftOpenerOf<OptionsShaftFactory>();
+
   final headerWx = rectCtx
       .rectWithHeight(height: themeWrap.shaftHeaderOuterHeight)
       .wxRectPadding(
@@ -22,16 +24,23 @@ ShaftLayout renderShaft({
               return shaftObj.shaftFactory
                   .createShaftHeaderLabel(shaftObj.shaftData)
                   .call(rectCtx);
-              // return rectCtx
-              //     .createTextCtx(
-              //       textStyle: themeWrap.shaftHeaderTextStyle,
-              //     )
-              //     .wxTextAlign(
-              //       text: "Hello",
-              //       alignmentGeometry: Alignment.centerLeft,
-              //     );
             },
-            right: [],
+            right: [
+              rectCtx
+                  .wxRectAim(
+                    action: () {
+                      optionsOpener.openShaftOpener(
+                        shaftCtx: rectCtx,
+                      );
+                    },
+                    horizontal: null,
+                    vertical: AxisAlignment.center,
+                  )
+                  .wxDecorateShaftOpener(
+                    shaftOpener: optionsOpener,
+                    shaftCtx: rectCtx,
+                  ),
+            ],
           );
         },
       );
@@ -46,6 +55,8 @@ ShaftLayout renderShaft({
     bottom: (rectCtx) {
       return rectCtx.wxEmpty();
     },
+  ).wxBackgroundColor(
+    color: themeWrap.shaftBackgroundColor,
   );
   final shaftMsg = shaftObj.shaftMsg;
   return ShaftLayout(

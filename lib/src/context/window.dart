@@ -32,6 +32,9 @@ class WindowObj with MixDisposers, MixWindowCtx {
   );
 
   late final onKeyEvent = this.windowOnKeyEvent();
+
+  // for now only one window
+  late final windowStateFw = windowCtx.dataObj.windowStateFw;
 }
 
 @Compose()
@@ -67,10 +70,6 @@ class RenderedView with _$RenderedView {
     required OnKeyEvent onKeyEvent,
   }) = _RenderedView;
 
-  // static final initial = RenderedView(
-  //   shaftsLayout: ShaftsLayout.initial,
-  //   onKeyEvent: ignore1,
-  // );
 }
 
 RenderedView watchWindowRenderedView({

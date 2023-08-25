@@ -1,6 +1,8 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_ide/src/context/asset.dart';
+import 'package:mhu_dart_ide/src/context/config.dart';
+import 'package:mhu_dart_ide/src/context/control.dart';
 export 'package:mhu_dart_ide/src/context/asset.dart';
 import 'package:mhu_dart_ide/src/context/persist.dart';
 import 'package:mhu_dart_ide/src/context/theme.dart';
@@ -15,7 +17,6 @@ part 'data.g.dart';
 
 part 'data.g.has.dart';
 
-
 @Has()
 class DataObj with MixDataCtx, MixDisposers {
   late final MdiConfigMsg$Fw configFw;
@@ -28,6 +29,14 @@ class DataObj with MixDataCtx, MixDisposers {
     () => dataCtx.createThemeWrap(
       themeMsg: themeFw(),
     ),
+  );
+  late final configWrapFr = disposers.fr(
+    () => dataCtx.createConfigWrap(
+      configMsg: configFw(),
+    ),
+  );
+  late final controlWrapFr = disposers.fr(
+    () => ControlWrap(),
   );
 }
 

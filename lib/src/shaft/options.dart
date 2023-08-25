@@ -66,6 +66,6 @@ class OptionsShaftFactory extends ShaftFactoryHolder {
   final factory = ComposedShaftFactory(
     createShaftData: voidShaftData,
     createShaftHeaderLabel: staticShaftHeaderLabel("Options"),
-    shaftNeedsFocus: shaftWithoutFocus,
+    requestShaftFocus: shaftWithoutFocus,
   );
 }

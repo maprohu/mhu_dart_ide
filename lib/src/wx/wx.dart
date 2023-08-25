@@ -12,6 +12,7 @@ part 'wx.g.dart';
 part 'linear.dart';
 part 'align.dart';
 part 'fill.dart';
+part 'decorate.dart';
 
 typedef WxHeightBuilder = Wx Function(double height);
 

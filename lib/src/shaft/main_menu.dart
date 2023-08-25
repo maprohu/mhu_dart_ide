@@ -60,6 +60,6 @@ class MainMenuShaftFactory extends ShaftFactoryHolder {
   final factory = ComposedShaftFactory(
     createShaftData: voidShaftData,
     createShaftHeaderLabel: staticShaftHeaderLabel("Main Menu"),
-    shaftNeedsFocus: shaftWithoutFocus,
+    requestShaftFocus: shaftWithoutFocus,
   );
 }

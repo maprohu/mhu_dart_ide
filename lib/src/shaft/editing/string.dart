@@ -153,10 +153,10 @@ ShortcutKeyListener createStringEditorShortcutKeyListener({
 }) {
   return (key) {
     switch (key) {
-      case ShortcutKey.enter:
+      case PressedKey.enter:
         onEnter();
         return;
-      case ShortcutKey.escape:
+      case PressedKey.escape:
         onEscape();
         return;
       default:
@@ -164,12 +164,12 @@ ShortcutKeyListener createStringEditorShortcutKeyListener({
     updateStringEdit((stringEdit) {
       final text = stringEdit.text;
       switch (key) {
-        case ShortcutKey.backspace:
+        case PressedKey.backspace:
           final length = text.length;
           if (length > 0) {
             stringEdit.text = text.substring(0, length - 1);
           }
-        case CharacterShortcutKey(:final character):
+        case CharacterKey(:final character):
           if (acceptCharacter(text, character)) {
             stringEdit.text = "$text$character";
           }
