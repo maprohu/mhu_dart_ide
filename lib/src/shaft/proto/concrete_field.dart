@@ -1,11 +1,11 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/app.dart';
-import 'package:mhu_dart_ide/src/context/data.dart';
-import 'package:mhu_dart_ide/src/op.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/content/value_browsing.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
+import 'package:mhu_shafts/src/app.dart';
+import 'package:mhu_shafts/src/context/data.dart';
+import 'package:mhu_shafts/src/op.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
+import 'package:mhu_shafts/src/shaft/proto/content/value_browsing.dart';
+import 'package:mhu_shafts/src/shaft/proto/proto_path.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 

@@ -3,14 +3,14 @@
 //
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/proto.dart';
-// import 'package:mhu_dart_ide/src/app.dart';
-// import 'package:mhu_dart_ide/src/bx/string.dart';
-// import 'package:mhu_dart_ide/src/context/data.dart';
-// import 'package:mhu_dart_ide/src/op.dart';
-// import 'package:mhu_dart_ide/src/screen/calc.dart';
-// import 'package:mhu_dart_ide/src/screen/opener.dart';
-// import 'package:mhu_dart_ide/src/shaft/proto/field/map_entry.dart';
+// import 'package:mhu_shafts/proto.dart';
+// import 'package:mhu_shafts/src/app.dart';
+// import 'package:mhu_shafts/src/bx/string.dart';
+// import 'package:mhu_shafts/src/context/data.dart';
+// import 'package:mhu_shafts/src/op.dart';
+// import 'package:mhu_shafts/src/screen/calc.dart';
+// import 'package:mhu_shafts/src/screen/opener.dart';
+// import 'package:mhu_shafts/src/shaft/proto/field/map_entry.dart';
 //
 // import '../keyboard.dart';
 // import '../long_running.dart';
@@ -31,7 +31,7 @@
 //         shaftCalcBuildBits.shaftMsg.shaftIdentifier.confirm.type;
 //
 //     final merge = switch (confirmType) {
-//       MdiConfirmMsg_Type$deleteEntry() => ComposedConfirmShaftMerge(
+//       MshConfirmMsg_Type$deleteEntry() => ComposedConfirmShaftMerge(
 //           shaftHeaderLabel: "Delete Entry",
 //           buildShaftContent: (sizedBits) {
 //             return [

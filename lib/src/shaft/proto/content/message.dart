@@ -1,11 +1,11 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/screen/opener.dart';
+import 'package:mhu_shafts/src/bx/menu.dart';
+import 'package:mhu_shafts/src/screen/opener.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 import '../../../builder/sized.dart';
 import '../../../proto.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
 
 
 // part 'message.g.has.dart';

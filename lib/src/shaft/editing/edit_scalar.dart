@@ -1,16 +1,16 @@
 
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/app.dart';
-import 'package:mhu_dart_ide/src/builder/text.dart';
-import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/context/data.dart';
-import 'package:mhu_dart_ide/src/op.dart';
-import 'package:mhu_dart_ide/src/proto.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_ide/src/shaft/editing/string.dart';
+import 'package:mhu_shafts/proto.dart';
+import 'package:mhu_shafts/src/app.dart';
+import 'package:mhu_shafts/src/builder/text.dart';
+import 'package:mhu_shafts/src/bx/menu.dart';
+import 'package:mhu_shafts/src/context/data.dart';
+import 'package:mhu_shafts/src/op.dart';
+import 'package:mhu_shafts/src/proto.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
+import 'package:mhu_shafts/src/screen/opener.dart';
+import 'package:mhu_shafts/src/shaft/editing/string.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
@@ -100,8 +100,8 @@ abstract class EditScalarShaft
     });
   }
 
-  static MdiInnerStateMsg stringEditInnerState(String text) {
-    final result = MdiInnerStateMsg();
+  static MshInnerStateMsg stringEditInnerState(String text) {
+    final result = MshInnerStateMsg();
     result.ensureStringEdit()
       ..text = text
       ..cursorPosition = text.length;

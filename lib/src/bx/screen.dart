@@ -6,10 +6,10 @@
 // import 'package:flutter/material.dart';
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/context/tasks/long_running.dart';
-// import 'package:mhu_dart_ide/src/context/data.dart';
-// import 'package:mhu_dart_ide/src/context/rect.dart';
-// import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
+// import 'package:mhu_shafts/src/context/tasks/long_running.dart';
+// import 'package:mhu_shafts/src/context/data.dart';
+// import 'package:mhu_shafts/src/context/rect.dart';
+// import 'package:mhu_shafts/src/shaft/main_menu.dart';
 // import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 //
 // import '../../proto.dart';
@@ -172,15 +172,15 @@
 //
 //
 //
-// extension ScreenMdiShaftMsgX on MdiShaftMsg {
-//   Iterable<MdiShaftMsg> get toShaftIterable =>
+// extension ScreenMshShaftMsgX on MshShaftMsg {
+//   Iterable<MshShaftMsg> get toShaftIterable =>
 //       finiteIterable((item) => item.parentOpt);
 //
-//   MdiShaftMsg getShaftByIndex(int index) {
+//   MshShaftMsg getShaftByIndex(int index) {
 //     return toShaftIterable.skip(index).first;
 //   }
 //
-//   MdiShaftMsg getShaftByIndexFromLeft(ShaftIndexFromLeft shaftIndexFromLeft) {
+//   MshShaftMsg getShaftByIndexFromLeft(ShaftIndexFromLeft shaftIndexFromLeft) {
 //     final iterable = toShaftIterable;
 //     final length = iterable.length;
 //     return iterable.skip(length - shaftIndexFromLeft - 1).first;

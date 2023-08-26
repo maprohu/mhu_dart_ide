@@ -1,3 +1,8 @@
+import 'package:mhu_shafts/src/context/rect.dart';
+import 'package:mhu_shafts/src/context/text.dart';
+import 'package:mhu_shafts/src/screen/opener.dart';
+import 'package:mhu_shafts/src/shaft/main_menu.dart';
+import 'package:mhu_shafts/src/wx/wx.dart';
 
 import '../shaft_factory.dart';
 
@@ -63,9 +68,22 @@ import '../shaft_factory.dart';
 
 class OptionsShaftFactory extends ShaftFactoryHolder {
   @override
-  final factory = ComposedShaftFactory(
+  final factory = ComposedShaftFactory.shaftLabel(
+    shaftLabel: staticShaftLabel("Options"),
     createShaftData: voidShaftData,
-    createShaftHeaderLabel: staticShaftHeaderLabel("Options"),
     requestShaftFocus: shaftWithoutFocus,
+    createShaftContent: shaftMenuContent(
+      (shaftData, shaftCtx) {
+        final closeAction = shaftCtx.shaftObj.shaftOnLeft?.shaftCloseAction();
+        return [
+          shaftCtx.shaftOpenerMenuItem<MainMenuShaftFactory>(),
+          if (closeAction != null)
+            menuItemStatic(
+              action: closeAction,
+              label: "Close Shaft",
+            ),
+        ];
+      },
+    ),
   );
 }

@@ -34,7 +34,7 @@ Wx wxRectAim({
 
 Wx wxRectAimWatch({
   @ext required RectCtx rectCtx,
-  required WatchValue<VoidCallback?> watchAction,
+  required WatchAimAction watchAction,
   required AxisAlignment? horizontal,
   required AxisAlignment? vertical,
 }) {

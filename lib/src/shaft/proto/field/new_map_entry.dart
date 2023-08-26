@@ -1,13 +1,13 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/app.dart';
-import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/context/data.dart';
-import 'package:mhu_dart_ide/src/op.dart';
-import 'package:mhu_dart_ide/src/proto.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/screen/notification.dart';
-import 'package:mhu_dart_ide/src/shaft/editing/string.dart';
+import 'package:mhu_shafts/src/app.dart';
+import 'package:mhu_shafts/src/bx/menu.dart';
+import 'package:mhu_shafts/src/context/data.dart';
+import 'package:mhu_shafts/src/op.dart';
+import 'package:mhu_shafts/src/proto.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
+import 'package:mhu_shafts/src/screen/notification.dart';
+import 'package:mhu_shafts/src/shaft/editing/string.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
 import '../../../long_running.dart';
@@ -200,8 +200,8 @@ abstract class NewMapEntryShaft
 //       shaftHeaderLabel: shaftCalcBuildBits.defaultShaftHeaderLabel,
 //       buildShaftContent: (sizedBits) {
 //         return sizedBits.menu(items: [
-//           sizedBits.openerField(MdiShaftMsg$.mapEntryKey),
-//           sizedBits.openerField(MdiShaftMsg$.mapEntryValue),
+//           sizedBits.openerField(MshShaftMsg$.mapEntryKey),
+//           sizedBits.openerField(MshShaftMsg$.mapEntryValue),
 //           MenuItem(
 //             label: "Add Entry",
 //             callback: () {

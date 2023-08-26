@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/context/rect.dart';
+import 'package:mhu_shafts/src/context/rect.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../bx/text.dart';
@@ -9,9 +9,11 @@ import '../wx/wx.dart';
 import 'text.dart' as $lib;
 
 part 'text.g.has.dart';
+
 part 'text.g.dart';
 
 part 'text/mono.dart';
+
 part 'text/span.dart';
 
 @Compose()
@@ -36,6 +38,19 @@ Wx wxTextAlign({
     text: text,
     vertical: AxisAlignment(value: alignmentGeometry.y),
     horizontal: AxisAlignment(value: alignmentGeometry.x),
+  );
+}
+
+Wx wxTextHorizontal({
+  @Ext() required TextCtx textCtx,
+  required String text,
+  AxisAlignment horizontal = AxisAlignment.left,
+}) {
+  return wxText(
+    textCtx: textCtx,
+    text: text,
+    vertical: null,
+    horizontal: horizontal,
   );
 }
 

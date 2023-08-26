@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "hu.mapro" "\0"
-            VALUE "FileDescription", "mhu_dart_ide" "\0"
+            VALUE "FileDescription", "mhu_shafts" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "mhu_dart_ide" "\0"
+            VALUE "InternalName", "mhu_shafts" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 hu.mapro. All rights reserved." "\0"
-            VALUE "OriginalFilename", "mhu_dart_ide.exe" "\0"
-            VALUE "ProductName", "mhu_dart_ide" "\0"
+            VALUE "OriginalFilename", "mhu_shafts.exe" "\0"
+            VALUE "ProductName", "mhu_shafts" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

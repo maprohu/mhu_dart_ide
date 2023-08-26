@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/bx/boxed.dart';
-import 'package:mhu_dart_ide/src/bx/text.dart';
-import 'package:mhu_dart_ide/src/context/app.dart';
-import 'package:mhu_dart_ide/src/context/rect.dart';
+import 'package:mhu_shafts/src/bx/boxed.dart';
+import 'package:mhu_shafts/src/bx/text.dart';
+import 'package:mhu_shafts/src/context/app.dart';
+import 'package:mhu_shafts/src/context/rect.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import '../../proto.dart';
@@ -22,10 +22,10 @@ part 'theme.g.dart';
 part 'theme.g.has.dart';
 
 @Has()
-typedef ThemeMsg = MdiThemeMsg;
+typedef ThemeMsg = MshThemeMsg;
 
-final mdiDefaultTheme = MdiThemeMsg$.create(
-  dividerThickness: MdiDividerThicknessThemeMsg$.create(
+final mdiDefaultTheme = MshThemeMsg$.create(
+  dividerThickness: MshDividerThicknessThemeMsg$.create(
     shafts: 2,
     shaftHeader: 2,
     menuItems: 1,
@@ -47,7 +47,7 @@ abstract base class ThemeWrap implements HasDataCtx, HasThemeMsg {
       themeMsg.dividerThicknessOpt?.shaftHeaderOpt ?? 2;
   late final menuItemsDividerThickness =
       themeMsg.dividerThicknessOpt?.menuItems ?? 1;
-  late final paginatorFooterDividerThickness =
+  late final chunkedFooterDividerThickness =
       themeMsg.dividerThicknessOpt?.paginatorFooterOpt ?? 2;
   late final shaftSharingDividerThickness =
       themeMsg.dividerThicknessOpt?.shaftSharingOpt ?? 2;
@@ -113,13 +113,13 @@ abstract base class ThemeWrap implements HasDataCtx, HasThemeMsg {
 
   late final stringTextStyle = MonoTextStyle.from(robotoMonoTextStyle);
 
-  late final paginatorFooterTextStyle = MonoTextStyle.from(robotoMonoTextStyle);
+  late final chunkedFooterTextStyle = MonoTextStyle.from(robotoMonoTextStyle);
 
-  late final paginatorFooterInnerHeight = paginatorFooterTextStyle.height;
-  late final paginatorFooterOuterHeight =
-      paginatorFooterInnerHeight + paginatorFooterPadding.vertical;
+  late final chunkedFooterInnerHeight = chunkedFooterTextStyle.height;
+  late final chunkedFooterOuterHeight =
+      chunkedFooterInnerHeight + chunkedFooterPadding.vertical;
 
-  late final paginatorFooterPadding = const EdgeInsets.all(2);
+  late final chunkedFooterPadding = const EdgeInsets.all(2);
 
   late final textCursorThickness = 2.0;
   late final textCursorColor = Colors.red;

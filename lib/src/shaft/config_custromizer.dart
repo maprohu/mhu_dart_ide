@@ -6,7 +6,7 @@ ProtoCustomizer configProtoCustomizer({
   final protoCustomizer = ProtoCustomizer();
 
   protoCustomizer.mapEntryLabel.put(
-    MdiConfigMsg$.workspaces,
+    MshConfigMsg$.workspaces,
     (mapEntry) => mapEntry.value.name.orIfBlank(
       () => "(${mapEntry.key})",
     ),
@@ -19,12 +19,12 @@ ProtoCustomizer configProtoCustomizer({
   }
 
   protoCustomizer.mapDefaultKey.put(
-    MdiConfigMsg$.workspaces,
+    MshConfigMsg$.workspaces,
     nextId,
   );
 
   protoCustomizer.mapEntryExtraContent.put(
-    MdiConfigMsg$.workspaces,
+    MshConfigMsg$.workspaces,
     (mapEntry) {
       return (sizedBits) {
         final workspaceIdentifier = mapEntry.key;

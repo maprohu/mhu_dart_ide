@@ -1,8 +1,8 @@
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/builder/text.dart';
-// import 'package:mhu_dart_ide/src/bx/menu.dart';
-// import 'package:mhu_dart_ide/src/bx/shaft.dart';
-// import 'package:mhu_dart_ide/src/bx/string.dart';
+// import 'package:mhu_shafts/src/builder/text.dart';
+// import 'package:mhu_shafts/src/bx/menu.dart';
+// import 'package:mhu_shafts/src/bx/shaft.dart';
+// import 'package:mhu_shafts/src/bx/string.dart';
 //
 // import '../builder/sized.dart';
 // import '../screen/calc.dart';

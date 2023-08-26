@@ -1,7 +1,8 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/app.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_shafts/src/app.dart';
+import 'package:mhu_shafts/src/context/rect.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
 
 import '../shaft_factory.dart';
 
@@ -57,9 +58,19 @@ import '../shaft_factory.dart';
 
 class MainMenuShaftFactory extends ShaftFactoryHolder {
   @override
-  final factory = ComposedShaftFactory(
+  final factory = ComposedShaftFactory.shaftLabel(
+    shaftLabel: staticShaftLabel("Main Menu"),
     createShaftData: voidShaftData,
-    createShaftHeaderLabel: staticShaftHeaderLabel("Main Menu"),
     requestShaftFocus: shaftWithoutFocus,
+    createShaftContent: shaftMenuContent(
+      (shaftData, shaftCtx) {
+        return [
+          menuItemStatic(
+            action: shaftCtx.windowResetView,
+            label: "Reset View",
+          ),
+        ];
+      },
+    ),
   );
 }

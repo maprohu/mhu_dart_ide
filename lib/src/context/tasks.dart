@@ -1,5 +1,5 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-import 'package:mhu_dart_ide/src/context/app.dart';
+import 'package:mhu_shafts/src/context/app.dart';
 import 'tasks.dart' as $lib;
 
 part 'tasks.g.dart';

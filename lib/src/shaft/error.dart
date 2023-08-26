@@ -30,9 +30,10 @@ import '../shaft_factory.dart';
 
 class InvalidShaftFactory extends ShaftFactoryHolder {
   @override
-  final factory = ComposedShaftFactory(
+  final factory = ComposedShaftFactory.shaftLabel(
+    shaftLabel: staticShaftLabel("Invalid"),
     createShaftData: voidShaftData,
-    createShaftHeaderLabel: staticShaftHeaderLabel("Invalid"),
     requestShaftFocus: shaftWithoutFocus,
+    createShaftContent: (shaftData) => (rectCtx) => [],
   );
 }

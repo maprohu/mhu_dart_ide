@@ -1,10 +1,10 @@
 // import 'package:collection/collection.dart';
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/proto.dart';
-// import 'package:mhu_dart_ide/src/app.dart';
-// import 'package:mhu_dart_ide/src/builder/shaft.dart';
-// import 'package:mhu_dart_ide/src/context/rect.dart';
+// import 'package:mhu_shafts/proto.dart';
+// import 'package:mhu_shafts/src/app.dart';
+// import 'package:mhu_shafts/src/builder/shaft.dart';
+// import 'package:mhu_shafts/src/context/rect.dart';
 // import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 // import 'package:recase/recase.dart';
 //
@@ -58,12 +58,12 @@
 // abstract class ShaftCalcBits implements HasShaftMsg, HasStateMsg, AppBits {}
 //
 // // @Has()
-// // typedef ShaftStateField<T> = ScalarFieldAccess<MdiShaftMsg, T>;
+// // typedef ShaftStateField<T> = ScalarFieldAccess<MshShaftMsg, T>;
 //
 // @Has()
-// typedef ShaftType = MdiShaftIdentifierMsg_Type$;
+// typedef ShaftType = MshShaftIdentifierMsg_Type$;
 //
-// typedef ShaftTypes = MdiShaftIdentifierMsg$;
+// typedef ShaftTypes = MshShaftIdentifierMsg$;
 //
 // @Compose()
 // abstract class ShaftCalcBuildBits
@@ -100,7 +100,7 @@
 // extension HasShaftMsgX on HasShaftMsg {
 //   int get shaftWidth => shaftMsg.widthOpt ?? 1;
 //
-//   MdiInnerStateMsg get innerState => shaftMsg.innerState;
+//   MshInnerStateMsg get innerState => shaftMsg.innerState;
 // }
 //
 // @Has()
@@ -135,7 +135,7 @@
 //   ShaftCalc? get leftSignificantCalc =>
 //       leftCalcs.firstWhereOrNull((e) => e.shaftSignificant);
 //
-//   Fu<MdiShaftMsg> get shaftMsgFu => shaftMsgFuByIndex(shaftIndexFromLeft);
+//   Fu<MshShaftMsg> get shaftMsgFu => shaftMsgFuByIndex(shaftIndexFromLeft);
 //
 //   MutableValue<ShaftMsg> get shaftUpdateValue => shaftMsgFu.toMutableValue;
 //
@@ -197,10 +197,10 @@
 //
 // extension ShaftCalcBuildBitsX on ShaftCalcBuildBits {
 //   String get defaultShaftHeaderLabel {
-//     final fieldKey = lookupPbiMessageOf<MdiShaftIdentifierMsg>()
+//     final fieldKey = lookupPbiMessageOf<MshShaftIdentifierMsg>()
 //             .calc
 //             .concreteFieldKeysByTagNumber[shaftType.tagNumber$] ??
-//         MdiShaftIdentifierMsg$.notImplemented.fieldKey;
+//         MshShaftIdentifierMsg$.notImplemented.fieldKey;
 //     return fieldKey.concreteFieldCalc.protoName.titleCase;
 //   }
 //

@@ -1,10 +1,10 @@
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/app.dart';
-// import 'package:mhu_dart_ide/src/builder/sized.dart';
-// import 'package:mhu_dart_ide/src/context/data.dart';
-// import 'package:mhu_dart_ide/src/op.dart';
-// import 'package:mhu_dart_ide/src/screen/calc.dart';
+// import 'package:mhu_shafts/src/app.dart';
+// import 'package:mhu_shafts/src/builder/sized.dart';
+// import 'package:mhu_shafts/src/context/data.dart';
+// import 'package:mhu_shafts/src/op.dart';
+// import 'package:mhu_shafts/src/screen/calc.dart';
 //
 // import '../long_running.dart';
 //
@@ -46,7 +46,7 @@
 // }
 //
 //
-// // import 'package:mhu_dart_ide/src/bx/shaft.dart';
+// // import 'package:mhu_shafts/src/bx/shaft.dart';
 // //
 // // import '../builder/sized.dart';
 // // import '../bx/menu.dart';

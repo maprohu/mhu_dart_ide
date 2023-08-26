@@ -2,10 +2,10 @@
 // import 'package:flutter/material.dart';
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/builder/shaft.dart';
-// import 'package:mhu_dart_ide/src/bx/boxed.dart';
-// import 'package:mhu_dart_ide/src/bx/text.dart';
-// import 'package:mhu_dart_ide/src/theme.dart';
+// import 'package:mhu_shafts/src/builder/shaft.dart';
+// import 'package:mhu_shafts/src/bx/boxed.dart';
+// import 'package:mhu_shafts/src/bx/text.dart';
+// import 'package:mhu_shafts/src/theme.dart';
 // import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 //
 // import '../builder/sized.dart';

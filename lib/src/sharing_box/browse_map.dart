@@ -1,10 +1,10 @@
 // import 'package:collection/collection.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/builder/sized.dart';
-// import 'package:mhu_dart_ide/src/builder/text.dart';
-// import 'package:mhu_dart_ide/src/bx/menu.dart';
-// import 'package:mhu_dart_ide/src/proto.dart';
-// import 'package:mhu_dart_ide/src/screen/opener.dart';
+// import 'package:mhu_shafts/src/builder/sized.dart';
+// import 'package:mhu_shafts/src/builder/text.dart';
+// import 'package:mhu_shafts/src/bx/menu.dart';
+// import 'package:mhu_shafts/src/proto.dart';
+// import 'package:mhu_shafts/src/screen/opener.dart';
 //
 // import '../screen/calc.dart';
 // import '../sharing_box.dart';

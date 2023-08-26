@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/widgets/busy.dart';
+import 'package:mhu_shafts/src/widgets/busy.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
-extension MdiWidgetFutureStreamX<T> on Future<Stream<T>> {
+extension MshWidgetFutureStreamX<T> on Future<Stream<T>> {
   Widget futureStreamWidget(Widget Function(T value) builder) {
     return futureBuilder(
       future: this,
@@ -21,7 +21,7 @@ extension MdiWidgetFutureStreamX<T> on Future<Stream<T>> {
   }
 }
 
-extension MdiWidgetFutureStreamNullableX<T extends Object>
+extension MshWidgetFutureStreamNullableX<T extends Object>
     on Future<Stream<T?>> {
   Widget futureStreamWidgetOrBusy(Widget Function(T value) builder) {
     return futureStreamWidget((value) {

@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/builder/shaft.dart';
-import 'package:mhu_dart_ide/src/builder/sized.dart';
-import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/context/data.dart';
-import 'package:mhu_dart_ide/src/sharing_box.dart';
-import 'package:mhu_dart_ide/src/bx/string.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/screen/notification.dart';
+import 'package:mhu_shafts/proto.dart';
+import 'package:mhu_shafts/src/builder/shaft.dart';
+import 'package:mhu_shafts/src/builder/sized.dart';
+import 'package:mhu_shafts/src/bx/menu.dart';
+import 'package:mhu_shafts/src/context/data.dart';
+import 'package:mhu_shafts/src/sharing_box.dart';
+import 'package:mhu_shafts/src/bx/string.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
+import 'package:mhu_shafts/src/screen/notification.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import 'package:protobuf/protobuf.dart';
@@ -149,7 +149,7 @@ ShortcutKeyListener createStringEditorShortcutKeyListener({
   required void Function() onEnter,
   required void Function() onEscape,
   required bool Function(String text, String character) acceptCharacter,
-  required UpdateValue<MdiStringEditStateMsg> updateStringEdit,
+  required UpdateValue<MshStringEditStateMsg> updateStringEdit,
 }) {
   return (key) {
     switch (key) {
@@ -204,8 +204,8 @@ SharingBox stringEditorSharingBoxFromGridSizeBuilder({
   );
 }
 
-typedef FocusedStringEditorState = HasWatchValue<MdiStringEditStateMsg?>;
-typedef FocusedStringEditorController = ScalarValue<MdiStringEditStateMsg>;
+typedef FocusedStringEditorState = HasWatchValue<MshStringEditStateMsg?>;
+typedef FocusedStringEditorController = ScalarValue<MshStringEditStateMsg>;
 
 SharingBox focusedStringEditorSharingBox<T>({
   required SizedShaftBuilderBits sizedBits,
@@ -324,7 +324,7 @@ void focusStringEditor<T>({
         shaftCalcBuildBits
             .shaftDataStore[shaftCalcBuildBits.shaftIndexFromLeft] = controller;
 
-        void defocus(MdiStringEditStateMsg stringEdit) {
+        void defocus(MshStringEditStateMsg stringEdit) {
           shaftCalcBuildBits.shaftCalcChain.shaftMsgFu.update(
             (shaftMsg) {
               shaftMsg.innerState.stringEdit = stringEdit.rebuild(
@@ -367,7 +367,7 @@ void focusStringEditor<T>({
                 character == " " ||
                 !TextLayoutMetrics.isWhitespace(character.codeUnitAt(0)),
             updateStringEdit: controller.updateMessage(
-              lookupPbiMessageOf<MdiStringEditStateMsg>().calc,
+              lookupPbiMessageOf<MshStringEditStateMsg>().calc,
             ),
           ),
         );

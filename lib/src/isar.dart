@@ -10,7 +10,7 @@
 //
 // final _logger = Logger();
 //
-// enum MdiSingleton {
+// enum MshSingleton {
 //   config,
 //   state,
 //   theme,
@@ -26,16 +26,16 @@
 //   return await Isar.open(
 //     [
 //       SingletonRecordSchema,
-//       // MdiInnerStateRecordSchema,
+//       // MshInnerStateRecordSchema,
 //     ],
 //     directory: dir.path,
 //   );
 // }
 //
 // // @collection
-// // class MdiInnerStateRecord
-// //     with BlobRecord, IsarIdRecord, ProtoRecord<MdiInnerStateMsg> {
+// // class MshInnerStateRecord
+// //     with BlobRecord, IsarIdRecord, ProtoRecord<MshInnerStateMsg> {
 // //   @override
-// //   MdiInnerStateMsg createProto$() => MdiInnerStateMsg();
+// //   MshInnerStateMsg createProto$() => MshInnerStateMsg();
 // // }
 

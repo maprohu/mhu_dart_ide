@@ -1,5 +1,5 @@
-import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_shafts/proto.dart';
 
 typedef WorkspaceIdentifier = int;
 
-typedef WorkspaceEntry = MapEntry<WorkspaceIdentifier, MdiWorkspaceMsg>;
+typedef WorkspaceEntry = MapEntry<WorkspaceIdentifier, MshWorkspaceMsg>;

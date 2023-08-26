@@ -1,17 +1,17 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/context/data.dart';
-import 'package:mhu_dart_ide/src/proto.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_ide/src/shaft/editing/edit_scalar.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/content/message.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/proto_customizer.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
-import 'package:mhu_dart_ide/src/shaft/string.dart';
-import 'package:mhu_dart_ide/src/sharing_box/browse_map.dart';
+import 'package:mhu_shafts/proto.dart';
+import 'package:mhu_shafts/src/bx/menu.dart';
+import 'package:mhu_shafts/src/context/data.dart';
+import 'package:mhu_shafts/src/proto.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
+import 'package:mhu_shafts/src/screen/opener.dart';
+import 'package:mhu_shafts/src/shaft/editing/edit_scalar.dart';
+import 'package:mhu_shafts/src/shaft/proto/content/message.dart';
+import 'package:mhu_shafts/src/shaft/proto/proto_customizer.dart';
+import 'package:mhu_shafts/src/shaft/proto/proto_path.dart';
+import 'package:mhu_shafts/src/shaft/string.dart';
+import 'package:mhu_shafts/src/sharing_box/browse_map.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -105,7 +105,7 @@ abstract class ValueBrowsingContent<T>
                     ShaftTypes.editScalar
                         .openerBits(
                           sizedBits,
-                          innerState: MdiInnerStateMsg()
+                          innerState: MshInnerStateMsg()
                             ..ensureStringEdit().pasting = true
                             ..freeze(),
                         )

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/context/shaft.dart';
+import 'package:mhu_shafts/src/context/shaft.dart';
+import 'package:mhu_shafts/src/model.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
-export 'package:mhu_dart_ide/src/context/app.dart';
+export 'package:mhu_shafts/src/context/app.dart';
 
 import 'window.dart' as $lib;
 
@@ -69,7 +70,6 @@ class RenderedView with _$RenderedView {
     required ShaftsLayout shaftsLayout,
     required OnKeyEvent onKeyEvent,
   }) = _RenderedView;
-
 }
 
 RenderedView watchWindowRenderedView({
@@ -97,4 +97,19 @@ OnKeyEvent windowOnKeyEvent({
   return (keyEvent) {
     windowObj.renderedViewFr.read().onKeyEvent(keyEvent);
   };
+}
+
+R windowUpdateView<R>(
+  @extHas WindowObj windowObj,
+  R Function() action,
+) {
+  return windowObj.updateViewExecutor(action);
+}
+
+void windowResetView({
+  @extHas required WindowObj windowObj,
+}) {
+  windowObj.windowUpdateView(() {
+    windowObj.windowStateFw.topShaft.value = createDefaultShaftMsg();
+  });
 }

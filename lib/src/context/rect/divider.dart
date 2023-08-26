@@ -5,20 +5,11 @@ Wx wxRectDivider({
   required Axis layoutAxis,
   required double thickness,
 }) {
-  final size = rectCtx.size.sizeWithAxisDimension(
-    axis: layoutAxis,
-    dimension: thickness,
-  );
-  return createWx(
-    widget: SizedBox.fromSize(
-      size: size,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: rectCtx.themeWrapRender().dividerColor,
-        ),
-      ),
-    ),
-    size: size,
+  return wxDivider(
+    rectSize: rectCtx.size,
+    layoutAxis: layoutAxis,
+    thickness: thickness,
+    themeWrap: rectCtx.themeWrapRender(),
   );
 }
 
@@ -32,6 +23,7 @@ Wx wxRectVerticalLayoutDivider({
     thickness: thickness,
   );
 }
+
 Wx wxRectHorizontalLayoutDivider({
   @ext required RectCtx rectCtx,
   required double thickness,

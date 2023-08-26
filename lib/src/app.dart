@@ -3,9 +3,9 @@
 // import 'package:isar/isar.dart';
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// export 'package:mhu_dart_ide/src/dart/dart_package.dart';
-// import 'package:mhu_dart_ide/src/screen/calc.dart';
-// export 'package:mhu_dart_ide/src/screen/shaft_factory.dart';
+// export 'package:mhu_shafts/src/dart/dart_package.dart';
+// import 'package:mhu_shafts/src/screen/calc.dart';
+// export 'package:mhu_shafts/src/screen/shaft_factory.dart';
 //
 // part 'app.g.has.dart';
 //

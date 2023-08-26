@@ -2,7 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
 import 'package:mhu_dart_commons/isar.dart';
-import 'package:mhu_dart_ide/proto.dart';
+import 'package:mhu_shafts/proto.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:protobuf/protobuf.dart';
@@ -47,61 +47,61 @@ Future<PersistCtx> createPersistCtx({
 }
 
 @Compose()
-abstract class MdiConfigIsarSingletonFwFactory
-    implements IsarSingletonFwFactory<MdiConfigMsg> {
+abstract class MshConfigIsarSingletonFwFactory
+    implements IsarSingletonFwFactory<MshConfigMsg> {
   static final instance =
-      ComposedMdiConfigIsarSingletonFwFactory.isarSingletonFwFactory(
+      ComposedMshConfigIsarSingletonFwFactory.isarSingletonFwFactory(
     isarSingletonFwFactory:
-        MdiConfigMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
+        MshConfigMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
   );
 }
 
 @Compose()
-abstract class MdiWindowStateIsarSingletonFwFactory
-    implements IsarSingletonFwFactory<MdiWindowStateMsg> {
+abstract class MshWindowStateIsarSingletonFwFactory
+    implements IsarSingletonFwFactory<MshWindowStateMsg> {
   static final instance =
-      ComposedMdiWindowStateIsarSingletonFwFactory.isarSingletonFwFactory(
+      ComposedMshWindowStateIsarSingletonFwFactory.isarSingletonFwFactory(
     isarSingletonFwFactory:
-        MdiWindowStateMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
+        MshWindowStateMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
   );
 }
 
 @Compose()
-abstract class MdiThemeIsarSingletonFwFactory
-    implements IsarSingletonFwFactory<MdiThemeMsg> {
+abstract class MshThemeIsarSingletonFwFactory
+    implements IsarSingletonFwFactory<MshThemeMsg> {
   static final instance =
-      ComposedMdiThemeIsarSingletonFwFactory.isarSingletonFwFactory(
+      ComposedMshThemeIsarSingletonFwFactory.isarSingletonFwFactory(
     isarSingletonFwFactory:
-        MdiThemeMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
+        MshThemeMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
   );
 }
 
 @Compose()
-abstract class MdiShaftNotificationsIsarSingletonFwFactory
-    implements IsarSingletonFwFactory<MdiShaftNotificationsMsg> {
-  static final instance = ComposedMdiShaftNotificationsIsarSingletonFwFactory
+abstract class MshShaftNotificationsIsarSingletonFwFactory
+    implements IsarSingletonFwFactory<MshShaftNotificationsMsg> {
+  static final instance = ComposedMshShaftNotificationsIsarSingletonFwFactory
       .isarSingletonFwFactory(
-    isarSingletonFwFactory: MdiShaftNotificationsMsg.new
+    isarSingletonFwFactory: MshShaftNotificationsMsg.new
         .createIsarSingletonProtoWriteOnlyFwFactory(),
   );
 }
 
 @Compose()
-abstract class MdiSequencesIsarSingletonFwFactory
-    implements IsarSingletonFwFactory<MdiSequencesMsg> {
+abstract class MshSequencesIsarSingletonFwFactory
+    implements IsarSingletonFwFactory<MshSequencesMsg> {
   static final instance =
-      ComposedMdiSequencesIsarSingletonFwFactory.isarSingletonFwFactory(
+      ComposedMshSequencesIsarSingletonFwFactory.isarSingletonFwFactory(
     isarSingletonFwFactory:
-        MdiSequencesMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
+        MshSequencesMsg.new.createIsarSingletonProtoWriteOnlyFwFactory(),
   );
 }
 
 final isarSingletonFwFactories = createIsarSingletonFwFactories<Msg>({
-  0: MdiConfigIsarSingletonFwFactory.instance,
-  1: MdiWindowStateIsarSingletonFwFactory.instance,
-  2: MdiThemeIsarSingletonFwFactory.instance,
-  3: MdiShaftNotificationsIsarSingletonFwFactory.instance,
-  4: MdiSequencesIsarSingletonFwFactory.instance,
+  0: MshConfigIsarSingletonFwFactory.instance,
+  1: MshWindowStateIsarSingletonFwFactory.instance,
+  2: MshThemeIsarSingletonFwFactory.instance,
+  3: MshShaftNotificationsIsarSingletonFwFactory.instance,
+  4: MshSequencesIsarSingletonFwFactory.instance,
 });
 
 class PersistObjSingletonFactoryMarker<M extends Msg,

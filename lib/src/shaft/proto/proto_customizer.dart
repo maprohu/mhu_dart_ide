@@ -1,8 +1,8 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/proto.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_shafts/src/bx/menu.dart';
+import 'package:mhu_shafts/src/proto.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -63,20 +63,20 @@ class ProtoCustomizer {
 
 // void _setup(ProtoCustomizer cst) {
 //   cst.mapEntryLabel.put(
-//     MdiConfigMsg$.dartPackages,
-//     (MapEntry<int, MdiDartPackageMsg> input) => input.value.path,
+//     MshConfigMsg$.dartPackages,
+//     (MapEntry<int, MshDartPackageMsg> input) => input.value.path,
 //   );
 // }
 //
 // void _use(ProtoCustomizer cst) {
 //   final mapEntry = MapEntry(
 //     1,
-//     MdiDartPackageMsg()
+//     MshDartPackageMsg()
 //       ..path = "some/path"
 //       ..freeze(),
 //   );
 //   String label = cst.mapEntryLabel(
-//     MdiConfigMsg$.dartPackages,
+//     MshConfigMsg$.dartPackages,
 //     mapEntry,
 //   );
 // }

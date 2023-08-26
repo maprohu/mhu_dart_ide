@@ -12,34 +12,41 @@ Int64 nextShaftSequence({
   return next;
 }
 
+ShaftMsg addShaftMsgParent({
+  @ext required ShaftCtx shaftCtx,
+  @ext required ShaftMsg shaftMsg,
+}) {
+  return shaftMsg.rebuild(
+    (msg) => msg.parent = shaftCtx.readShaftMsg()!,
+  );
+}
+
 void openShaftMsg({
   @ext required ShaftCtx shaftCtx,
   required ShaftMsg shaftMsg,
 }) {
-  shaftCtx.updateView(() {
-    shaftMsg = shaftMsg.rebuild(
-      (msg) {
-        msg
-          ..shaftSeq = shaftCtx.nextShaftSequence()
-          ..parent = shaftCtx.readShaftMsg()!;
-      },
-    );
-
-    shaftCtx.windowObj.windowStateFw.topShaft.value = shaftMsg;
+  shaftCtx.windowUpdateView(() {
+    shaftCtx.windowObj.windowStateFw.topShaft.value = shaftMsg
+        .addShaftMsgParent(
+          shaftCtx: shaftCtx,
+        )
+        .rebuild(
+          (msg) => msg.shaftSeq = shaftCtx.nextShaftSequence(),
+        );
   });
 }
 
 @Has()
 typedef UpdateShaftIdentifier = void Function(
-  MdiShaftIdentifierMsg shaftIdentifierMsg,
+  MshShaftIdentifierMsg shaftIdentifierMsg,
 );
 @Has()
 @HasDefault(shaftEmptyInnerState)
 typedef UpdateShaftInnerState = void Function(
-  MdiInnerStateMsg innerStateMsg,
+  MshInnerStateMsg innerStateMsg,
 );
 
-void shaftEmptyInnerState(MdiInnerStateMsg innerStateMsg) {}
+void shaftEmptyInnerState(MshInnerStateMsg innerStateMsg) {}
 
 @Compose()
 abstract class ShaftOpener
@@ -56,7 +63,7 @@ bool isShaftOpen({
   }
 
   final shaftIdentifier =
-      MdiShaftIdentifierMsg().also(shaftOpener.updateShaftIdentifier)..freeze();
+      MshShaftIdentifierMsg().also(shaftOpener.updateShaftIdentifier)..freeze();
 
   return shaftOnRight.shaftMsg.shaftIdentifier == shaftIdentifier;
 }
@@ -108,4 +115,34 @@ void openShaftOpener({
   shaftCtx.openShaftMsg(
     shaftMsg: shaftOpener.openerShaftMsg(),
   );
+}
+
+bool shaftIsInStack({
+  @ext required ShaftCtx shaftCtx,
+}) {
+  final shaftSeq = shaftCtx.shaftObj.shaftMsg.shaftSeq;
+  return shaftCtx.windowObj.windowStateFw
+      .read()
+      .getEffectiveTopShaft()
+      .shaftMsgIterableLeft()
+      .any((s) => s.shaftSeq == shaftSeq);
+}
+
+VoidCallback? shaftCloseAction({
+  @extHas required ShaftObj shaftObj,
+}) {
+  final shaftOnLeft = shaftObj.shaftOnLeft;
+
+  if (shaftOnLeft == null) {
+    return null;
+  }
+
+  final shaftCtx = shaftObj.shaftCtx;
+
+  return () {
+    assert(shaftCtx.shaftIsInStack());
+    shaftCtx.windowUpdateView(() {
+      shaftCtx.windowObj.windowStateFw.topShaft.value = shaftOnLeft.shaftMsg;
+    });
+  };
 }

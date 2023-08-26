@@ -4,7 +4,7 @@
 // part 'inner_state.g.compose.dart';
 
 // typedef InnerStateKey = ShaftIndexFromLeft;
-// typedef InnerStateFw = Fw<MdiInnerStateMsg?>;
+// typedef InnerStateFw = Fw<MshInnerStateMsg?>;
 
 // Cache<InnerStateKey, Future<InnerStateFw>> innerStateFwCache({
 //   required IsarDatabase isarDatabase,
@@ -12,7 +12,7 @@
 // }) {
 //   return Cache(
 //     (key) => isarDatabase.mdiInnerStateRecords
-//         .withCreateRecord(MdiInnerStateRecord.new)
+//         .withCreateRecord(MshInnerStateRecord.new)
 //         .protoRecordFwNullableWriteOnly(
 //           id: key,
 //           disposers: disposers,
@@ -44,7 +44,7 @@
 // extension InnerStateShaftCalcBuildBitsX on ShaftCalcBuildBits {
 //   Widget innerStateWidget<S>({
 //     required Future<S> Function(InnerStateFw innerStateFw) access,
-//     required Widget Function(MdiInnerStateMsg innerState, S value) builder,
+//     required Widget Function(MshInnerStateMsg innerState, S value) builder,
 //   }) {
 //     return futureBuilderNull(
 //       future: accessInnerState(
@@ -69,8 +69,8 @@
 //   Widget innerStateWidgetVoid({
 //     void Function(InnerStateFw innerStateFw)? access,
 //     required Widget Function(
-//       MdiInnerStateMsg innerState,
-//       void Function(MdiInnerStateMsg? innerState) update,
+//       MshInnerStateMsg innerState,
+//       void Function(MshInnerStateMsg? innerState) update,
 //     ) builder,
 //   }) {
 //     return innerStateWidget(

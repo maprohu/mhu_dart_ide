@@ -1,13 +1,13 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/context/asset.dart';
-import 'package:mhu_dart_ide/src/context/config.dart';
-import 'package:mhu_dart_ide/src/context/control.dart';
-export 'package:mhu_dart_ide/src/context/asset.dart';
-import 'package:mhu_dart_ide/src/context/persist.dart';
-import 'package:mhu_dart_ide/src/context/theme.dart';
-export 'package:mhu_dart_ide/src/context/persist.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_shafts/src/context/asset.dart';
+import 'package:mhu_shafts/src/context/config.dart';
+import 'package:mhu_shafts/src/context/control.dart';
+export 'package:mhu_shafts/src/context/asset.dart';
+import 'package:mhu_shafts/src/context/persist.dart';
+import 'package:mhu_shafts/src/context/theme.dart';
+export 'package:mhu_shafts/src/context/persist.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
 
 import '../../proto.dart';
 import '../model.dart';
@@ -19,11 +19,11 @@ part 'data.g.has.dart';
 
 @Has()
 class DataObj with MixDataCtx, MixDisposers {
-  late final MdiConfigMsg$Fw configFw;
-  late final MdiWindowStateMsg$Fw windowStateFw;
-  late final MdiThemeMsg$Fw themeFw;
-  late final MdiShaftNotificationsMsg$Fw notificationsFw;
-  late final MdiSequencesMsg$Fw sequencesFw;
+  late final MshConfigMsg$Fw configFw;
+  late final MshWindowStateMsg$Fw windowStateFw;
+  late final MshThemeMsg$Fw themeFw;
+  late final MshShaftNotificationsMsg$Fw notificationsFw;
+  late final MshSequencesMsg$Fw sequencesFw;
 
   late final themeWrapFr = disposers.fr(
     () => dataCtx.createThemeWrap(
@@ -53,29 +53,29 @@ Future<DataCtx> createConfigCtx({
   ) = persistCtx;
   final dataObj = DataObj()
     ..disposers = DspImpl()
-    ..configFw = MdiConfigMsg$Fw(
+    ..configFw = MshConfigMsg$Fw(
       await isarSingletonFwFactories
-          .lookupSingletonByType<MdiConfigIsarSingletonFwFactory>()
+          .lookupSingletonByType<MshConfigIsarSingletonFwFactory>()
           .producePersistObjSingletonFw(persistObj: persistObj),
     )
-    ..windowStateFw = MdiWindowStateMsg$Fw(
+    ..windowStateFw = MshWindowStateMsg$Fw(
       await isarSingletonFwFactories
-          .lookupSingletonByType<MdiWindowStateIsarSingletonFwFactory>()
+          .lookupSingletonByType<MshWindowStateIsarSingletonFwFactory>()
           .producePersistObjSingletonFw(persistObj: persistObj),
     )
-    ..themeFw = MdiThemeMsg$Fw(
+    ..themeFw = MshThemeMsg$Fw(
       await isarSingletonFwFactories
-          .lookupSingletonByType<MdiThemeIsarSingletonFwFactory>()
+          .lookupSingletonByType<MshThemeIsarSingletonFwFactory>()
           .producePersistObjSingletonFw(persistObj: persistObj),
     )
-    ..sequencesFw = MdiSequencesMsg$Fw(
+    ..sequencesFw = MshSequencesMsg$Fw(
       await isarSingletonFwFactories
-          .lookupSingletonByType<MdiSequencesIsarSingletonFwFactory>()
+          .lookupSingletonByType<MshSequencesIsarSingletonFwFactory>()
           .producePersistObjSingletonFw(persistObj: persistObj),
     )
-    ..notificationsFw = MdiShaftNotificationsMsg$Fw(
+    ..notificationsFw = MshShaftNotificationsMsg$Fw(
       await isarSingletonFwFactories
-          .lookupSingletonByType<MdiShaftNotificationsIsarSingletonFwFactory>()
+          .lookupSingletonByType<MshShaftNotificationsIsarSingletonFwFactory>()
           .producePersistObjSingletonFw(persistObj: persistObj),
     );
 

@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/context/data.dart';
-import 'package:mhu_dart_ide/src/dart/workspace.dart';
-import 'package:mhu_dart_ide/src/long_running.dart';
+import 'package:mhu_shafts/src/context/data.dart';
+import 'package:mhu_shafts/src/dart/workspace.dart';
+import 'package:mhu_shafts/src/long_running.dart';
 import 'package:path/path.dart' as p;
 
 import 'dart_package.dart' as $lib;

@@ -1,7 +1,7 @@
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/shaft/proto/proto_customizer.dart';
-// import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
+// import 'package:mhu_shafts/src/shaft/proto/proto_customizer.dart';
+// import 'package:mhu_shafts/src/shaft/proto/proto_path.dart';
 // import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 // import 'package:protobuf/protobuf.dart';
 //

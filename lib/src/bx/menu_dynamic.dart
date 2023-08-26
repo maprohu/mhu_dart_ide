@@ -1,9 +1,9 @@
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/builder/shaft.dart';
-// import 'package:mhu_dart_ide/src/builder/text.dart';
-// import 'package:mhu_dart_ide/src/bx/menu.dart';
-// import 'package:mhu_dart_ide/src/bx/shortcut.dart';
+// import 'package:mhu_shafts/src/builder/shaft.dart';
+// import 'package:mhu_shafts/src/builder/text.dart';
+// import 'package:mhu_shafts/src/bx/menu.dart';
+// import 'package:mhu_shafts/src/bx/shortcut.dart';
 //
 // import '../builder/sized.dart';
 // import '../builder/static.dart';

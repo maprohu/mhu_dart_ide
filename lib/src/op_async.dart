@@ -1,7 +1,7 @@
 // import 'dart:async';
 //
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
-// import 'package:mhu_dart_ide/src/screen/calc.dart';
+// import 'package:mhu_shafts/src/screen/calc.dart';
 //
 // part 'op_async.g.has.dart';
 //

@@ -1,6 +1,7 @@
 part of 'wx.dart';
 
 typedef WxWidthBuilder = Wx Function(double width);
+
 Wx wxFillLeft({
   @extHas required Size size,
   required WxWidthBuilder left,
@@ -14,6 +15,19 @@ Wx wxFillLeft({
   );
 }
 
+Wx wxFillRight({
+  @extHas required Size size,
+  required Iterable<Wx> left,
+  required WxWidthBuilder right,
+}) {
+  return wxFillAxisDirection(
+    size: size,
+    axisDirection: AxisDirection.right,
+    fixed: left,
+    fill: right,
+  );
+}
+
 Wx wxFillBottom({
   @extHas required Size size,
   required Iterable<Wx> top,
@@ -24,6 +38,19 @@ Wx wxFillBottom({
     axisDirection: AxisDirection.down,
     fixed: top,
     fill: bottom,
+  );
+}
+
+Wx wxFillTop({
+  @extHas required Size size,
+  required Wx Function(double height) top,
+  required Iterable<Wx> bottom,
+}) {
+  return wxFillAxisDirection(
+    size: size,
+    axisDirection: AxisDirection.up,
+    fixed: bottom,
+    fill: top,
   );
 }
 
@@ -48,13 +75,13 @@ Wx wxFillAxisDirection({
 
   final boxes = reversed
       ? [
-    fillWx,
-    ...fixed,
-  ]
+          fillWx,
+          ...fixed,
+        ]
       : [
-    ...fixed,
-    fillWx,
-  ];
+          ...fixed,
+          fillWx,
+        ];
 
   return wxLinear(
     children: boxes,
@@ -62,4 +89,3 @@ Wx wxFillAxisDirection({
     size: size,
   );
 }
-

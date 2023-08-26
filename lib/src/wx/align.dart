@@ -56,9 +56,22 @@ Alignment alignmentGeometryWithAxis({
   };
 }
 
+Wx wxAlignVertical({
+  @Ext() required Wx wx,
+  @extHas required Size size,
+  AxisAlignment axisAlignment = AxisAlignment.center,
+}) {
+  return wxAlign(
+    wx: wx,
+    size: size,
+    vertical: axisAlignment,
+    horizontal: null,
+  );
+}
+
 Wx wxAlign({
   @Ext() required Wx wx,
-  required Size size,
+  @extHas required Size size,
   required AxisAlignment? vertical,
   required AxisAlignment? horizontal,
 }) {

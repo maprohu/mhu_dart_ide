@@ -1,6 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
+import 'package:mhu_shafts/src/context/rect.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 import 'wx.dart' as $lib;
 
@@ -13,6 +15,8 @@ part 'linear.dart';
 part 'align.dart';
 part 'fill.dart';
 part 'decorate.dart';
+part 'sharing.dart';
+part 'divider.dart';
 
 typedef WxHeightBuilder = Wx Function(double height);
 

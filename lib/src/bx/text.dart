@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mhu_dart_ide/src/bx/boxed.dart';
+import 'package:mhu_shafts/src/bx/boxed.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 extension SizedTextSpanX on TextSpan {

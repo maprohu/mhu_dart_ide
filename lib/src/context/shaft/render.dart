@@ -53,7 +53,16 @@ ShaftLayout renderShaft({
       ),
     ],
     bottom: (rectCtx) {
-      return rectCtx.wxEmpty();
+      return wxLinearShared(
+        size: rectCtx.size,
+        axis: Axis.vertical,
+        items: [
+          ...shaftObj.shaftFactory
+              .createShaftContent(shaftObj.shaftData)
+              .call(rectCtx),
+        ],
+        themeWrap: themeWrap,
+      );
     },
   ).wxBackgroundColor(
     color: themeWrap.shaftBackgroundColor,

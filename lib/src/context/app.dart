@@ -1,9 +1,9 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/context/rect.dart';
-export 'package:mhu_dart_ide/src/context/tasks.dart';
-export 'package:mhu_dart_ide/src/context/theme.dart';
-export 'package:mhu_dart_ide/src/context/data.dart';
+import 'package:mhu_shafts/src/context/rect.dart';
+export 'package:mhu_shafts/src/context/tasks.dart';
+export 'package:mhu_shafts/src/context/theme.dart';
+export 'package:mhu_shafts/src/context/data.dart';
 import 'app.dart' as $lib;
 
 part 'app.g.dart';
@@ -40,9 +40,3 @@ Future<AppCtx> createAppCtx({
   return appCtx;
 }
 
-R updateView<R>(
-  @extHas AppObj appObj,
-  R Function() action,
-) {
-  return appObj.windowCtx.windowObj.updateViewExecutor(action);
-}

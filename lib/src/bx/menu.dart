@@ -1,12 +1,12 @@
 // import 'package:flutter/material.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/builder/static.dart';
-// import 'package:mhu_dart_ide/src/builder/text.dart';
+// import 'package:mhu_shafts/src/builder/static.dart';
+// import 'package:mhu_shafts/src/builder/text.dart';
 //
-// import 'package:mhu_dart_ide/src/bx/paginate.dart';
-// import 'package:mhu_dart_ide/src/context/data.dart';
-// import 'package:mhu_dart_ide/src/op.dart';
-// import 'package:mhu_dart_ide/src/screen/opener.dart';
+// import 'package:mhu_shafts/src/bx/paginate.dart';
+// import 'package:mhu_shafts/src/context/data.dart';
+// import 'package:mhu_shafts/src/op.dart';
+// import 'package:mhu_shafts/src/screen/opener.dart';
 //
 // import '../../proto.dart';
 // import '../builder/shaft.dart';
@@ -131,10 +131,10 @@
 //
 //   OpenerBits openerBits(
 //     ShaftIdentifier shaftIdentifier, {
-//     MdiInnerStateMsg? innerState,
+//     MshInnerStateMsg? innerState,
 //     OnShaftOpen onShaftOpen = noop,
 //   }) {
-//     final newShaftMessage = MdiShaftMsg$.create(
+//     final newShaftMessage = MshShaftMsg$.create(
 //       parent: shaftMsg,
 //       shaftIdentifier: shaftIdentifier,
 //       innerState: innerState,
@@ -164,7 +164,7 @@
 //   Bx openerShortcut(
 //     ShaftIdentifier shaftIdentifier,
 //     // {
-//     //   // FutureOr<MdiInnerStateMsg> Function()? innerState,
+//     //   // FutureOr<MshInnerStateMsg> Function()? innerState,
 //     // }
 //   ) {
 //     return openerShortcutFromBits(
@@ -178,9 +178,9 @@
 //   MenuItem opener(
 //     ShaftIdentifier shaftIdentifier, {
 //     String? label,
-//     MdiInnerStateMsg? innerState,
+//     MshInnerStateMsg? innerState,
 //   }) {
-//     final newShaftMessage = MdiShaftMsg$.create(
+//     final newShaftMessage = MshShaftMsg$.create(
 //       parent: shaftMsg,
 //       shaftIdentifier: shaftIdentifier,
 //       innerState: innerState,
@@ -190,7 +190,7 @@
 //       appBits: this,
 //       shaftMsg: newShaftMessage,
 //       shaftIndexFromRight: 0,
-//       windowStateMsg: MdiStateMsg.getDefault(),
+//       windowStateMsg: MshStateMsg.getDefault(),
 //     ).calc;
 //
 //     label ??= calc.shaftHeaderLabel;

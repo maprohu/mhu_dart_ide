@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/bx/string.dart';
-import 'package:mhu_dart_ide/src/bx/shortcut.dart';
-import 'package:mhu_dart_ide/src/bx/text.dart';
-import 'package:mhu_dart_ide/src/context/data.dart';
+import 'package:mhu_shafts/proto.dart';
+import 'package:mhu_shafts/src/bx/string.dart';
+import 'package:mhu_shafts/src/bx/shortcut.dart';
+import 'package:mhu_shafts/src/bx/text.dart';
+import 'package:mhu_shafts/src/context/data.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 import 'bx/boxed.dart';
@@ -28,7 +28,7 @@ import 'bx/padding.dart';
 //   static late final FontAssets _fontAssets;
 //
 //   static const _sizerKeys = 'MMM';
-//   final MdiThemeMsg theme;
+//   final MshThemeMsg theme;
 //
 //   ThemeWrap(this.theme);
 //

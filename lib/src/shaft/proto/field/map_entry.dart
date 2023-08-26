@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/app.dart';
-import 'package:mhu_dart_ide/src/bx/menu.dart';
-import 'package:mhu_dart_ide/src/context/config.dart';
-import 'package:mhu_dart_ide/src/model.dart';
-import 'package:mhu_dart_ide/src/op.dart';
-import 'package:mhu_dart_ide/src/proto.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
-import 'package:mhu_dart_ide/src/screen/opener.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/content/value_browsing.dart';
-import 'package:mhu_dart_ide/src/shaft/proto/proto_path.dart';
+import 'package:mhu_shafts/src/app.dart';
+import 'package:mhu_shafts/src/bx/menu.dart';
+import 'package:mhu_shafts/src/context/config.dart';
+import 'package:mhu_shafts/src/model.dart';
+import 'package:mhu_shafts/src/op.dart';
+import 'package:mhu_shafts/src/proto.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
+import 'package:mhu_shafts/src/screen/opener.dart';
+import 'package:mhu_shafts/src/shaft/proto/content/value_browsing.dart';
+import 'package:mhu_shafts/src/shaft/proto/proto_path.dart';
 import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 
 import '../../../long_running.dart';

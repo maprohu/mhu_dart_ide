@@ -1,17 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/context/shaft.dart';
-import 'package:mhu_dart_ide/src/context/text.dart';
-import 'package:mhu_dart_ide/src/wx/wx.dart';
+import 'package:mhu_shafts/src/context/shaft.dart';
+import 'package:mhu_shafts/src/context/text.dart';
+import 'package:mhu_shafts/src/shaft_factory.dart';
+import 'package:mhu_shafts/src/wx/wx.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
-export 'package:mhu_dart_ide/src/context/shaft.dart';
+export 'package:mhu_shafts/src/context/shaft.dart';
 
+import '../layout.dart';
 import 'rect.dart' as $lib;
 
 part 'rect.g.dart';
 
-// part 'rect.g.has.dart';
+part 'rect.g.has.dart';
 
 part 'rect/fill.dart';
 
@@ -21,6 +25,13 @@ part 'rect/divider.dart';
 
 part 'rect/aim.dart';
 
+part 'rect/chunk.dart';
+
+part 'rect/sharing_box.dart';
+
+part 'rect/menu.dart';
+
+@Has()
 typedef WxRectBuilder = Wx Function(RectCtx rectCtx);
 
 // @Has()

@@ -1,4 +1,4 @@
-# mhu_dart_ide
+# mhu_shafts
 
 A new Flutter project.
 

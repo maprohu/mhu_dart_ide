@@ -1,6 +1,6 @@
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/proto.dart';
-import 'package:mhu_dart_ide/src/screen/calc.dart';
+import 'package:mhu_shafts/proto.dart';
+import 'package:mhu_shafts/src/screen/calc.dart';
 import 'package:protobuf/protobuf.dart';
 
 extension NotificationHasShaftCalcChainX on HasShaftCalcChain {
@@ -14,13 +14,13 @@ extension NotificationHasShaftCalcChainX on HasShaftCalcChain {
 
       final selfNotifications =
           notifications.byIndexFromLeft[shaftIndexFromLeft] ??
-              MdiShaftNotificationMsg.getDefault();
+              MshShaftNotificationMsg.getDefault();
 
       notifications.byIndexFromLeft[shaftIndexFromLeft] =
           selfNotifications.rebuild((selfNotifications) {
         for (final message in messages) {
           selfNotifications.notifications
-              .add(MdiNotificationMsg()..text = message);
+              .add(MshNotificationMsg()..text = message);
         }
       });
     });

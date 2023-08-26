@@ -1,14 +1,14 @@
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/src/dart/workspace_scan_packages.dart';
-// import 'package:mhu_dart_ide/src/shaft/build_runner.dart';
-// import 'package:mhu_dart_ide/src/shaft/config.dart';
-// import 'package:mhu_dart_ide/src/shaft/confirm.dart';
-// import 'package:mhu_dart_ide/src/shaft/editing/edit_scalar.dart';
-// import 'package:mhu_dart_ide/src/shaft/main_menu.dart';
-// import 'package:mhu_dart_ide/src/shaft/not_implemented.dart';
-// import 'package:mhu_dart_ide/src/shaft/options.dart';
-// import 'package:mhu_dart_ide/src/shaft/proto/concrete_field.dart';
+// import 'package:mhu_shafts/src/dart/workspace_scan_packages.dart';
+// import 'package:mhu_shafts/src/shaft/build_runner.dart';
+// import 'package:mhu_shafts/src/shaft/config.dart';
+// import 'package:mhu_shafts/src/shaft/confirm.dart';
+// import 'package:mhu_shafts/src/shaft/editing/edit_scalar.dart';
+// import 'package:mhu_shafts/src/shaft/main_menu.dart';
+// import 'package:mhu_shafts/src/shaft/not_implemented.dart';
+// import 'package:mhu_shafts/src/shaft/options.dart';
+// import 'package:mhu_shafts/src/shaft/proto/concrete_field.dart';
 // import 'package:mhu_dart_proto/mhu_dart_proto.dart';
 //
 // import '../../proto.dart';
@@ -23,7 +23,7 @@
 //
 // typedef ShaftCalcBuilder = ShaftCalc Function(ShaftCalcBuildBits buildBits);
 //
-// final _shaftPbi = lookupPbiMessage(MdiShaftMsg);
+// final _shaftPbi = lookupPbiMessage(MshShaftMsg);
 //
 // ShaftCalc calculateShaft(ShaftCalcChain shaftCalcChain) {
 //   final ShaftCalcChain(:shaftMsg) = shaftCalcChain;
@@ -34,27 +34,27 @@
 //   );
 //
 //   return switch (type) {
-//     MdiShaftIdentifierMsg_Type$mainMenu() =>
+//     MshShaftIdentifierMsg_Type$mainMenu() =>
 //       MainMenuShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$options() =>
+//     MshShaftIdentifierMsg_Type$options() =>
 //       OptionsShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$config() =>
+//     MshShaftIdentifierMsg_Type$config() =>
 //       ConfigShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$concreteField() =>
+//     MshShaftIdentifierMsg_Type$concreteField() =>
 //       ConcreteFieldShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$mapEntry() =>
+//     MshShaftIdentifierMsg_Type$mapEntry() =>
 //       MapEntryShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$newMapEntry() =>
+//     MshShaftIdentifierMsg_Type$newMapEntry() =>
 //       NewMapEntryShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$editScalar() =>
+//     MshShaftIdentifierMsg_Type$editScalar() =>
 //       EditScalarShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$buildRunner() =>
+//     MshShaftIdentifierMsg_Type$buildRunner() =>
 //       BuildRunnerShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$viewTask() =>
+//     MshShaftIdentifierMsg_Type$viewTask() =>
 //       ViewTaskShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$confirm() =>
+//     MshShaftIdentifierMsg_Type$confirm() =>
 //       ConfirmShaft.create(shaftCalcBuildBits),
-//     MdiShaftIdentifierMsg_Type$dartWorkspaceScanPackages() =>
+//     MshShaftIdentifierMsg_Type$dartWorkspaceScanPackages() =>
 //       DartWorkspaceScanPackagesShaft.create(shaftCalcBuildBits),
 //     _ => NotImplementedShaft.create(shaftCalcBuildBits),
 //   };

@@ -1,12 +1,12 @@
 import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/app.dart';
+import 'package:mhu_shafts/src/app.dart';
 
-import '../screen/shaft_factory.dart';
+// import '../screen/shaft_factory.dart';
 
 // import 'not_implemented.dart' as $lib;
 // part 'not_implemented.g.has.dart';
-part 'not_implemented.g.dart';
+// part 'not_implemented.g.dart';
 
 // part 'not_implemented.g.has.dart';
 //
@@ -51,11 +51,11 @@ part 'not_implemented.g.dart';
 //   }
 // }
 
-@Compose()
-abstract class NotImplementedShaftFactory implements ShaftFactory {
-  static NotImplementedShaftFactory create() {
-    return ComposedNotImplementedShaftFactory.shaftFactory(
-      shaftFactory: createShaftFactory(),
-    );
-  }
-}
+// @Compose()
+// abstract class NotImplementedShaftFactory implements ShaftFactory {
+//   static NotImplementedShaftFactory create() {
+//     return ComposedNotImplementedShaftFactory.shaftFactory(
+//       shaftFactory: createShaftFactory(),
+//     );
+//   }
+// }

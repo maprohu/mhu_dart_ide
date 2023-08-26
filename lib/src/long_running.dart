@@ -2,16 +2,16 @@
 // import 'package:flutter/material.dart';
 // import 'package:mhu_dart_annotation/mhu_dart_annotation.dart';
 // import 'package:mhu_dart_commons/commons.dart';
-// import 'package:mhu_dart_ide/proto.dart';
-// import 'package:mhu_dart_ide/src/builder/shaft.dart';
-// import 'package:mhu_dart_ide/src/builder/sized.dart';
-// import 'package:mhu_dart_ide/src/bx/menu_dynamic.dart';
-// import 'package:mhu_dart_ide/src/bx/text.dart';
-// import 'package:mhu_dart_ide/src/context/data.dart';
-// import 'package:mhu_dart_ide/src/screen/calc.dart';
-// import 'package:mhu_dart_ide/src/screen/opener.dart';
-// import 'package:mhu_dart_ide/src/sharing_box.dart';
-// import 'package:mhu_dart_ide/src/theme.dart';
+// import 'package:mhu_shafts/proto.dart';
+// import 'package:mhu_shafts/src/builder/shaft.dart';
+// import 'package:mhu_shafts/src/builder/sized.dart';
+// import 'package:mhu_shafts/src/bx/menu_dynamic.dart';
+// import 'package:mhu_shafts/src/bx/text.dart';
+// import 'package:mhu_shafts/src/context/data.dart';
+// import 'package:mhu_shafts/src/screen/calc.dart';
+// import 'package:mhu_shafts/src/screen/opener.dart';
+// import 'package:mhu_shafts/src/sharing_box.dart';
+// import 'package:mhu_shafts/src/theme.dart';
 // import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 //
 // import 'bx/boxed.dart';
@@ -231,15 +231,15 @@
 //   //     longRunningTasks.stateFw.rebuild(
 //   //       (state) {
 //   //         final shaftMsg = shaftCalc.shaftCalcChain.shaftMsgFu.read();
-//   //         state.topShaft = MdiShaftMsg$.create(
-//   //           shaftIdentifier: MdiShaftIdentifierMsg$.create(
-//   //             viewTask: MdiViewTaskMsg$.create(
+//   //         state.topShaft = MshShaftMsg$.create(
+//   //           shaftIdentifier: MshShaftIdentifierMsg$.create(
+//   //             viewTask: MshViewTaskMsg$.create(
 //   //               taskIdentifier: taskIdentifier,
 //   //             ),
 //   //           ),
-//   //           parent: MdiShaftMsg$.create(
-//   //             shaftIdentifier: MdiShaftIdentifierMsg$.create(
-//   //               options: MdiEmptyMsg.getDefault(),
+//   //           parent: MshShaftMsg$.create(
+//   //             shaftIdentifier: MshShaftIdentifierMsg$.create(
+//   //               options: MshEmptyMsg.getDefault(),
 //   //             ),
 //   //             parent: shaftMsg,
 //   //           ),

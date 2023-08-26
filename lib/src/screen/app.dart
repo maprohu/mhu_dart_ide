@@ -3,16 +3,16 @@ import 'dart:ui';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:mhu_dart_commons/commons.dart';
-import 'package:mhu_dart_ide/src/context/rect.dart';
-import 'package:mhu_dart_ide/src/wx/wx.dart';
+import 'package:mhu_shafts/src/context/rect.dart';
+import 'package:mhu_shafts/src/wx/wx.dart';
 import 'package:mhu_flutter_commons/mhu_flutter_commons.dart';
 
 part 'app.freezed.dart';
 
-class MdiApp extends StatelessWidget {
+class MshApp extends StatelessWidget {
   final WindowObj windowObj;
 
-  MdiApp({
+  MshApp({
     super.key,
     required this.windowObj,
   });

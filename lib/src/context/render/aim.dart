@@ -9,6 +9,9 @@ final emptyAimKeys = AimKeys();
 typedef AimAction = ReadValue<VoidCallback?>;
 
 @Has()
+typedef WatchAimAction = WatchValue<VoidCallback?>;
+
+@Has()
 typedef ReadAimKeys = ReadValue<AimKeys>;
 
 @Has()
