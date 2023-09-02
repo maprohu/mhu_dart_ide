@@ -192,7 +192,7 @@ SharingBox stringEditorSharingBoxFromGridSizeBuilder({
     dimensionBxBuilder: (height) {
       final widgetSize = sizedBits.size.withHeight(height);
       final gridSize =
-          sizedBits.themeCalc.stringTextStyle.maxGridSize(widgetSize);
+          sizedBits.themeCalc.stringMonoTextStyle.maxGridSize(widgetSize);
 
       final widget = builder(gridSize);
 
