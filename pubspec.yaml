@@ -1,12 +1,18 @@
-name: mhu_shafts
+name: mhu_dart_ide
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 dependency_overrides:
+  mhu_shafts:
+    path: ../mhu_shafts
   mhu_dart_commons:
     path: ../mhu_dart_commons
-  mhu_dart_proto:
-    path: ../mhu_dart_proto
+  mhu_dart_protoc:
+    path: ../mhu_dart_protoc
+#  mhu_dart_proto:
+#    path: ../mhu_dart_proto
+  mhu_dart_pbschema:
+    path: ../mhu_dart_pbschema
   mhu_dart_builder:
     path: ../mhu_dart_builder
   mhu_dart_sourcegen:
@@ -26,8 +32,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  mhu_shafts: ^1.0.0
   mhu_dart_commons: ^1.0.8
-  mhu_dart_proto: ^1.0.2
+#  mhu_dart_proto: ^1.0.2
+  mhu_dart_pbschema: ^1.0.2
   mhu_dart_model: ^1.0.2
   mhu_flutter_commons: ^1.0.5
   mhu_dart_annotation: ^1.0.1
