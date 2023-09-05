@@ -13,9 +13,7 @@ Future<MdiConfigObj> createSampleConfigObj(AppCtx appCtx) async {
       .mdiProducePersistObjSingletonWatch(persistObj: appCtx.persistObj);
 
   return ComposedMdiConfigObj(
-    schemaLookupByName: await mhuDartIdePbschema
-        .pbschemaFileDescriptorSet()
-        .descriptorSchemaLookupByName(
+    schemaLookupByName: await mhuDartIdePbschema.pbschemaLookupByName(
       dependencies: [],
     ),
     mdiConfigWatch: mdiConfigWatch,

@@ -8,19 +8,32 @@ class MdiConfigShaftFactory extends MdiShaftFactory {
     final messageCtx =
         configObj.schemaLookupByName.lookupMessageCtxOfType<MdiConfigMsg>();
 
+    late final protoCustomizer = mdiConfigProtoCustomizer();
+
     late final shaftInterface = ComposedProtoMessageShaftInterface(
       messageCtx: messageCtx,
       messageValue: messageValue,
+      protoCustomizer: protoCustomizer,
     );
     return ComposedShaftActions.shaftLabel(
       shaftLabel: stringConstantShaftLabel("MDI Config"),
       callShaftContent: () => protoMessageShaftContent(
-        messageCtx: messageCtx,
-        messageValue: messageValue,
+        shaftInterface: shaftInterface,
       ),
       callShaftFocusHandler: shaftWithoutFocus,
       callShaftInterface: () => shaftInterface,
       callParseShaftIdentifier: keyOnlyShaftIdentifier,
     );
   }
+}
+
+ProtoCustomizer mdiConfigProtoCustomizer() {
+  final protoCustomizer = ProtoCustomizer();
+
+  protoCustomizer.logicalFieldVisible.put(
+    MdiConfigMsg$.ids,
+    (shaftInterface) => false,
+  );
+
+  return protoCustomizer;
 }

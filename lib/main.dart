@@ -12,6 +12,7 @@ import 'main.dart' as $lib;
 import 'proto.dart';
 
 part 'main.g.has.dart';
+
 part 'main.g.dart';
 
 // part 'main.freezed.dart';
@@ -26,7 +27,6 @@ part 'config.dart';
 
 part 'data.dart';
 
-
 void main() async {
   initMhuShafts();
 
@@ -40,6 +40,4 @@ void main() async {
   ).mhuShaftsApp();
 
   runApp(app);
-
-  // runApp(Placeholder());
 }
